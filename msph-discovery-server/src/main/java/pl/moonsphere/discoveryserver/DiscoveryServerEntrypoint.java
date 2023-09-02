@@ -2,7 +2,7 @@
  * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  *
- *     File name: Main.java
+ *     File name: DiscoveryServerEntrypoint.java
  *     Last modified: 9/2/23, 3:55 PM
  *     Project name: moonsphere-infra-monorepo
  *     Module name: msph-discovery-server
@@ -22,9 +22,6 @@
  */
 package pl.moonsphere.discoveryserver;
 
-import lombok.Data;
-
-@Data
 public class DiscoveryServerEntrypoint {
     public static void main(String[] args) {
         System.out.println("Hello world!");

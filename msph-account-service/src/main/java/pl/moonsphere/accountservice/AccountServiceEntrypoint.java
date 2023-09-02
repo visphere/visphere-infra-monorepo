@@ -2,7 +2,7 @@
  * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  *
- *     File name: Main.java
+ *     File name: AccountServiceEntrypoint.java
  *     Last modified: 9/2/23, 4:31 PM
  *     Project name: moonsphere-infra-monorepo
  *     Module name: msph-account-service

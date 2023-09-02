@@ -2,7 +2,7 @@
  * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  *
- *     File name: Main.java
+ *     File name: ConfigServerEntrypoint.java
  *     Last modified: 9/2/23, 4:05 PM
  *     Project name: moonsphere-infra-monorepo
  *     Module name: msph-config-server
