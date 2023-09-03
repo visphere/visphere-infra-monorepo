@@ -20,6 +20,14 @@ spring:
           uri: http://localhost:6162
           predicates:
             - Path=/api/v1/account/**
+        - id: auth
+          uri: http://localhost:6163
+          predicates:
+            - Path=/api/v1/auth/**
+        - id: misc
+          uri: http://localhost:6164
+          predicates:
+            - Path=/api/v1/misc/**
 
 management:
   tracing:

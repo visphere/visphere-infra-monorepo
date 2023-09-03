@@ -1,0 +1,20 @@
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    service-url:
+      defaultZone: http://localhost:6161/eureka
+
+server:
+  port: 6164
+
+spring:
+  application:
+    name: msph-misc-service
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0

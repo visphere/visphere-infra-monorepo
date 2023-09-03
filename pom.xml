@@ -45,6 +45,7 @@
     <module>msph-account-service</module>
     <module>msph-config-server</module>
     <module>msph-auth-service</module>
+    <module>msph-misc-service</module>
   </modules>
 
   <properties>
