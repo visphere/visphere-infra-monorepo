@@ -22,11 +22,12 @@
  */
 package pl.moonsphere.accountservice;
 
-import pl.moonsphere.lib.SharedLibEntryClass;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class AccountServiceEntrypoint {
     public static void main(String[] args) {
-        final SharedLibEntryClass sharedLibEntryClass = new SharedLibEntryClass();
-        sharedLibEntryClass.printInfo();
+        SpringApplication.run(AccountServiceEntrypoint.class, args);
     }
 }

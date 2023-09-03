@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: msph-discovery-server
+  config:
+    import: optional:configserver:http://localhost:6160

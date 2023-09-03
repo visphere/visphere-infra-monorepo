@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: msph-api-gateway
+  config:
+    import: optional:configserver:http://localhost:6160

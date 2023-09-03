@@ -2,10 +2,10 @@
  * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  *
- *     File name: ApiGatewayEntrypoint.java
- *     Last modified: 9/3/23, 2:45 PM
+ *     File name: AccountController.java
+ *     Last modified: 9/3/23, 2:20 PM
  *     Project name: moonsphere-infra-monorepo
- *     Module name: msph-api-gateway
+ *     Module name: msph-account-service
  *
  * This project is a part of "MoonSphere" instant messenger system. This system is a part of
  * completing an engineers degree in computer science at Silesian University of Technology.
@@ -20,14 +20,20 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the license.
  */
-package pl.moonsphere.apigateway;
+package pl.moonsphere.accountservice;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import pl.moonsphere.lib.SharedLibEntryClass;
 
-@SpringBootApplication
-public class ApiGatewayEntrypoint {
-    public static void main(String[] args) {
-        SpringApplication.run(ApiGatewayEntrypoint.class, args);
+@RestController
+@RequestMapping("/api/v1/account")
+public class AccountController {
+
+    @GetMapping
+    String testMessage() {
+        final SharedLibEntryClass sharedLibEntryClass = new SharedLibEntryClass();
+        return sharedLibEntryClass.printInfo();
     }
 }

@@ -1,0 +1,27 @@
+eureka:
+  client:
+    register-with-eureka: false
+    service-url:
+      defaultZone: http://localhost:6161/eureka
+
+server:
+  port: 6065
+
+spring:
+  application:
+    name: msph-api-gateway
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: account
+          uri: http://localhost:6162
+          predicates:
+            - Path=/api/v1/account/**
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
