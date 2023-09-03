@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: msph-auth-service
+  config:
+    import: optional:configserver:http://localhost:6160
