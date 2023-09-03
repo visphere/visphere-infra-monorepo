@@ -1,27 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
+  ~ Silesian University of Technology
+  ~
+  ~     File name: pom.xml
+  ~     Last modified: 9/3/23, 3:04 PM
+  ~     Project name: moonsphere-infra-monorepo
+  ~     Module name: msph-config-server
+  ~
+  ~ This project is a part of "MoonSphere" instant messenger system. This system is a part of
+  ~ completing an engineers degree in computer science at Silesian University of Technology.
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+  ~ file except in compliance with the License. You may obtain a copy of the License at
+  ~
+  ~     <http://www.apache.org/license/LICENSE-2.0>
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under
+  ~ the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS
+  ~ OF ANY KIND, either express or implied. See the License for the specific language
+  ~ governing permissions and limitations under the license.
+  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>pl.moonsphere</groupId>
-        <artifactId>moonsphere-infra-monorepo</artifactId>
-        <version>1.0.0</version>
-    </parent>
+  <parent>
+    <groupId>pl.moonsphere</groupId>
+    <artifactId>moonsphere-infra-monorepo</artifactId>
+    <version>1.0.0</version>
+  </parent>
 
-    <artifactId>msph-config-server</artifactId>
+  <artifactId>msph-config-server</artifactId>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-config-server</artifactId>
-        </dependency>
-    </dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.cloud</groupId>
+      <artifactId>spring-cloud-config-server</artifactId>
+    </dependency>
+  </dependencies>
 </project>
