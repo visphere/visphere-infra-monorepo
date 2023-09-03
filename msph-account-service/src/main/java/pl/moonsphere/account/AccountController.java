@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  *
- *     File name: AccountServiceEntrypoint.java
- *     Last modified: 9/3/23, 2:40 PM
+ *     File name: AccountController.java
+ *     Last modified: 9/3/23, 2:20 PM
  *     Project name: moonsphere-infra-monorepo
  *     Module name: msph-account-service
  *
@@ -20,14 +20,20 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the license.
  */
-package pl.moonsphere.accountservice;
+package pl.moonsphere.account;
 
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import pl.moonsphere.lib.SharedLibEntryClass;
 
-@SpringBootApplication
-public class AccountServiceEntrypoint {
-    public static void main(String[] args) {
-        SpringApplication.run(AccountServiceEntrypoint.class, args);
+@RestController
+@RequestMapping("/api/v1/account")
+public class AccountController {
+
+    @GetMapping
+    String testMessage() {
+        final SharedLibEntryClass sharedLibEntryClass = new SharedLibEntryClass();
+        return sharedLibEntryClass.printInfo();
     }
 }
