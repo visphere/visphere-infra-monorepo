@@ -4,4 +4,4 @@
  | |  | | (_) | (_) | | | |___) | |_) | | | |  __/ | |  __/
  |_|  |_|\___/ \___/|_| |_|____/| .__/|_| |_|\___|_|  \___|
 ================================|_|${AnsiColor.MAGENTA} :: ACCOUNT SERVICE :: ${AnsiStyle.NORMAL}
-${AnsiColor.GREEN} :: Spring Boot :: ${AnsiStyle.NORMAL} (v ${spring-boot.version})
+${AnsiColor.GREEN} :: Spring Boot :: ${AnsiStyle.NORMAL} (v${spring-boot.version})

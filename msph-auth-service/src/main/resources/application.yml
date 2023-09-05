@@ -3,3 +3,5 @@ spring:
     name: msph-auth-service
   config:
     import: optional:configserver:http://localhost:6160
+  banner:
+    location: classpath:spring/banner.txt
