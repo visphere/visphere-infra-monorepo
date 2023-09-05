@@ -2,8 +2,8 @@
  * Copyright (c) 2023 by MILOSZ GILGA <https://miloszgilga.pl>
  * Silesian University of Technology
  *
- *     File name: SharedLibEntryClass.java
- *     Last modified: 9/2/23, 4:34 PM
+ *     File name: BaseMessageResDto.java
+ *     Last modified: 9/3/23, 6:52 PM
  *     Project name: moonsphere-infra-monorepo
  *     Module name: msph-shared-lib
  *
@@ -20,10 +20,13 @@
  * OF ANY KIND, either express or implied. See the License for the specific language
  * governing permissions and limitations under the license.
  */
+
 package pl.moonsphere.lib;
 
-public class SharedLibEntryClass {
-    public String printInfo() {
-        return "Shared LIB";
-    }
+import lombok.Builder;
+
+@Builder
+public record BaseMessageResDto(
+    String message
+) {
 }
