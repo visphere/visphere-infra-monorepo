@@ -1,0 +1,54 @@
+version: '3.8'
+
+name: moonsphere-infra
+
+services:
+  msph-account-service-db:
+    container_name: msph-account-service-db
+    image: postgres:15.4-alpine
+    ports:
+      - '7500:5432'
+    environment:
+      - 'POSTGRES_USER=microaccount'
+      - 'POSTGRES_PASSWORD=MoonSphere123@'
+      - 'POSTGRES_DB=msph_account_service_db'
+    volumes:
+      - ./_db/postgres-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 10s
+      retries: 120
+
+  msph-account-service:
+    container_name: msph-account-service
+    ports:
+      - '7510:8080'
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - 'OPEN_PORT=8080'
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=docker'
+      - 'MSPH_DOCKER_EUREKA_PORT=8761'
+    depends_on:
+      - msph-config-server
+      - msph-discovery-server
+      - msph-api-gateway
+      - msph-account-service-db
+
+  msph-config-server:
+    extends:
+      file: ../docker-compose.yml
+      service: msph-config-server
+
+  msph-discovery-server:
+    extends:
+      file: ../docker-compose.yml
+      service: msph-discovery-server
+
+  msph-api-gateway:
+    extends:
+      file: ../docker-compose.yml
+      service: msph-api-gateway

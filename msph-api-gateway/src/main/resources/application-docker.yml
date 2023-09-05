@@ -1,0 +1,3 @@
+spring:
+  config:
+    import: optional:configserver:http://msph-config-server:8888/config
