@@ -3,14 +3,14 @@ version: '3.8'
 name: moonsphere-infra
 
 services:
-  msph-account-service-db:
+  msph-account-service-db-template:
     container_name: msph-account-service-db
     image: postgres:15.4-alpine
     ports:
-      - '7500:5432'
+      - '5432'
     environment:
-      - 'POSTGRES_USER=microaccount'
-      - 'POSTGRES_PASSWORD=MoonSphere123@'
+      - 'POSTGRES_USER=${ENV_MSPH_ACCOUNT_SERVICE_POSTGRES_USERNAME}'
+      - 'POSTGRES_PASSWORD=${ENV_MSPH_ACCOUNT_SERVICE_POSTGRES_PASSWORD}'
       - 'POSTGRES_DB=msph_account_service_db'
     volumes:
       - ./_db/postgres-volume:/var/lib/postgresql/data
@@ -20,35 +20,19 @@ services:
       timeout: 10s
       retries: 120
 
-  msph-account-service:
+  msph-account-service-template:
     container_name: msph-account-service
     ports:
-      - '7510:8080'
+      - '8080'
     build:
-      context: .
+      context: ./msph-account-service
       dockerfile: Dockerfile
       args:
         - 'OPEN_PORT=8080'
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
       - 'MSPH_DOCKER_EUREKA_PORT=8761'
-    depends_on:
-      - msph-config-server
-      - msph-discovery-server
-      - msph-api-gateway
-      - msph-account-service-db
-
-  msph-config-server:
-    extends:
-      file: ../docker-compose.yml
-      service: msph-config-server
-
-  msph-discovery-server:
-    extends:
-      file: ../docker-compose.yml
-      service: msph-discovery-server
-
-  msph-api-gateway:
-    extends:
-      file: ../docker-compose.yml
-      service: msph-api-gateway
+      - 'MSPH_SPRING_CONFIG_USERNAME=${ENV_DOCKER_MSPH_SPRING_CONFIG_USERNAME}'
+      - 'MSPH_SPRING_CONFIG_PASSWORD=${ENV_DOCKER_MSPH_SPRING_CONFIG_PASSWORD}'
+      - 'MSPH_EUREKA_USERNAME=${ENV_MSPH_EUREKA_USERNAME}'
+      - 'MSPH_EUREKA_PASSWORD=${ENV_MSPH_EUREKA_PASSWORD}'

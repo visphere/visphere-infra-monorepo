@@ -1,0 +1,24 @@
+{
+  "Servers": {
+    "msph_account_service_db": {
+      "Name": "msph_account_service_db",
+      "Group": "Servers",
+      "Host": "msph-account-service-db",
+      "Port": 5432,
+      "MaintenanceDB": "postgres",
+      "Username": "msphaccountdb",
+      "SSLMode": "prefer",
+      "ConnectNow": true
+    },
+    "msph_auth_service_db": {
+      "Name": "msph_auth_service_db",
+      "Group": "Servers",
+      "Host": "msph-auth-service-db",
+      "Port": 5432,
+      "MaintenanceDB": "postgres",
+      "Username": "msphauthdb",
+      "SSLMode": "prefer",
+      "ConnectNow": true
+    }
+  }
+}

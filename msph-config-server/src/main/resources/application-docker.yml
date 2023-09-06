@@ -1,0 +1,5 @@
+spring:
+  security:
+    user:
+      name: ${MSPH_SPRING_CONFIG_USERNAME}
+      password: ${MSPH_SPRING_CONFIG_PASSWORD}

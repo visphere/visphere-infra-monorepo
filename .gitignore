@@ -7,3 +7,6 @@
 .idea/uiDesigner.xml
 
 **/target/
+.env
+/**/_db/*volume/
+vault/

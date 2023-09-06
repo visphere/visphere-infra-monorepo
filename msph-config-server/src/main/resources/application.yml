@@ -1,14 +1,29 @@
 server:
-  port: 6160
+  port: 8888
+  servlet:
+    context-path: /config
+
 spring:
-  profiles:
-    active: native
   application:
     name: msph-config-server
   cloud:
     config:
       server:
-        native:
-          search-locations: classpath:/configurations
+        git:
+          uri: https://github.com/moonsphere-systems/moonsphere-infra-cloud-config
+          username: ${ENV_MSPH_SPRING_CONFIG_REPO_USERNAME}
+          password: ${ENV_MSPH_SPRING_CONFIG_REPO_TOKEN}
+          default-label: 'master'
   banner:
     location: classpath:spring/banner.txt
+
+management:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
