@@ -7,9 +7,8 @@ services:
     container_name: msph-misc-service
     ports:
       - '8080'
-    build:
-      context: ./msph-misc-service
-      dockerfile: Dockerfile
+    image: milosz08/msph-misc-service:latest
+    pull_policy: always
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
       - 'MSPH_VAULT_ROOT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'

@@ -7,9 +7,8 @@ services:
     container_name: msph-config-server
     ports:
       - '5160:8888'
-    build:
-      context: ./msph-config-server
-      dockerfile: Dockerfile
+    image: milosz08/msph-config-server:latest
+    pull_policy: always
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
       - 'MSPH_VAULT_ROOT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'
@@ -20,9 +19,8 @@ services:
     container_name: msph-discovery-server
     ports:
       - '5161:8761'
-    build:
-      context: ./msph-discovery-server
-      dockerfile: Dockerfile
+    image: milosz08/msph-discovery-server:latest
+    pull_policy: always
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
       - 'MSPH_VAULT_ROOT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'
@@ -67,9 +65,8 @@ services:
     container_name: msph-api-gateway
     ports:
       - '5055:8080'
-    build:
-      context: ./msph-api-gateway
-      dockerfile: Dockerfile
+    image: milosz08/msph-api-gateway:latest
+    pull_policy: always
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
       - 'MSPH_DOCKER_LANDING_PORT=${MSPH_DOCKER_LANDING_PORT}'
