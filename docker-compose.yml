@@ -54,9 +54,9 @@ services:
     volumes:
       - ./vault/data:/vault/data:rw
       - ./_vault:/vault/config
+      - ./.env:/.env
     environment:
       - 'VAULT_ADDR=http://127.0.0.1:8200'
-      - 'VAULT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'
     cap_add:
       - IPC_LOCK
     entrypoint: vault server -config=/vault/config/vault.hcl
