@@ -1,3 +1,11 @@
 spring:
   application:
     name: msph-api-gateway
+  cloud:
+    vault:
+      token: ${MSPH_VAULT_ROOT_TOKEN}
+      authentication: TOKEN
+      kv:
+        backend: moonsphere
+        default-context: msph-common
+        application-name: ${spring.application.name}

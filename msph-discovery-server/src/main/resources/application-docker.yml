@@ -1,7 +1,11 @@
 spring:
   config:
-    import: optional:configserver:http://msph-config-server:8888/config
+    import:
+      - optional:configserver:http://msph-config-server:8888/config
+      - optional:vault://
   cloud:
+    vault:
+      uri: http://msph-vault:8200
     config:
       username: ${MSPH_SPRING_CONFIG_USERNAME}
       password: ${MSPH_SPRING_CONFIG_PASSWORD}

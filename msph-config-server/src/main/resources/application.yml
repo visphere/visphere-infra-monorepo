@@ -1,5 +1,4 @@
 server:
-  port: 8888
   servlet:
     context-path: /config
 
@@ -7,12 +6,20 @@ spring:
   application:
     name: msph-config-server
   cloud:
+    vault:
+      token: ${MSPH_VAULT_ROOT_TOKEN}
+      authentication: TOKEN
+      scheme: http
+      kv:
+        backend: moonsphere
+        default-context: msph-common
+        application-name: ${spring.application.name}
     config:
       server:
         git:
           uri: https://github.com/moonsphere-systems/moonsphere-infra-cloud-config
-          username: ${ENV_MSPH_SPRING_CONFIG_REPO_USERNAME}
-          password: ${ENV_MSPH_SPRING_CONFIG_REPO_TOKEN}
+          username: ${V_SPRING_CONFIG_GIT_USERNAME}
+          password: ${V_SPRING_CONFIG_GIT_TOKEN}
           default-label: 'master'
   banner:
     location: classpath:spring/banner.txt
