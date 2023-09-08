@@ -53,6 +53,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-cloud.version>2022.0.2</spring-cloud.version>
+    <msph.lib.version>1.0.0</msph.lib.version>
   </properties>
 
   <repositories>
@@ -92,6 +93,11 @@
         <version>${spring-cloud.version}</version>
         <type>pom</type>
         <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>pl.moonsphere</groupId>
+        <artifactId>msph-shared-lib</artifactId>
+        <version>${msph.lib.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

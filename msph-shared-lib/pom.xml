@@ -34,7 +34,7 @@
   </parent>
 
   <artifactId>msph-shared-lib</artifactId>
-  <version>1.0.0</version>
+  <version>${msph.lib.version}</version>
 
   <properties>
     <maven.compiler.source>17</maven.compiler.source>

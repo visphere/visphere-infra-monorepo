@@ -46,7 +46,6 @@
     <dependency>
       <groupId>pl.moonsphere</groupId>
       <artifactId>msph-shared-lib</artifactId>
-      <version>1.0.0</version>
     </dependency>
     <dependency>
       <groupId>org.springframework.boot</groupId>
