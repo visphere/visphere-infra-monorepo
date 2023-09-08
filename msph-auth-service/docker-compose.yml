@@ -7,10 +7,10 @@ services:
     container_name: msph-auth-service-db
     image: postgres:15.4-alpine
     ports:
-      - '5432'
+      - '7502:5432'
     environment:
-      - 'POSTGRES_USER=${ENV_MSPH_AUTH_SERVICE_POSTGRES_USERNAME}'
-      - 'POSTGRES_PASSWORD=${ENV_MSPH_AUTH_SERVICE_POSTGRES_PASSWORD}'
+      - 'POSTGRES_USER=${MSPH_AUTH_POSTGRES_USERNAME}'
+      - 'POSTGRES_PASSWORD=${MSPH_AUTH_POSTGRES_PASSWORD}'
       - 'POSTGRES_DB=msph_auth_service_db'
     volumes:
       - ./_db/postgres-volume:/var/lib/postgresql/data
@@ -27,12 +27,9 @@ services:
     build:
       context: ./msph-auth-service
       dockerfile: Dockerfile
-      args:
-        - 'OPEN_PORT=8080'
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
-      - 'MSPH_DOCKER_EUREKA_PORT=8761'
-      - 'MSPH_SPRING_CONFIG_USERNAME=${ENV_DOCKER_MSPH_SPRING_CONFIG_USERNAME}'
-      - 'MSPH_SPRING_CONFIG_PASSWORD=${ENV_DOCKER_MSPH_SPRING_CONFIG_PASSWORD}'
-      - 'MSPH_EUREKA_USERNAME=${ENV_MSPH_EUREKA_USERNAME}'
-      - 'MSPH_EUREKA_PASSWORD=${ENV_MSPH_EUREKA_PASSWORD}'
+      - 'MSPH_VAULT_ROOT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'
+      - 'MSPH_SPRING_CONFIG_USERNAME=${MSPH_SPRING_CONFIG_USERNAME}'
+      - 'MSPH_SPRING_CONFIG_PASSWORD=${MSPH_SPRING_CONFIG_PASSWORD}'
+

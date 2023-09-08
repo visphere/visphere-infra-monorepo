@@ -40,13 +40,20 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
     private final Environment environment;
 
+    // @formatter:off
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         final HttpSecurity modifiedConfig = Arrays.stream(environment.getActiveProfiles()).toList().contains("dev")
-            ? httpSecurity.authorizeHttpRequests(request -> request.anyRequest().permitAll())
-            : httpSecurity.authorizeHttpRequests(request -> request.anyRequest().authenticated());
+            ? httpSecurity
+                .authorizeHttpRequests(request -> request.anyRequest().permitAll())
+            : httpSecurity
+                .authorizeHttpRequests(request -> request
+                    .requestMatchers("/actuator/**").permitAll()
+                    .anyRequest().authenticated()
+                );
         return modifiedConfig
             .httpBasic(withDefaults())
             .build();
     }
+    // @formatter:on
 }
