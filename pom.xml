@@ -54,6 +54,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <spring-cloud.version>2022.0.2</spring-cloud.version>
     <msph.lib.version>1.0.0</msph.lib.version>
+    <postgresql.driver.version>42.6.0</postgresql.driver.version>
+    <liquibase.version>4.23.1</liquibase.version>
   </properties>
 
   <repositories>
@@ -98,6 +100,17 @@
         <groupId>pl.moonsphere</groupId>
         <artifactId>msph-shared-lib</artifactId>
         <version>${msph.lib.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>${postgresql.driver.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.liquibase</groupId>
+        <artifactId>liquibase-core</artifactId>
+        <version>${liquibase.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

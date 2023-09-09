@@ -1,5 +1,4 @@
 .mvn
-_db
 .env.sample
 .gitignore
 docker-compose.yml
