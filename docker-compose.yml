@@ -62,6 +62,20 @@ services:
       msph-postgresql-db:
         condition: service_healthy
 
+  msph-mailhog:
+    container_name: msph-mailhog
+    image: mailhog/mailhog
+    ports:
+      - '${MSPH_DEV_MAILHOG_PORT}:1025'
+      - '${MSPH_DEV_MAILHOG_CLIENT_PORT}:8025'
+    environment:
+      - 'MH_STORAGE=maildir'
+      - 'MH_MAILDIR_PATH=/home/mailhog'
+    volumes:
+      - ./_mail/mailhog-volume:/home/mailhog
+      - ./_mail/mailhog.conf:/etc/supervisor/conf.d
+      - ./_mail/mailhog-auth.txt:/etc/mailhog-auth.txt
+
   msph-vault:
     container_name: msph-vault
     image: hashicorp/vault

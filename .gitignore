@@ -9,4 +9,5 @@
 **/target/
 .env
 _db/*volume/
+_mail/*volume/
 vault/
