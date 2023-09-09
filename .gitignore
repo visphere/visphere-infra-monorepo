@@ -8,5 +8,5 @@
 
 **/target/
 .env
-/**/_db/*volume/
+_db/*volume/
 vault/

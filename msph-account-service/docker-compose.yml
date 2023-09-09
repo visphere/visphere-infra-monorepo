@@ -3,23 +3,6 @@ version: '3.8'
 name: moonsphere-infra
 
 services:
-  msph-account-service-db-template:
-    container_name: msph-account-service-db
-    image: postgres:15.4-alpine
-    ports:
-      - '7501:5432'
-    environment:
-      - 'POSTGRES_USER=${MSPH_ACCOUNT_POSTGRES_USERNAME}'
-      - 'POSTGRES_PASSWORD=${MSPH_ACCOUNT_POSTGRES_PASSWORD}'
-      - 'POSTGRES_DB=msph_account_service_db'
-    volumes:
-      - ./_db/postgres-volume:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 5s
-      timeout: 10s
-      retries: 120
-
   msph-account-service-template:
     container_name: msph-account-service
     ports:

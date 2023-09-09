@@ -30,6 +30,24 @@ services:
       - msph-vault
       - msph-config-server
 
+  msph-postgresql-db:
+    container_name: msph-postgresql-db
+    image: postgres:15.4-alpine
+    ports:
+      - '7500:5432'
+    environment:
+      - 'POSTGRES_USER=${MSPH_POSTGRES_USERNAME}'
+      - 'POSTGRES_PASSWORD=${MSPH_POSTGRES_PASSWORD}'
+      - 'POSTGRES_DB=postgres'
+    volumes:
+      - ./_db/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./_db/postgres-volume:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 10s
+      retries: 120
+
   msph-postgresql-client:
     container_name: msph-postgresql-client
     image: dpage/pgadmin4
@@ -41,9 +59,7 @@ services:
     volumes:
       - ./_db/servers.json:/pgadmin4/servers.json
     depends_on:
-      msph-account-service-db:
-        condition: service_healthy
-      msph-auth-service-db:
+      msph-postgresql-db:
         condition: service_healthy
 
   msph-vault:
@@ -78,16 +94,6 @@ services:
       - msph-config-server
       - msph-discovery-server
 
-  msph-account-service-db:
-    extends:
-      file: ./msph-account-service/docker-compose.yml
-      service: msph-account-service-db-template
-
-  msph-auth-service-db:
-    extends:
-      file: ./msph-auth-service/docker-compose.yml
-      service: msph-auth-service-db-template
-
   msph-account-service:
     extends:
       file: ./msph-account-service/docker-compose.yml
@@ -96,7 +102,7 @@ services:
       - msph-config-server
       - msph-discovery-server
       - msph-api-gateway
-      - msph-account-service-db
+      - msph-postgresql-db
 
   msph-auth-service:
     extends:
@@ -106,7 +112,7 @@ services:
       - msph-config-server
       - msph-discovery-server
       - msph-api-gateway
-      - msph-auth-service-db
+      - msph-postgresql-db
 
   msph-misc-service:
     extends:
