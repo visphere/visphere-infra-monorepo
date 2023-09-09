@@ -46,6 +46,7 @@
     <module>msph-config-server</module>
     <module>msph-auth-service</module>
     <module>msph-misc-service</module>
+    <module>msph-notification-service</module>
   </modules>
 
   <properties>
