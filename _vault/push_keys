@@ -22,6 +22,9 @@
 # governing permissions and limitations under the license.
 #
 
+set -e
+set -u
+
 mounted_env_path="../../.env"
 secret_name="moonsphere"
 
@@ -45,35 +48,19 @@ export VAULT_TOKEN=$vault_token
 
 vault secrets enable -path=$secret_name kv
 
-vault kv put "$secret_name/msph-common/dev" \
-    V_EUREKA_USERNAME="$(get_env_variable "MSPH_DEV_EUREKA_USERNAME")" \
-    V_EUREKA_PASSWORD="$(get_env_variable "MSPH_DEV_EUREKA_PASSWORD")"
+vault kv put "$secret_name/msph-common" \
+    V_EUREKA_USERNAME="$(get_env_variable "MSPH_EUREKA_USERNAME")" \
+    V_EUREKA_PASSWORD="$(get_env_variable "MSPH_EUREKA_PASSWORD")" \
+    V_POSTGRES_USERNAME="$(get_env_variable "MSPH_POSTGRES_USERNAME")" \
+    V_POSTGRES_PASSWORD="$(get_env_variable "MSPH_POSTGRES_PASSWORD")"
 
-echo "Put V_EUREKA_USERNAME, V_EUREKA_PASSWORD in msph-common/dev"
-
-vault kv put "$secret_name/msph-common/docker" \
-    V_EUREKA_USERNAME="$(get_env_variable "MSPH_DOCKER_EUREKA_USERNAME")" \
-    V_EUREKA_PASSWORD="$(get_env_variable "MSPH_DOCKER_EUREKA_PASSWORD")"
-
-echo "Put V_EUREKA_USERNAME, V_EUREKA_PASSWORD in msph-common/dev"
+echo "Put V_EUREKA_USERNAME, V_EUREKA_PASSWORD, V_POSTGRES_USERNAME, V_POSTGRES_PASSWORD in msph-common"
 
 vault kv put "$secret_name/msph-config-server" \
     V_SPRING_CONFIG_GIT_USERNAME="$(get_env_variable "MSPH_SPRING_CONFIG_GIT_USERNAME")" \
     V_SPRING_CONFIG_GIT_TOKEN="$(get_env_variable "MSPH_SPRING_CONFIG_GIT_TOKEN")"
 
 echo "Put V_SPRING_CONFIG_GIT_USERNAME, V_SPRING_CONFIG_GIT_TOKEN in msph-config-server"
-
-vault kv put "$secret_name/msph-account-service" \
-    V_POSTGRES_USERNAME="$(get_env_variable "MSPH_ACCOUNT_POSTGRES_USERNAME")" \
-    V_POSTGRES_PASSWORD="$(get_env_variable "MSPH_ACCOUNT_POSTGRES_PASSWORD")"
-
-echo "Put V_POSTGRES_USERNAME, V_POSTGRES_PASSWORD in msph-account-service"
-
-vault kv put "$secret_name/msph-auth-service" \
-    V_POSTGRES_USERNAME="$(get_env_variable "MSPH_AUTH_POSTGRES_USERNAME")" \
-    V_POSTGRES_PASSWORD="$(get_env_variable "MSPH_AUTH_POSTGRES_PASSWORD")"
-
-echo "Put V_POSTGRES_USERNAME, V_POSTGRES_PASSWORD in msph-auth-service"
 
 vault kv put "$secret_name/msph-misc-service" \
     V_CAPTCHA_SECRET_KEY="$(get_env_variable "MSPH_CAPTCHA_SECRET_KEY")" \
