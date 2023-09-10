@@ -7,8 +7,6 @@
 .idea/uiDesigner.xml
 .idea/shelf/
 
-**/target/
+target/
 .env
-_db/*volume/
-_mail/*volume/
-vault/
+.volumes/**/*volume/
