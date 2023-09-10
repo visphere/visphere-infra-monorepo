@@ -40,27 +40,13 @@ services:
       - 'POSTGRES_PASSWORD=${MSPH_POSTGRES_PASSWORD}'
       - 'POSTGRES_DB=postgres'
     volumes:
-      - ./_db/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./_db/postgres-volume:/var/lib/postgresql/data
+      - ./.volumes/db/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./.volumes/db/postgres-volume:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
       timeout: 10s
       retries: 120
-
-  msph-postgresql-client:
-    container_name: msph-postgresql-client
-    image: dpage/pgadmin4
-    ports:
-      - '5162:80'
-    environment:
-      - 'PGADMIN_DEFAULT_EMAIL=${MSPH_PGADMIN_USERNAME}'
-      - 'PGADMIN_DEFAULT_PASSWORD=${MSPH_PGADMIN_PASSWORD}'
-    volumes:
-      - ./_db/servers.json:/pgadmin4/servers.json
-    depends_on:
-      msph-postgresql-db:
-        condition: service_healthy
 
   msph-mailhog:
     container_name: msph-mailhog
@@ -72,9 +58,9 @@ services:
       - 'MH_STORAGE=maildir'
       - 'MH_MAILDIR_PATH=/home/mailhog'
     volumes:
-      - ./_mail/mailhog-volume:/home/mailhog
-      - ./_mail/mailhog.conf:/etc/supervisor/conf.d
-      - ./_mail/mailhog-auth.txt:/etc/mailhog-auth.txt
+      - ./.volumes/mail/mailhog-volume:/home/mailhog
+      - ./.volumes/mail/mailhog.conf:/etc/supervisor/conf.d
+      - ./.volumes/mail/mailhog-auth.txt:/etc/mailhog-auth.txt
 
   msph-vault:
     container_name: msph-vault
@@ -82,8 +68,8 @@ services:
     ports:
       - '${MSPH_DEV_VAULT_PORT}:8200'
     volumes:
-      - ./vault/data:/vault/data:rw
-      - ./_vault:/vault/config
+      - ./.volumes/vault/vault-volume:/vault/data:rw
+      - ./.volumes/vault:/vault/config
       - ./.env:/.env
     environment:
       - 'VAULT_ADDR=http://127.0.0.1:8200'
