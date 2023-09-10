@@ -21,6 +21,8 @@ spring:
           username: ${V_SPRING_CONFIG_GIT_USERNAME}
           password: ${V_SPRING_CONFIG_GIT_TOKEN}
           default-label: 'master'
+          search-paths:
+            - '{application}'
   banner:
     location: classpath:spring/banner.txt
 

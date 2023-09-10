@@ -5,6 +5,7 @@
 .idea/workspace.xml
 .idea/jarRepositories.xml
 .idea/uiDesigner.xml
+.idea/shelf/
 
 **/target/
 .env
