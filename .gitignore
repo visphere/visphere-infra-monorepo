@@ -6,6 +6,7 @@
 .idea/jarRepositories.xml
 .idea/uiDesigner.xml
 .idea/shelf/
+.idea/discord.xml
 
 target/
 .env
