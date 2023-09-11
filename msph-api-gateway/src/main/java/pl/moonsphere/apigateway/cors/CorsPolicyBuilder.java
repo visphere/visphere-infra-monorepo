@@ -4,6 +4,7 @@
  */
 package pl.moonsphere.apigateway.cors;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
@@ -13,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 class CorsPolicyBuilder {
     private final Map<String, CorsConfiguration> corsConfigurationList = new HashMap<>();
     private final List<String> allowedOrigins;
@@ -28,6 +30,7 @@ class CorsPolicyBuilder {
         corsConfig.setAllowedMethods(extractNamesFromHttpMethods(methods));
         corsConfig.addAllowedHeader("*");
         corsConfigurationList.put(path, corsConfig);
+        log.info("Registered CORS policy for {}, methods: {}", path, methods);
         return this;
     }
 
