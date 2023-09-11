@@ -24,12 +24,12 @@ import pl.moonsphere.misc.network.captcha.dto.RestCaptchaVerificationResDto;
 class CaptchaService implements ICaptchaService {
     private final I18nService i18nService;
     private final RestTemplate restTemplate;
-    private final CaptchaConfig captchaConfig;
+    private final CaptchaProperties captchaProperties;
 
     @Override
     public BaseMessageResDto verify(CaptchaVerifyReqDto reqDto) {
         final MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
-        formData.add("secret", captchaConfig.getSecretkey());
+        formData.add("secret", captchaProperties.getSecretkey());
         formData.add("response", reqDto.getResponse());
         formData.add("remoteip", reqDto.getRemoteIp());
         formData.add("sitekey", reqDto.getSiteKey());
@@ -42,7 +42,7 @@ class CaptchaService implements ICaptchaService {
             .exchange("https://hcaptcha.com/siteverify", HttpMethod.POST, request, RestCaptchaVerificationResDto.class);
 
         final RestCaptchaVerificationResDto resBody = response.getBody();
-        if (resBody == null || (!resBody.success() && !reqDto.getSiteKey().equals(captchaConfig.getDevSitekey()))) {
+        if (resBody == null || (!resBody.success() && !reqDto.getSiteKey().equals(captchaProperties.getDevSitekey()))) {
             throw new CaptchaException.CaptchaVerificationException(reqDto);
         }
         return BaseMessageResDto.builder()
