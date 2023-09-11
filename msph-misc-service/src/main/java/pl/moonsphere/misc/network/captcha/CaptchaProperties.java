@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @Data
 @Configuration
 @ConfigurationProperties(prefix = "moonsphere.captcha")
-public class CaptchaConfig {
+class CaptchaProperties {
     private String secretkey;
     private String devSitekey;
 }

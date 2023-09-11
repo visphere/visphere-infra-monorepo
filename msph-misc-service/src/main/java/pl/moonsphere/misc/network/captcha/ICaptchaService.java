@@ -7,6 +7,6 @@ package pl.moonsphere.misc.network.captcha;
 import pl.moonsphere.lib.BaseMessageResDto;
 import pl.moonsphere.misc.network.captcha.dto.CaptchaVerifyReqDto;
 
-public interface ICaptchaService {
+interface ICaptchaService {
     BaseMessageResDto verify(CaptchaVerifyReqDto reqDto);
 }

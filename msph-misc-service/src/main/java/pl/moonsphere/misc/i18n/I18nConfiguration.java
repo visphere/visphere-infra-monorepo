@@ -10,9 +10,9 @@ import pl.moonsphere.lib.i18n.AbstractI18nConfiguration;
 import pl.moonsphere.lib.i18n.I18nService;
 
 @Configuration
-public class I18nConfiguration extends AbstractI18nConfiguration {
+class I18nConfiguration extends AbstractI18nConfiguration {
     @Bean
-    public I18nService i18nService() {
+    I18nService i18nService() {
         return new I18nService(this);
     }
 }

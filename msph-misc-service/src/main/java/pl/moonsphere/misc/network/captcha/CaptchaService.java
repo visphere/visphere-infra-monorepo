@@ -21,7 +21,7 @@ import pl.moonsphere.misc.network.captcha.dto.RestCaptchaVerificationResDto;
 @Service
 @RefreshScope
 @RequiredArgsConstructor
-public class CaptchaService implements ICaptchaService {
+class CaptchaService implements ICaptchaService {
     private final I18nService i18nService;
     private final RestTemplate restTemplate;
     private final CaptchaConfig captchaConfig;

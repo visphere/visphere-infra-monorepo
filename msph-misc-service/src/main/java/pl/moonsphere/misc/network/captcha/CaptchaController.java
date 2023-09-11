@@ -18,7 +18,7 @@ import pl.moonsphere.misc.network.captcha.dto.CaptchaVerifyReqDto;
 @RestController
 @RequestMapping("/api/v1/misc/captcha")
 @RequiredArgsConstructor
-public class CaptchaController {
+class CaptchaController {
     private final ICaptchaService captchaService;
 
     @PostMapping("/verification")

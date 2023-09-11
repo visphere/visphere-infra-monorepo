@@ -9,8 +9,8 @@ import pl.moonsphere.lib.exception.AbstractBaseExceptionListener;
 import pl.moonsphere.lib.i18n.I18nService;
 
 @RestControllerAdvice
-public class ExceptionsListener extends AbstractBaseExceptionListener {
-    public ExceptionsListener(I18nService i18nService) {
+class ExceptionsListener extends AbstractBaseExceptionListener {
+    ExceptionsListener(I18nService i18nService) {
         super(i18nService);
     }
 }
