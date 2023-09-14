@@ -5,13 +5,12 @@
 package pl.moonsphere.misc.network.captcha;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import pl.moonsphere.lib.BaseMessageResDto;
+import pl.moonsphere.lib.dto.BaseMessageResDto;
 import pl.moonsphere.lib.i18n.I18nService;
 import pl.moonsphere.misc.exception.CaptchaException;
 import pl.moonsphere.misc.i18n.LocaleSet;
@@ -19,7 +18,6 @@ import pl.moonsphere.misc.network.captcha.dto.CaptchaVerifyReqDto;
 import pl.moonsphere.misc.network.captcha.dto.RestCaptchaVerificationResDto;
 
 @Service
-@RefreshScope
 @RequiredArgsConstructor
 class CaptchaService implements ICaptchaService {
     private final I18nService i18nService;

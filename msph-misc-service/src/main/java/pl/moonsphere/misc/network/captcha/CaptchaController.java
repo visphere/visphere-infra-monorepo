@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import pl.moonsphere.lib.BaseMessageResDto;
+import pl.moonsphere.lib.dto.BaseMessageResDto;
 import pl.moonsphere.misc.network.captcha.dto.CaptchaVerifyReqDto;
 
 @RestController

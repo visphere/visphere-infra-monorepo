@@ -5,6 +5,7 @@
 package pl.moonsphere.apigateway.cors;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -12,9 +13,10 @@ import org.springframework.web.cors.reactive.CorsWebFilter;
 
 import java.util.List;
 
+@RefreshScope
 @Configuration
 @RequiredArgsConstructor
-class ExtendedCorsConfiguration {
+class CorsConfiguration {
     private final CorsProperties corsProperties;
 
     @Bean
