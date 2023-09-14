@@ -122,3 +122,12 @@ services:
       - msph-config-server
       - msph-discovery-server
       - msph-api-gateway
+
+  msph-notification-service:
+    extends:
+      file: ./msph-notification-service/docker-compose.yml
+      service: msph-notification-service-template
+    depends_on:
+      - msph-config-server
+      - msph-discovery-server
+      - msph-api-gateway
