@@ -6,7 +6,6 @@ package pl.moonsphere.misc.network.captcha;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,8 +20,8 @@ import pl.moonsphere.misc.network.captcha.dto.CaptchaVerifyReqDto;
 class CaptchaController {
     private final ICaptchaService captchaService;
 
-    @PostMapping("/verification")
+    @PostMapping("/verify")
     ResponseEntity<BaseMessageResDto> verify(@Valid @RequestBody CaptchaVerifyReqDto reqDto) {
-        return new ResponseEntity<>(captchaService.verify(reqDto), HttpStatus.OK);
+        return ResponseEntity.ok(captchaService.verify(reqDto));
     }
 }
