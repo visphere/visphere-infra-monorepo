@@ -32,4 +32,9 @@ public class CreateAccountController {
     ) {
         return ResponseEntity.ok(createAccountService.activate(token, reqDto));
     }
+
+    @PostMapping("/activate/resend")
+    ResponseEntity<BaseMessageResDto> resend(@Valid @RequestBody ActivateAccountReqDto reqDto) {
+        return ResponseEntity.ok(createAccountService.resend(reqDto));
+    }
 }

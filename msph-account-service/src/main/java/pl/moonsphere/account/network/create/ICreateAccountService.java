@@ -12,4 +12,5 @@ import pl.moonsphere.lib.BaseMessageResDto;
 interface ICreateAccountService {
     BaseMessageResDto createNew(CreateAccountReqDto reqDto);
     ActivateAccountResDto activate(String token, ActivateAccountReqDto reqDto);
+    BaseMessageResDto resend(ActivateAccountReqDto reqDto);
 }

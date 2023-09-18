@@ -10,6 +10,7 @@ import pl.moonsphere.lib.BaseMessageResDto;
 
 interface IPasswordRefreshService {
     BaseMessageResDto request(AttemptReqDto reqDto);
-    BaseVerificationResDto verify(String token);
+    BaseMessageResDto verify(String token);
+    BaseMessageResDto resend(AttemptReqDto reqDto);
     BaseMessageResDto change(String token, ChangeReqDto reqDto);
 }

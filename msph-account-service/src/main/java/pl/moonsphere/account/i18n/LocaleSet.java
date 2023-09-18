@@ -14,7 +14,9 @@ public enum LocaleSet implements ILocaleExtendableSet {
     CREATE_ACCOUNT_RESPONSE_SUCCESS("msph.i18n.createAccount.res.success"),
     CREATE_ACCOUNT_RESPONSE_ERROR("msph.i18n.createAccount.res.error"),
     ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("msph.i18n.activateAccount.res.success"),
-    ACTIVATE_ACCOUNT_RESPONSE_ERROR("msph.i18n.activateAccount.res.error");
+    ACTIVATE_ACCOUNT_RESPONSE_ERROR("msph.i18n.activateAccount.res.error"),
+    RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("msph.i18n.resendActivateAccount.res.success"),
+    RESEND_ACTIVATE_ACCOUNT_RESPONSE_ERROR("msph.i18n.resendActivateAccount.res.error");
 
     private final String holder;
 }

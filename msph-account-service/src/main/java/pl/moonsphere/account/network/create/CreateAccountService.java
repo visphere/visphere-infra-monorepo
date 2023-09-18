@@ -36,4 +36,13 @@ class CreateAccountService implements ICreateAccountService {
             .mfaEnabled(false)
             .build();
     }
+
+    @Override
+    public BaseMessageResDto resend(ActivateAccountReqDto reqDto) {
+        // resend email message with provided token
+
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS))
+            .build();
+    }
 }

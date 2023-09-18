@@ -14,7 +14,7 @@ import pl.moonsphere.lib.i18n.I18nService;
 
 @Service
 @RequiredArgsConstructor
-public class PasswordRefreshService implements IPasswordRefreshService {
+public class PasswordRenewService implements IPasswordRenewService {
     private final I18nService i18nService;
 
     @Override
@@ -27,11 +27,20 @@ public class PasswordRefreshService implements IPasswordRefreshService {
     }
 
     @Override
-    public BaseVerificationResDto verify(String token) {
+    public BaseMessageResDto verify(String token) {
         // next
 
-        return BaseVerificationResDto.builder()
-            .isValid(false)
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.TOKEN_VERIFICATION_RESPONSE_SUCCESS))
+            .build();
+    }
+
+    @Override
+    public BaseMessageResDto resend(AttemptReqDto reqDto) {
+        // resend email message with created previously token
+        
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.RESEND_TOKEN_VERIFICATION_RESPONSE_SUCCESS))
             .build();
     }
 
