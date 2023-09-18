@@ -7,7 +7,7 @@ package pl.moonsphere.account.network.create;
 import pl.moonsphere.account.network.create.dto.ActivateAccountReqDto;
 import pl.moonsphere.account.network.create.dto.ActivateAccountResDto;
 import pl.moonsphere.account.network.create.dto.CreateAccountReqDto;
-import pl.moonsphere.lib.dto.BaseMessageResDto;
+import pl.moonsphere.lib.BaseMessageResDto;
 
 interface ICreateAccountService {
     BaseMessageResDto createNew(CreateAccountReqDto reqDto);

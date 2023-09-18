@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
-import pl.moonsphere.lib.dto.BaseMessageResDto;
+import pl.moonsphere.lib.BaseMessageResDto;
 import pl.moonsphere.lib.i18n.I18nService;
 import pl.moonsphere.misc.exception.CaptchaException;
 import pl.moonsphere.misc.i18n.LocaleSet;

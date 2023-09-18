@@ -19,16 +19,26 @@ public class ChangeReqDto implements IPasswordValidatorModel {
 
     @NotBlank(message = "msph.lib.jpa.password.notBlank")
     @Pattern(regexp = RegexConstant.PASSWORD_REQ, message = "msph.lib.jpa.password.pattern")
-    private String password;
+    private String newPassword;
 
     @NotBlank(message = "msph.lib.jpa.confirmedPassword.notBlank")
-    private String confirmedPassword;
+    private String confirmedNewPassword;
+
+    @Override
+    public String getPassword() {
+        return newPassword;
+    }
+
+    @Override
+    public String getConfirmedPassword() {
+        return confirmedNewPassword;
+    }
 
     @Override
     public String toString() {
         return "{" +
-            "password=" + password +
-            ", confirmedPassword=" + confirmedPassword +
+            "newPassword=" + newPassword +
+            ", confirmedNewPassword=" + confirmedNewPassword +
             '}';
     }
 }

@@ -4,7 +4,7 @@
  */
 package pl.moonsphere.misc.network.captcha;
 
-import pl.moonsphere.lib.dto.BaseMessageResDto;
+import pl.moonsphere.lib.BaseMessageResDto;
 import pl.moonsphere.misc.network.captcha.dto.CaptchaVerifyReqDto;
 
 interface ICaptchaService {

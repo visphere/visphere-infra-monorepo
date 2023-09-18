@@ -8,7 +8,7 @@ import pl.moonsphere.auth.network.access.dto.LoginPasswordReqDto;
 import pl.moonsphere.auth.network.access.dto.LoginResDto;
 import pl.moonsphere.auth.network.access.dto.RefreshReqDto;
 import pl.moonsphere.auth.network.access.dto.RefreshResDto;
-import pl.moonsphere.lib.dto.BaseMessageResDto;
+import pl.moonsphere.lib.BaseMessageResDto;
 
 interface IAccessService {
     LoginResDto loginViaPassword(LoginPasswordReqDto reqDto);

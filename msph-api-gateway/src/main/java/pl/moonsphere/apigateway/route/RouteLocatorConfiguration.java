@@ -18,10 +18,10 @@ class RouteLocatorConfiguration {
     @Bean
     RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-            .route(r -> createOpenApiRoute(r, "msph-account-service"))
-            .route(r -> createOpenApiRoute(r, "msph-auth-service"))
-            .route(r -> createOpenApiRoute(r, "msph-misc-service"))
-            .route(r -> createOpenApiRoute(r, "msph-notification-service"))
+            .route(route -> createOpenApiRoute(route, "msph-account-service"))
+            .route(route -> createOpenApiRoute(route, "msph-auth-service"))
+            .route(route -> createOpenApiRoute(route, "msph-misc-service"))
+            .route(route -> createOpenApiRoute(route, "msph-notification-service"))
             .build();
     }
 

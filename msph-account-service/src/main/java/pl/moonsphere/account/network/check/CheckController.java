@@ -17,7 +17,7 @@ import pl.moonsphere.account.network.check.dto.CheckUsernameExist;
 @RequiredArgsConstructor
 class CheckController {
     private final ICheckService checkService;
-    
+
     @GetMapping("/username/{username}/exist")
     ResponseEntity<CheckUsernameExist> checkIfUsernameAlreadyExist(@PathVariable String username) {
         return ResponseEntity.ok(checkService.checkIfUsernameAlreadyExist(username));

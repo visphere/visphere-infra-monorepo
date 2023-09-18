@@ -15,6 +15,6 @@ import java.util.List;
 @Component
 @RefreshScope
 @ConfigurationProperties(prefix = "moonsphere.cors")
-public class CorsProperties {
+class CorsProperties {
     private List<String> allowedOrigins;
 }

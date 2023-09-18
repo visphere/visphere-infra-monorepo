@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.moonsphere.account.network.create.dto.ActivateAccountReqDto;
 import pl.moonsphere.account.network.create.dto.ActivateAccountResDto;
 import pl.moonsphere.account.network.create.dto.CreateAccountReqDto;
-import pl.moonsphere.lib.dto.BaseMessageResDto;
+import pl.moonsphere.lib.BaseMessageResDto;
 
 @RestController
 @RequestMapping("/api/v1/account/new")

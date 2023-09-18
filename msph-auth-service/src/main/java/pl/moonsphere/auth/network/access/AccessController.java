@@ -12,7 +12,7 @@ import pl.moonsphere.auth.network.access.dto.LoginPasswordReqDto;
 import pl.moonsphere.auth.network.access.dto.LoginResDto;
 import pl.moonsphere.auth.network.access.dto.RefreshReqDto;
 import pl.moonsphere.auth.network.access.dto.RefreshResDto;
-import pl.moonsphere.lib.dto.BaseMessageResDto;
+import pl.moonsphere.lib.BaseMessageResDto;
 
 @RestController
 @RequestMapping("/api/v1/auth/access")
