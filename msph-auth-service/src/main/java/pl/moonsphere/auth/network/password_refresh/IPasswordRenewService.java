@@ -8,7 +8,7 @@ import pl.moonsphere.auth.network.password_refresh.dto.AttemptReqDto;
 import pl.moonsphere.auth.network.password_refresh.dto.ChangeReqDto;
 import pl.moonsphere.lib.BaseMessageResDto;
 
-interface IPasswordRefreshService {
+interface IPasswordRenewService {
     BaseMessageResDto request(AttemptReqDto reqDto);
     BaseMessageResDto verify(String token);
     BaseMessageResDto resend(AttemptReqDto reqDto);
