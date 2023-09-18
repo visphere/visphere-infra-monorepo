@@ -29,6 +29,7 @@
     <module>msph-auth-service</module>
     <module>msph-misc-service</module>
     <module>msph-notification-service</module>
+    <module>msph-multimedia-service</module>
   </modules>
 
   <properties>

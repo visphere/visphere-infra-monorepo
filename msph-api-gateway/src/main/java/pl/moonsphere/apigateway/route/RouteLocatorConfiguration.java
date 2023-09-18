@@ -21,6 +21,7 @@ class RouteLocatorConfiguration {
             .route(route -> createOpenApiRoute(route, "msph-account-service"))
             .route(route -> createOpenApiRoute(route, "msph-auth-service"))
             .route(route -> createOpenApiRoute(route, "msph-misc-service"))
+            .route(route -> createOpenApiRoute(route, "msph-multimedia-service"))
             .route(route -> createOpenApiRoute(route, "msph-notification-service"))
             .build();
     }

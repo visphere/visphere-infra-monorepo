@@ -123,6 +123,15 @@ services:
       - msph-discovery-server
       - msph-api-gateway
 
+  msph-multimedia-service:
+    extends:
+      file: ./msph-multimedia-service/docker-compose.yml
+      service: msph-multimedia-service-template
+    depends_on:
+      - msph-config-server
+      - msph-discovery-server
+      - msph-api-gateway
+
   msph-notification-service:
     extends:
       file: ./msph-notification-service/docker-compose.yml
