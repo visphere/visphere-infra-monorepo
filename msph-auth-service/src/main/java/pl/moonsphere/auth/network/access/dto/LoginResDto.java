@@ -9,8 +9,11 @@ import lombok.Builder;
 @Builder
 public record LoginResDto(
     String fullName,
+    String username,
+    String emailAddress,
     String profileUrl,
     String accessToken,
-    String refreshToken
+    String refreshToken,
+    boolean isActivated
 ) {
 }

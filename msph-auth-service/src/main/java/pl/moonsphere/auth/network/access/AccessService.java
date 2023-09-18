@@ -27,9 +27,12 @@ class AccessService implements IAccessService {
 
         return LoginResDto.builder()
             .fullName("Anna Nowak")
-            .profileUrl("file://")
+            .username("annnow123")
+            .emailAddress("annanowak@gmail.com")
+            .profileUrl("https://raw.githubusercontent.com/Milosz08/schedule-management-server/master/_StaticPrivateContent/UserImages/zoqeCUQJ1QMqRBH4dDEB__julnow269.jpg")
             .accessToken("accessToken")
             .refreshToken("refresh token")
+            .isActivated(true)
             .build();
     }
 
@@ -39,9 +42,12 @@ class AccessService implements IAccessService {
 
         return LoginResDto.builder()
             .fullName("Anna Nowak")
-            .profileUrl("file://")
+            .username("annnow123")
+            .emailAddress("annanowak@gmail.com")
+            .profileUrl("https://raw.githubusercontent.com/Milosz08/schedule-management-server/master/_StaticPrivateContent/UserImages/zoqeCUQJ1QMqRBH4dDEB__julnow269.jpg")
             .accessToken("accessToken")
             .refreshToken("refresh token")
+            .isActivated(true)
             .build();
     }
 
