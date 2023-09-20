@@ -7,7 +7,7 @@ package pl.moonsphere.account.network.check;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.moonsphere.account.network.check.dto.CheckUsernameExist;
+import pl.moonsphere.account.network.check.dto.CheckAlreadyExistResDto;
 import pl.moonsphere.account.network.check.dto.MyAccountReqDto;
 import pl.moonsphere.account.network.check.dto.MyAccountResDto;
 
@@ -19,9 +19,12 @@ import java.util.List;
 class CheckController {
     private final ICheckService checkService;
 
-    @GetMapping("/username/{username}/exist")
-    ResponseEntity<CheckUsernameExist> checkIfUsernameAlreadyExist(@PathVariable String username) {
-        return ResponseEntity.ok(checkService.checkIfUsernameAlreadyExist(username));
+    @GetMapping("/prop/exist")
+    ResponseEntity<CheckAlreadyExistResDto> checkIfUsernameAlreadyExist(
+        @RequestParam AccountValueParam by,
+        @RequestParam String value
+    ) {
+        return ResponseEntity.ok(checkService.checkIfAccountValueAlreadyExist(by, value));
     }
 
     @PatchMapping("/myaccounts/exists")

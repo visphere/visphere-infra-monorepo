@@ -7,7 +7,7 @@ package pl.moonsphere.account.network.check;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import pl.moonsphere.account.network.check.dto.CheckUsernameExist;
+import pl.moonsphere.account.network.check.dto.CheckAlreadyExistResDto;
 import pl.moonsphere.account.network.check.dto.MyAccountReqDto;
 import pl.moonsphere.account.network.check.dto.MyAccountResDto;
 
@@ -18,12 +18,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CheckService implements ICheckService {
     @Override
-    public CheckUsernameExist checkIfUsernameAlreadyExist(String username) {
-        // check if passed username is already declared in system
-
-        return CheckUsernameExist.builder()
-            .alreadyExist(true)
-            .build();
+    public CheckAlreadyExistResDto checkIfAccountValueAlreadyExist(AccountValueParam by, String value) {
+        boolean alreadyExist = false;
+        if (StringUtils.isNotEmpty(value)) {
+            // check if passed username/email address is already declared in system
+            alreadyExist = true;
+        }
+        return new CheckAlreadyExistResDto(alreadyExist);
     }
 
     @Override

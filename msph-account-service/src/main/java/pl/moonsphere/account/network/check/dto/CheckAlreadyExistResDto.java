@@ -7,7 +7,7 @@ package pl.moonsphere.account.network.check.dto;
 import lombok.Builder;
 
 @Builder
-public record CheckUsernameExist(
+public record CheckAlreadyExistResDto(
     boolean alreadyExist
 ) {
 }
