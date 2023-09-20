@@ -11,7 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import pl.moonsphere.lib.LibLocaleSet;
 import pl.moonsphere.lib.i18n.I18nService;
 
 import java.util.HashMap;
@@ -26,6 +28,19 @@ public abstract class AbstractBaseExceptionListener {
     public ResponseEntity<MessageExceptionResDto> restException(AbstractRestException ex, HttpServletRequest req) {
         final HttpStatus responseStatus = ex.getHttpStatus();
         final String message = i18nService.getMessage(ex.getPlaceholder(), ex.getVariables());
+        return new ResponseEntity<>(new MessageExceptionResDto(responseStatus, req, message), responseStatus);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<MessageExceptionResDto> queryParamsException(
+        MissingServletRequestParameterException ex,
+        HttpServletRequest req
+    ) {
+        final HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+        final String message = i18nService.getMessage(
+            LibLocaleSet.MISSING_REQUEST_PARAM_EXCEPTION_MESSAGE,
+            Map.of("parameter", String.format("%s:%s", ex.getParameterName(), ex.getParameterType()))
+        );
         return new ResponseEntity<>(new MessageExceptionResDto(responseStatus, req, message), responseStatus);
     }
 
