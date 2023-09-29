@@ -56,7 +56,7 @@ services:
 
   msph-cassandra-db:
     container_name: msph-cassandra-db
-    image: bitnami/cassandra
+    image: bitnami/cassandra:4.1.3
     ports:
       - '${MSPH_DEV_CASSANDRA_PORT}:9042'
     volumes:
@@ -76,7 +76,7 @@ services:
 
   msph-mailhog:
     container_name: msph-mailhog
-    image: mailhog/mailhog
+    image: mailhog/mailhog:v1.0.1
     ports:
       - '${MSPH_DEV_MAILHOG_PORT}:1025'
       - '${MSPH_DEV_MAILHOG_CLIENT_PORT}:8025'
@@ -92,7 +92,7 @@ services:
 
   msph-vault:
     container_name: msph-vault
-    image: hashicorp/vault
+    image: hashicorp/vault:1.14
     ports:
       - '${MSPH_DEV_VAULT_PORT}:8200'
     volumes:
@@ -109,7 +109,7 @@ services:
 
   msph-s3:
     container_name: msph-s3
-    image: bitnami/minio:latest
+    image: bitnami/minio:2023.9.27
     ports:
       - '${MSPH_DEV_S3_API_PORT}:9000'
       - '${MSPH_DEV_S3_PORT}:9001'
