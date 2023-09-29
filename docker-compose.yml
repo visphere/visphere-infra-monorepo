@@ -38,7 +38,7 @@ services:
     container_name: msph-postgresql-db
     image: postgres:15.4-alpine
     ports:
-      - '7500:5432'
+      - '${MSPH_DEV_POSTGRESQL_PORT}:5432'
     environment:
       - 'POSTGRES_USER=${MSPH_POSTGRES_USERNAME}'
       - 'POSTGRES_PASSWORD=${MSPH_POSTGRES_PASSWORD}'
@@ -58,7 +58,7 @@ services:
     container_name: msph-cassandra-db
     image: bitnami/cassandra
     ports:
-      - '9042:9042'
+      - '${MSPH_DEV_CASSANDRA_PORT}:9042'
     volumes:
       - ./.volumes/db/cassandra-volume:/bitnami
     environment:
@@ -106,11 +106,11 @@ services:
     container_name: msph-s3
     image: bitnami/minio:latest
     ports:
-      - '${ENV_MSPH_S3_PORT}:9000'
-      - '${ENV_MSPH_S3_CONSOLE_PORT}:9001'
+      - '${MSPH_DEV_S3_API_PORT}:9000'
+      - '${MSPH_DEV_S3_PORT}:9001'
     environment:
-      - 'MINIO_ROOT_USER=${ENV_MSPH_MINIO_USERNAME}'
-      - 'MINIO_ROOT_PASSWORD=${ENV_MSPH_MINIO_PASSWORD}'
+      - 'MINIO_ROOT_USER=${ENV_MSPH_S3_USERNAME}'
+      - 'MINIO_ROOT_PASSWORD=${ENV_MSPH_S3_PASSWORD}'
       - 'MINIO_DEFAULT_BUCKETS=spheres:public,users:public'
       - 'MINIO_SCHEME=http'
     volumes:
