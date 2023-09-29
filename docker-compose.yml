@@ -1,7 +1,5 @@
 version: '3.8'
 
-name: moonsphere-infra
-
 services:
   msph-config-server:
     container_name: msph-config-server
