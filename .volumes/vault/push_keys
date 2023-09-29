@@ -34,18 +34,18 @@ vault kv put "$secret_name/msph-common" \
     V_EUREKA_USERNAME="$(get_env_variable "MSPH_EUREKA_USERNAME")" \
     V_EUREKA_PASSWORD="$(get_env_variable "MSPH_EUREKA_PASSWORD")" \
     V_POSTGRES_USERNAME="$(get_env_variable "MSPH_POSTGRES_USERNAME")" \
-    V_POSTGRES_PASSWORD="$(get_env_variable "MSPH_POSTGRES_PASSWORD")"
-
-echo "Put V_EUREKA_USERNAME, V_EUREKA_PASSWORD, V_POSTGRES_USERNAME, V_POSTGRES_PASSWORD in msph-common"
+    V_POSTGRES_PASSWORD="$(get_env_variable "MSPH_POSTGRES_PASSWORD")" \
+    V_S3_USERNAME="$(get_env_variable "ENV_MSPH_S3_USERNAME")" \
+    V_S3_PASSWORD="$(get_env_variable "ENV_MSPH_S3_PASSWORD")"
 
 vault kv put "$secret_name/msph-config-server" \
     V_SPRING_CONFIG_GIT_USERNAME="$(get_env_variable "MSPH_SPRING_CONFIG_GIT_USERNAME")" \
     V_SPRING_CONFIG_GIT_TOKEN="$(get_env_variable "MSPH_SPRING_CONFIG_GIT_TOKEN")"
 
-echo "Put V_SPRING_CONFIG_GIT_USERNAME, V_SPRING_CONFIG_GIT_TOKEN in msph-config-server"
-
 vault kv put "$secret_name/msph-misc-service" \
     V_CAPTCHA_SECRET_KEY="$(get_env_variable "MSPH_CAPTCHA_SECRET_KEY")" \
     V_CAPTCHA_SITE_KEY="$(get_env_variable "MSPH_CAPTCHA_SITE_KEY")"
 
-echo "Put V_CAPTCHA_SECRET_KEY, V_CAPTCHA_SITE_KEY in msph-misc-service"
+vault kv put "$secret_name/msph-chat-service" \
+    V_CASSANDRA_USERNAME="$(get_env_variable "MSPH_CASSANDRA_USERNAME")" \
+    V_CASSANDRA_PASSWORD="$(get_env_variable "MSPH_CASSANDRA_PASSWORD")"
