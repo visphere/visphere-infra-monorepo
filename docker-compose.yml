@@ -14,6 +14,8 @@ services:
       - 'MSPH_VAULT_ROOT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'
       - 'MSPH_SPRING_CONFIG_USERNAME=${MSPH_SPRING_CONFIG_USERNAME}'
       - 'MSPH_SPRING_CONFIG_PASSWORD=${MSPH_SPRING_CONFIG_PASSWORD}'
+    networks:
+      - moonsphere-infra-network
 
   msph-discovery-server:
     container_name: msph-discovery-server
@@ -29,6 +31,8 @@ services:
     depends_on:
       - msph-vault
       - msph-config-server
+    networks:
+      - moonsphere-infra-network
 
   msph-postgresql-db:
     container_name: msph-postgresql-db
@@ -78,6 +82,8 @@ services:
       - ./.volumes/mail/mailhog-volume:/home/mailhog
       - ./.volumes/mail/mailhog.conf:/etc/supervisor/conf.d
       - ./.volumes/mail/mailhog-auth.txt:/etc/mailhog-auth.txt
+    networks:
+      - moonsphere-infra-network
 
   msph-vault:
     container_name: msph-vault
@@ -133,6 +139,8 @@ services:
     depends_on:
       - msph-config-server
       - msph-discovery-server
+    networks:
+      - moonsphere-infra-network
 
   msph-account-service:
     extends:
@@ -143,6 +151,9 @@ services:
       - msph-discovery-server
       - msph-api-gateway
       - msph-postgresql-db
+      - msph-s3
+    networks:
+      - moonsphere-infra-network
 
   msph-auth-service:
     extends:
@@ -153,6 +164,9 @@ services:
       - msph-discovery-server
       - msph-api-gateway
       - msph-postgresql-db
+      - msph-s3
+    networks:
+      - moonsphere-infra-network
 
   msph-misc-service:
     extends:
@@ -162,6 +176,8 @@ services:
       - msph-config-server
       - msph-discovery-server
       - msph-api-gateway
+    networks:
+      - moonsphere-infra-network
 
   msph-multimedia-service:
     extends:
@@ -171,6 +187,9 @@ services:
       - msph-config-server
       - msph-discovery-server
       - msph-api-gateway
+      - msph-s3
+    networks:
+      - moonsphere-infra-network
 
   msph-notification-service:
     extends:
@@ -180,3 +199,9 @@ services:
       - msph-config-server
       - msph-discovery-server
       - msph-api-gateway
+    networks:
+      - moonsphere-infra-network
+
+networks:
+  moonsphere-infra-network:
+    driver: bridge
