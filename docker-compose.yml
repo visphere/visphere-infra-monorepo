@@ -46,7 +46,24 @@ services:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
       timeout: 10s
-      retries: 120
+      retries: 6
+    networks:
+      - moonsphere-infra-network
+
+  msph-cassandra-db:
+    container_name: msph-cassandra-db
+    image: bitnami/cassandra
+    ports:
+      - '9042:9042'
+    volumes:
+      - ./.volumes/db/cassandra-volume:/bitnami
+    environment:
+      - 'CASSANDRA_CLUSTER_NAME=msph-cluster'
+      - 'CASSANDRA_PASSWORD_SEEDER=yes'
+      - 'CASSANDRA_USER=${MSPH_CASSANDRA_USERNAME}'
+      - 'CASSANDRA_PASSWORD=${MSPH_CASSANDRA_PASSWORD}'
+    networks:
+      - moonsphere-infra-network
 
   msph-mailhog:
     container_name: msph-mailhog
