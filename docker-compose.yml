@@ -66,6 +66,11 @@ services:
       - 'CASSANDRA_PASSWORD_SEEDER=yes'
       - 'CASSANDRA_USER=${MSPH_CASSANDRA_USERNAME}'
       - 'CASSANDRA_PASSWORD=${MSPH_CASSANDRA_PASSWORD}'
+    healthcheck:
+      test: [ "CMD-SHELL", "[ $$(nodetool statusgossip) = running ]" ]
+      interval: 30s
+      timeout: 10s
+      retries: 6
     networks:
       - moonsphere-infra-network
 
