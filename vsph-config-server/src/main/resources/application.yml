@@ -1,0 +1,38 @@
+server:
+  servlet:
+    context-path: /config
+
+spring:
+  application:
+    name: vsph-config-server
+  cloud:
+    vault:
+      token: ${VSPH_VAULT_ROOT_TOKEN}
+      authentication: TOKEN
+      scheme: http
+      kv:
+        backend: visphere
+        default-context: vsph-common
+        application-name: ${spring.application.name}
+    config:
+      server:
+        git:
+          uri: https://github.com/visphere/visphere-infra-cloud-config
+          username: ${V_SPRING_CONFIG_GIT_USERNAME}
+          password: ${V_SPRING_CONFIG_GIT_TOKEN}
+          default-label: 'master'
+          search-paths:
+            - '{application}'
+  banner:
+    location: classpath:spring/banner.txt
+
+management:
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true

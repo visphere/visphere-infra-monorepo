@@ -1,0 +1,11 @@
+spring:
+  config:
+    import:
+      - optional:vault://
+      - optional:configserver:http://vsph-config-server:8888/config
+  cloud:
+    vault:
+      uri: http://vsph-vault:8200
+    config:
+      username: ${VSPH_SPRING_CONFIG_USERNAME}
+      password: ${VSPH_SPRING_CONFIG_PASSWORD}

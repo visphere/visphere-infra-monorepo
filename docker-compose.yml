@@ -1,45 +1,46 @@
 version: '3.8'
 
 services:
-  msph-config-server:
-    container_name: msph-config-server
+  vsph-config-server:
+    container_name: vsph-config-server
     ports:
       - '5160:8888'
-    image: milosz08/msph-config-server:latest
+    image: milosz08/vsph-config-server:latest
     pull_policy: always
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
-      - 'MSPH_VAULT_ROOT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'
-      - 'MSPH_SPRING_CONFIG_USERNAME=${MSPH_SPRING_CONFIG_USERNAME}'
-      - 'MSPH_SPRING_CONFIG_PASSWORD=${MSPH_SPRING_CONFIG_PASSWORD}'
+      - 'VSPH_VAULT_ROOT_TOKEN=${VSPH_VAULT_ROOT_TOKEN}'
+      - 'VSPH_SPRING_CONFIG_USERNAME=${VSPH_SPRING_CONFIG_USERNAME}'
+      - 'VSPH_SPRING_CONFIG_PASSWORD=${VSPH_SPRING_CONFIG_PASSWORD}'
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-discovery-server:
-    container_name: msph-discovery-server
+  vsph-discovery-server:
+    container_name: vsph-discovery-server
     ports:
       - '5161:8761'
-    image: milosz08/msph-discovery-server:latest
+    image: milosz08/vsph-discovery-server:latest
     pull_policy: always
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
-      - 'MSPH_VAULT_ROOT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'
-      - 'MSPH_SPRING_CONFIG_USERNAME=${MSPH_SPRING_CONFIG_USERNAME}'
-      - 'MSPH_SPRING_CONFIG_PASSWORD=${MSPH_SPRING_CONFIG_PASSWORD}'
+      - 'VSPH_VAULT_ROOT_TOKEN=${VSPH_VAULT_ROOT_TOKEN}'
+      - 'VSPH_SPRING_CONFIG_USERNAME=${VSPH_SPRING_CONFIG_USERNAME}'
+      - 'VSPH_SPRING_CONFIG_PASSWORD=${VSPH_SPRING_CONFIG_PASSWORD}'
     depends_on:
-      - msph-vault
-      - msph-config-server
+      - vsph-vault
+      - vsph-config-server
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-postgresql-db:
-    container_name: msph-postgresql-db
+  vsph-postgresql-db:
+    container_name: vsph-postgresql-db
     image: postgres:15.4-alpine
     ports:
       - '${MSPH_DEV_POSTGRESQL_PORT}:5432'
     environment:
       - 'POSTGRES_USER=${MSPH_POSTGRES_USERNAME}'
       - 'POSTGRES_PASSWORD=${MSPH_POSTGRES_PASSWORD}'
+      - 'POSTGRES_PASSWORD=${VSPH_POSTGRES_PASSWORD}'
       - 'POSTGRES_DB=postgres'
     volumes:
       - ./.volumes/db/postgres_init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -50,34 +51,34 @@ services:
       timeout: 10s
       retries: 6
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-cassandra-db:
-    container_name: msph-cassandra-db
+  vsph-cassandra-db:
+    container_name: vsph-cassandra-db
     image: bitnami/cassandra:4.1.3
     ports:
-      - '${MSPH_DEV_CASSANDRA_PORT}:9042'
+      - '${VSPH_DEV_CASSANDRA_PORT}:9042'
     volumes:
       - ./.volumes/db/cassandra-volume:/bitnami
     environment:
-      - 'CASSANDRA_CLUSTER_NAME=msph-cluster'
+      - 'CASSANDRA_CLUSTER_NAME=vsph-cluster'
       - 'CASSANDRA_PASSWORD_SEEDER=yes'
-      - 'CASSANDRA_USER=${MSPH_CASSANDRA_USERNAME}'
-      - 'CASSANDRA_PASSWORD=${MSPH_CASSANDRA_PASSWORD}'
+      - 'CASSANDRA_USER=${VSPH_CASSANDRA_USERNAME}'
+      - 'CASSANDRA_PASSWORD=${VSPH_CASSANDRA_PASSWORD}'
     healthcheck:
       test: [ "CMD-SHELL", "[ $$(nodetool statusgossip) = running ]" ]
       interval: 30s
       timeout: 10s
       retries: 6
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-mailhog:
-    container_name: msph-mailhog
+  vsph-mailhog:
+    container_name: vsph-mailhog
     image: mailhog/mailhog:v1.0.1
     ports:
-      - '${MSPH_DEV_MAILHOG_PORT}:1025'
-      - '${MSPH_DEV_MAILHOG_CLIENT_PORT}:8025'
+      - '${VSPH_DEV_MAILHOG_PORT}:1025'
+      - '${VSPH_DEV_MAILHOG_CLIENT_PORT}:8025'
     environment:
       - 'MH_STORAGE=maildir'
       - 'MH_MAILDIR_PATH=/home/mailhog'
@@ -86,13 +87,13 @@ services:
       - ./.volumes/mail/mailhog.conf:/etc/supervisor/conf.d
       - ./.volumes/mail/mailhog-auth.txt:/etc/mailhog-auth.txt
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-vault:
-    container_name: msph-vault
+  vsph-vault:
+    container_name: vsph-vault
     image: hashicorp/vault:1.14
     ports:
-      - '${MSPH_DEV_VAULT_PORT}:8200'
+      - '${VSPH_DEV_VAULT_PORT}:8200'
     volumes:
       - ./.volumes/vault/vault-volume:/vault/data:rw
       - ./.volumes/vault:/vault/config
@@ -103,108 +104,113 @@ services:
       - IPC_LOCK
     entrypoint: vault server -config=/vault/config/vault.hcl
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-s3:
-    container_name: msph-s3
+  vsph-s3:
+    container_name: vsph-s3
     image: bitnami/minio:2023.9.27
     ports:
-      - '${MSPH_DEV_S3_API_PORT}:9000'
-      - '${MSPH_DEV_S3_PORT}:9001'
+      - '${VSPH_DEV_S3_API_PORT}:9000'
+      - '${VSPH_DEV_S3_PORT}:9001'
     environment:
-      - 'MINIO_ROOT_USER=${ENV_MSPH_S3_USERNAME}'
-      - 'MINIO_ROOT_PASSWORD=${ENV_MSPH_S3_PASSWORD}'
+      - 'MINIO_ROOT_USER=${VSPH_S3_USERNAME}'
+      - 'MINIO_ROOT_PASSWORD=${VSPH_S3_PASSWORD}'
       - 'MINIO_DEFAULT_BUCKETS=spheres:public,users:public'
       - 'MINIO_SCHEME=http'
     volumes:
-      - ./.volumes/s3/volume:/bitnami/minio/data
+      - ./.volumes/s3/s3-volume:/bitnami/minio/data
     healthcheck:
       test: 'curl --fail http://localhost:9000/minio/health/live || exit 1'
       interval: 10s
       timeout: 5s
       retries: 3
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-api-gateway:
-    container_name: msph-api-gateway
+  vsph-api-gateway:
+    container_name: vsph-api-gateway
     ports:
       - '5055:8080'
-    image: milosz08/msph-api-gateway:latest
+    image: milosz08/vsph-api-gateway:latest
     pull_policy: always
     environment:
       - 'SPRING_PROFILES_ACTIVE=docker'
-      - 'MSPH_DOCKER_LANDING_PORT=${MSPH_DOCKER_LANDING_PORT}'
-      - 'MSPH_DOCKER_CLIENT_PORT=${MSPH_DOCKER_CLIENT_PORT}'
-      - 'MSPH_VAULT_ROOT_TOKEN=${MSPH_VAULT_ROOT_TOKEN}'
-      - 'MSPH_SPRING_CONFIG_USERNAME=${MSPH_SPRING_CONFIG_USERNAME}'
-      - 'MSPH_SPRING_CONFIG_PASSWORD=${MSPH_SPRING_CONFIG_PASSWORD}'
+      - 'VSPH_DOCKER_LANDING_PORT=${VSPH_DOCKER_LANDING_PORT}'
+      - 'VSPH_DOCKER_CLIENT_PORT=${VSPH_DOCKER_CLIENT_PORT}'
+      - 'VSPH_VAULT_ROOT_TOKEN=${VSPH_VAULT_ROOT_TOKEN}'
+      - 'VSPH_SPRING_CONFIG_USERNAME=${VSPH_SPRING_CONFIG_USERNAME}'
+      - 'VSPH_SPRING_CONFIG_PASSWORD=${VSPH_SPRING_CONFIG_PASSWORD}'
     depends_on:
-      - msph-config-server
-      - msph-discovery-server
+      - vsph-config-server
+      - vsph-discovery-server
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-account-service:
+  vsph-account-service:
     extends:
-      file: ./msph-account-service/docker-compose.yml
-      service: msph-account-service-template
+      file: ./vsph-account-service/docker-compose.yml
+      service: vsph-account-service-template
+    depends_on:
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
+      - vsph-postgresql-db
+      - vsph-s3
+    networks:
+      - visphere-infra-network
+
+  vsph-auth-service:
+    extends:
+      file: ./vsph-auth-service/docker-compose.yml
+      service: vsph-auth-service-template
     depends_on:
       - msph-config-server
       - msph-discovery-server
       - msph-api-gateway
       - msph-postgresql-db
       - msph-s3
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
+      - vsph-postgresql-db
+      - vsph-s3
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-auth-service:
+  vsph-misc-service:
     extends:
-      file: ./msph-auth-service/docker-compose.yml
-      service: msph-auth-service-template
+      file: ./vsph-misc-service/docker-compose.yml
+      service: vsph-misc-service-template
     depends_on:
-      - msph-config-server
-      - msph-discovery-server
-      - msph-api-gateway
-      - msph-postgresql-db
-      - msph-s3
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-misc-service:
+  vsph-multimedia-service:
     extends:
-      file: ./msph-misc-service/docker-compose.yml
-      service: msph-misc-service-template
+      file: ./vsph-multimedia-service/docker-compose.yml
+      service: vsph-multimedia-service-template
     depends_on:
-      - msph-config-server
-      - msph-discovery-server
-      - msph-api-gateway
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
+      - vsph-s3
     networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
-  msph-multimedia-service:
+  vsph-notification-service:
     extends:
-      file: ./msph-multimedia-service/docker-compose.yml
-      service: msph-multimedia-service-template
+      file: ./vsph-notification-service/docker-compose.yml
+      service: vsph-notification-service-template
     depends_on:
-      - msph-config-server
-      - msph-discovery-server
-      - msph-api-gateway
-      - msph-s3
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
     networks:
-      - moonsphere-infra-network
-
-  msph-notification-service:
-    extends:
-      file: ./msph-notification-service/docker-compose.yml
-      service: msph-notification-service-template
-    depends_on:
-      - msph-config-server
-      - msph-discovery-server
-      - msph-api-gateway
-    networks:
-      - moonsphere-infra-network
+      - visphere-infra-network
 
 networks:
-  moonsphere-infra-network:
+  visphere-infra-network:
     driver: bridge

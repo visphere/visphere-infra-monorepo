@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright (c) 2023 by MoonSphere Systems
+  ~ Copyright (c) 2023 by Visphere & Vsph Technologies
   ~ Originally developed by Miłosz Gilga <https://miloszgilga.pl>
   -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -15,21 +15,21 @@
     <relativePath/>
   </parent>
 
-  <groupId>pl.moonsphere</groupId>
-  <artifactId>moonsphere-infra-monorepo</artifactId>
+  <groupId>pl.visphere</groupId>
+  <artifactId>visphere-infra-monorepo</artifactId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
 
   <modules>
-    <module>msph-api-gateway</module>
-    <module>msph-discovery-server</module>
-    <module>msph-shared-lib</module>
-    <module>msph-account-service</module>
-    <module>msph-config-server</module>
-    <module>msph-auth-service</module>
-    <module>msph-misc-service</module>
-    <module>msph-notification-service</module>
-    <module>msph-multimedia-service</module>
+    <module>vsph-api-gateway</module>
+    <module>vsph-discovery-server</module>
+    <module>vsph-shared-lib</module>
+    <module>vsph-account-service</module>
+    <module>vsph-config-server</module>
+    <module>vsph-auth-service</module>
+    <module>vsph-misc-service</module>
+    <module>vsph-notification-service</module>
+    <module>vsph-multimedia-service</module>
   </modules>
 
   <properties>
@@ -38,7 +38,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- Start libs versions section -->
     <spring-cloud.version>2022.0.2</spring-cloud.version>
-    <msph.lib.version>1.0.0</msph.lib.version>
+    <vsph.lib.version>1.0.0</vsph.lib.version>
     <postgresql.driver.version>42.6.0</postgresql.driver.version>
     <liquibase.version>4.23.1</liquibase.version>
     <doc.webmvc.version>2.2.0</doc.webmvc.version>
@@ -91,9 +91,9 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>pl.moonsphere</groupId>
-        <artifactId>msph-shared-lib</artifactId>
-        <version>${msph.lib.version}</version>
+        <groupId>pl.visphere</groupId>
+        <artifactId>vsph-shared-lib</artifactId>
+        <version>${vsph.lib.version}</version>
       </dependency>
       <dependency>
         <groupId>org.postgresql</groupId>

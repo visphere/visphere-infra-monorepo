@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Copyright (c) 2023 by MoonSphere Systems
+# Copyright (c) 2023 by Visphere & Vsph Technologies
 # Originally developed by Miłosz Gilga <https://miloszgilga.pl>
 #
 
@@ -8,7 +8,7 @@ set -e
 set -u
 
 mounted_env_path="../../.env"
-secret_name="moonsphere"
+secret_name="visphere"
 
 get_env_variable() {
     variable_name=$1
@@ -23,29 +23,29 @@ get_env_variable() {
     echo ""
 }
 
-vault operator unseal "$(get_env_variable "MSPH_VAULT_UNSEAL_KEY")"
+vault operator unseal "$(get_env_variable "VSPH_VAULT_UNSEAL_KEY")"
 
-vault_token="$(get_env_variable "MSPH_VAULT_ROOT_TOKEN")"
+vault_token="$(get_env_variable "VSPH_VAULT_ROOT_TOKEN")"
 export VAULT_TOKEN=$vault_token
 
 vault secrets enable -path=$secret_name kv
 
-vault kv put "$secret_name/msph-common" \
-    V_EUREKA_USERNAME="$(get_env_variable "MSPH_EUREKA_USERNAME")" \
-    V_EUREKA_PASSWORD="$(get_env_variable "MSPH_EUREKA_PASSWORD")" \
-    V_POSTGRES_USERNAME="$(get_env_variable "MSPH_POSTGRES_USERNAME")" \
-    V_POSTGRES_PASSWORD="$(get_env_variable "MSPH_POSTGRES_PASSWORD")" \
-    V_S3_USERNAME="$(get_env_variable "ENV_MSPH_S3_USERNAME")" \
-    V_S3_PASSWORD="$(get_env_variable "ENV_MSPH_S3_PASSWORD")"
+vault kv put "$secret_name/vsph-common" \
+    V_EUREKA_USERNAME="$(get_env_variable "VSPH_EUREKA_USERNAME")" \
+    V_EUREKA_PASSWORD="$(get_env_variable "VSPH_EUREKA_PASSWORD")" \
+    V_POSTGRES_USERNAME="$(get_env_variable "VSPH_POSTGRES_USERNAME")" \
+    V_POSTGRES_PASSWORD="$(get_env_variable "VSPH_POSTGRES_PASSWORD")" \
+    V_S3_USERNAME="$(get_env_variable "VSPH_S3_USERNAME")" \
+    V_S3_PASSWORD="$(get_env_variable "VSPH_S3_PASSWORD")"
 
-vault kv put "$secret_name/msph-config-server" \
-    V_SPRING_CONFIG_GIT_USERNAME="$(get_env_variable "MSPH_SPRING_CONFIG_GIT_USERNAME")" \
-    V_SPRING_CONFIG_GIT_TOKEN="$(get_env_variable "MSPH_SPRING_CONFIG_GIT_TOKEN")"
+vault kv put "$secret_name/vsph-config-server" \
+    V_SPRING_CONFIG_GIT_USERNAME="$(get_env_variable "VSPH_SPRING_CONFIG_GIT_USERNAME")" \
+    V_SPRING_CONFIG_GIT_TOKEN="$(get_env_variable "VSPH_SPRING_CONFIG_GIT_TOKEN")"
 
-vault kv put "$secret_name/msph-misc-service" \
-    V_CAPTCHA_SECRET_KEY="$(get_env_variable "MSPH_CAPTCHA_SECRET_KEY")" \
-    V_CAPTCHA_SITE_KEY="$(get_env_variable "MSPH_CAPTCHA_SITE_KEY")"
+vault kv put "$secret_name/vsph-misc-service" \
+    V_CAPTCHA_SECRET_KEY="$(get_env_variable "VSPH_CAPTCHA_SECRET_KEY")" \
+    V_CAPTCHA_SITE_KEY="$(get_env_variable "VSPH_CAPTCHA_SITE_KEY")"
 
-vault kv put "$secret_name/msph-chat-service" \
-    V_CASSANDRA_USERNAME="$(get_env_variable "MSPH_CASSANDRA_USERNAME")" \
-    V_CASSANDRA_PASSWORD="$(get_env_variable "MSPH_CASSANDRA_PASSWORD")"
+vault kv put "$secret_name/vsph-chat-service" \
+    V_CASSANDRA_USERNAME="$(get_env_variable "VSPH_CASSANDRA_USERNAME")" \
+    V_CASSANDRA_PASSWORD="$(get_env_variable "VSPH_CASSANDRA_PASSWORD")"

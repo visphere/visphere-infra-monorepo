@@ -1,0 +1,13 @@
+server:
+  port: 8888
+
+spring:
+  cloud:
+    vault:
+      uri: http://vsph-vault:8200
+  security:
+    user:
+      name: ${VSPH_SPRING_CONFIG_USERNAME}
+      password: ${VSPH_SPRING_CONFIG_PASSWORD}
+  config:
+    import: optional:vault://
