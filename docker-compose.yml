@@ -36,10 +36,9 @@ services:
     container_name: vsph-postgresql-db
     image: postgres:15.4-alpine
     ports:
-      - '${MSPH_DEV_POSTGRESQL_PORT}:5432'
+      - '${VSPH_DEV_POSTGRESQL_PORT}:5432'
     environment:
-      - 'POSTGRES_USER=${MSPH_POSTGRES_USERNAME}'
-      - 'POSTGRES_PASSWORD=${MSPH_POSTGRES_PASSWORD}'
+      - 'POSTGRES_USER=${VSPH_POSTGRES_USERNAME}'
       - 'POSTGRES_PASSWORD=${VSPH_POSTGRES_PASSWORD}'
       - 'POSTGRES_DB=postgres'
     volumes:
@@ -242,11 +241,6 @@ services:
       file: ./vsph-auth-service/docker-compose.yml
       service: vsph-auth-service-template
     depends_on:
-      - msph-config-server
-      - msph-discovery-server
-      - msph-api-gateway
-      - msph-postgresql-db
-      - msph-s3
       - vsph-config-server
       - vsph-discovery-server
       - vsph-api-gateway
