@@ -127,6 +127,84 @@ services:
     networks:
       - visphere-infra-network
 
+  vsph-kafka-zookeeper:
+    container_name: vsph-kafka-zookeeper
+    image: confluentinc/cp-zookeeper:7.5.1
+    hostname: localhost
+    ports:
+      - '${VSPH_DEV_KAFKA_ZOOKEEPER_PORT}:2181'
+      - '${VSPH_DEV_KAFKA_ZOOKEEPER_SSL_PORT}:2182'
+    environment:
+      - 'ZOOKEEPER_CLIENT_PORT=2181'
+      - 'ZOOKEEPER_TICK_TIME=2000'
+      - 'ZOOKEEPER_SECURE_CLIENT_PORT=2182'
+      - 'ZOOKEEPER_SSL_KEYSTORE_LOCATION=/etc/kafka/secrets/zoo/zoo.docker.keystore.jks'
+      - 'ZOOKEEPER_SSL_KEYSTORE_PASSWORD=${VSPH_KAFKA_BROKER_PASSWORD}'
+      - 'ZOOKEEPER_SSL_KEYSTORE_TYPE=JKS'
+      - 'ZOOKEEPER_SSL_TRUSTSTORE_LOCATION=/etc/kafka/secrets/zoo/zoo.docker.truststore.jks'
+      - 'ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD=${VSPH_KAFKA_BROKER_PASSWORD}'
+      - 'ZOOKEEPER_SSL_TRUSTSTORE_TYPE=JKS'
+      - 'ZOOKEEPER_SERVER_CNXN_FACTORY=org.apache.zookeeper.server.NettyServerCnxnFactory'
+      - 'ZOOKEEPER_SSL_CLIENT_AUTH=need'
+      - 'ZOOKEEPER_AUTH_PROVIDER_X509=org.apache.zookeeper.server.auth.X509AuthenticationProvider'
+      - 'ZOOKEEPER_AUTH_PROVIDER_SASL=org.apache.zookeeper.server.auth.SASLAuthenticationProvider'
+      - 'KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/secrets/zoo_jaas.conf'
+    volumes:
+      - ./.volumes/kafka/secrets/zoo:/etc/kafka/secrets/zoo
+      - ./.volumes/kafka/secrets/zoo_jaas.conf:/etc/kafka/secrets/zoo_jaas.conf
+      - ./.volumes/kafka/zookeeper-volume/data:/var/lib/zookeeper/data
+      - ./.volumes/kafka/zookeeper-volume/log:/var/lib/zookeeper/log
+    healthcheck:
+      test: echo srvr | nc zookeeper 2181 || exit 1
+      retries: 20
+      interval: 10s
+    networks:
+      - visphere-infra-network
+
+  vsph-kafka-broker:
+    container_name: vsph-kafka-broker
+    image: confluentinc/cp-kafka:7.5.1
+    hostname: localhost
+    ports:
+      - '${VSPH_DEV_KAFKA_BROKER_PORT}:9092'
+      - '${VSPH_DEV_KAFKA_BROKER_SSL_PORT}:9093'
+    environment:
+      - 'KAFKA_BROKER_ID=1'
+      - 'KAFKA_ZOOKEEPER_CONNECT=vsph-kafka-zookeeper:2182'
+      - 'KAFKA_ZOOKEEPER_SSL_CLIENT_ENABLE=true'
+      - 'KAFKA_ZOOKEEPER_CLIENT_CNXN_SOCKET=org.apache.zookeeper.ClientCnxnSocketNetty'
+      - 'KAFKA_ZOOKEEPER_SSL_KEYSTORE_LOCATION=/etc/kafka/secrets/zoo/zoo.docker.keystore.jks'
+      - 'KAFKA_ZOOKEEPER_SSL_KEYSTORE_PASSWORD=${VSPH_KAFKA_BROKER_PASSWORD}'
+      - 'KAFKA_ZOOKEEPER_SSL_KEYSTORE_TYPE=JKS'
+      - 'KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_LOCATION=/etc/kafka/secrets/zoo/zoo.docker.truststore.jks'
+      - 'KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_PASSWORD=${VSPH_KAFKA_BROKER_PASSWORD}'
+      - 'KAFKA_ZOOKEEPER_SSL_TRUSTSTORE_TYPE=JKS'
+      - 'KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092,SASL_SSL://localhost:9093,INTERNAL://vsph-kafka-broker:9094'
+      - 'KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,SASL_SSL:SASL_SSL,INTERNAL:SASL_SSL'
+      - 'KAFKA_SSL_KEYSTORE_FILENAME=kafka.keystore.jks'
+      - 'KAFKA_SSL_KEYSTORE_CREDENTIALS=ssl.cred'
+      - 'KAFKA_SSL_KEY_CREDENTIALS=ssl.cred'
+      - 'KAFKA_SSL_TRUSTSTORE_FILENAME=kafka.truststore.jks'
+      - 'KAFKA_SSL_TRUSTSTORE_CREDENTIALS=ssl.cred'
+      - 'KAFKA_SSL_CLIENT_AUTH=required'
+      - 'KAFKA_SECURITY_PROTOCOL=SASL_SSL'
+      - 'KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1'
+      - 'KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL=PLAIN'
+      - 'KAFKA_SASL_ENABLED_MECHANISMS=PLAIN'
+      - 'KAFKA_LISTENER_NAME_INTERNAL_SASL_ENABLED_MECHANISMS=PLAIN'
+      - 'KAFKA_OPTS=-Djava.security.auth.login.config=/etc/kafka/secrets/broker_jaas.conf'
+    volumes:
+      - ./.volumes/kafka/secrets/broker_jaas.conf:/etc/kafka/secrets/broker_jaas.conf
+      - ./.volumes/kafka/secrets/ssl.cred:/etc/kafka/secrets/ssl.cred
+      - ./.volumes/kafka/secrets/zoo:/etc/kafka/secrets/zoo
+      - ./.volumes/kafka/secrets/local/kafka.keystore.jks:/etc/kafka/secrets/kafka.keystore.jks
+      - ./.volumes/kafka/secrets/local/kafka.truststore.jks:/etc/kafka/secrets/kafka.truststore.jks
+      - ./.volumes/kafka/kafka-volume:/var/lib/kafka/data
+    depends_on:
+      - vsph-kafka-zookeeper
+    networks:
+      - visphere-infra-network
+
   vsph-api-gateway:
     container_name: vsph-api-gateway
     ports:

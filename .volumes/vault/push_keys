@@ -36,7 +36,10 @@ vault kv put "$secret_name/vsph-common" \
     V_POSTGRES_USERNAME="$(get_env_variable "VSPH_POSTGRES_USERNAME")" \
     V_POSTGRES_PASSWORD="$(get_env_variable "VSPH_POSTGRES_PASSWORD")" \
     V_S3_USERNAME="$(get_env_variable "VSPH_S3_USERNAME")" \
-    V_S3_PASSWORD="$(get_env_variable "VSPH_S3_PASSWORD")"
+    V_S3_PASSWORD="$(get_env_variable "VSPH_S3_PASSWORD")" \
+    V_KAFKA_BROKER_PASSWORD="$(get_env_variable "VSPH_KAFKA_BROKER_PASSWORD")" \
+    V_KAFKA_CLIENT_USERNAME="$(get_env_variable "VSPH_KAFKA_CLIENT_USERNAME")" \
+    V_KAFKA_CLIENT_PASSWORD="$(get_env_variable "VSPH_KAFKA_CLIENT_PASSWORD")"
 
 vault kv put "$secret_name/vsph-config-server" \
     V_SPRING_CONFIG_GIT_USERNAME="$(get_env_variable "VSPH_SPRING_CONFIG_GIT_USERNAME")" \

@@ -1,0 +1,60 @@
+#!/bin/sh
+#
+# Copyright (c) 2023 by Visphere & Vsph Technologies
+# Originally developed by Miłosz Gilga <https://miloszgilga.pl>
+#
+
+set -e
+set -u
+
+CERT_VALIDITY=36500
+PASSWORD=123456
+
+[ -e secrets/local/kafka.keystore.jks ] && rm secrets/local/kafka.keystore.jks
+[ -e secrets/local/kafka.truststore.jks ] && rm secrets/local/kafka.truststore.jks
+
+keytool \
+    -keystore secrets/local/kafka.keystore.jks \
+    -alias visphere \
+    -validity $CERT_VALIDITY \
+    -genkey \
+    -keyalg RSA \
+    -storepass $PASSWORD \
+    -dname "CN=localhost"
+
+openssl req -new -x509 \
+    -keyout ca-key -out ca-cert \
+    -days $CERT_VALIDITY \
+    -subj "/CN=localhost"
+
+keytool \
+    -keystore secrets/local/kafka.keystore.jks \
+    -alias visphere \
+    -certreq -file cert-file
+
+openssl x509 -req \
+    -CA ca-cert -CAkey ca-key \
+    -in cert-file -out cert-signed \
+    -days $CERT_VALIDITY \
+    -CAcreateserial -passin pass:$PASSWORD
+
+keytool \
+    -keystore secrets/local/kafka.keystore.jks \
+    -alias CARoot \
+    -import -file ca-cert
+
+keytool \
+    -keystore secrets/local/kafka.keystore.jks \
+    -alias visphere \
+    -import -file cert-signed
+
+keytool \
+    -keystore secrets/local/kafka.truststore.jks \
+    -alias CARoot \
+    -import -file ca-cert \
+    -storepass $PASSWORD
+
+rm ca-key
+rm ca-cert
+rm cert-file
+rm cert-signed

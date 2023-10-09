@@ -3,26 +3,9 @@ spring:
     name: vsph-account-service
   cloud:
     vault:
-      uri: http://localhost:8200
       token: ${VSPH_VAULT_ROOT_TOKEN}
       authentication: TOKEN
       kv:
         backend: visphere
         default-context: vsph-common
         application-name: ${spring.application.name}
-  kafka:
-    #    security:
-    #      protocol: "SSL"
-    bootstrap-servers: localhost:9092
-    #    ssl:
-    #      trust-store-location: classpath:kafka/kafka.client.truststore.jks
-    #      trust-store-password: testtest
-    #      key-store-location: classpath:kafka/kafka.client.keystore.jks
-    #      key-store-password: testtest
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      group-id: test123
