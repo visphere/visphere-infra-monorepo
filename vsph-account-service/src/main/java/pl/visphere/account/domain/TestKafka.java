@@ -4,15 +4,19 @@
  */
 package pl.visphere.account.domain;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Component;
+import pl.visphere.lib.kafka.payload.RequestDto;
+import pl.visphere.lib.kafka.payload.ResponseDto;
 
 @Component
 public class TestKafka {
 
-    @KafkaListener(topics = "testtopic")
-    public void receive(ConsumerRecord<String, String> consumerRecord) {
-        System.out.println("Received payload " + consumerRecord.toString());
+    @KafkaListener(topics = "${visphere.kafka.topic.check-user}")
+    @SendTo
+    public ResponseDto receive(RequestDto request) {
+        System.out.println(request);
+        return new ResponseDto("This is a response message");
     }
 }

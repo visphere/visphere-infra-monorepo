@@ -6,7 +6,6 @@ package pl.visphere.auth.network.access;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import pl.visphere.auth.i18n.LocaleSet;
 import pl.visphere.auth.network.access.dto.LoginPasswordReqDto;
@@ -15,23 +14,27 @@ import pl.visphere.auth.network.access.dto.RefreshReqDto;
 import pl.visphere.auth.network.access.dto.RefreshResDto;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
+import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.SyncQueueHandler;
+import pl.visphere.lib.kafka.payload.RequestDto;
+import pl.visphere.lib.kafka.payload.ResponseDto;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 class AccessService implements IAccessService {
     private final I18nService i18nService;
-
-    private final KafkaTemplate<String, String> kafkaTemplate;
-
+    private final SyncQueueHandler syncQueueHandler;
 
     @Override
     public LoginResDto loginViaPassword(LoginPasswordReqDto reqDto) {
         // login user via username and password
 
-        log.info("Producing message: {}", "This is a test message");
-        kafkaTemplate.send("testtopic", "key", "This is a test message");
-        
+        final ResponseDto response = syncQueueHandler
+            .sendWithBlockThread(QueueTopic.CHECK_USER, new RequestDto("From request"), ResponseDto.class)
+            .orElseThrow(RuntimeException::new);
+
+        System.out.println(response);
 
         return LoginResDto.builder()
             .fullName("Anna Nowak")
