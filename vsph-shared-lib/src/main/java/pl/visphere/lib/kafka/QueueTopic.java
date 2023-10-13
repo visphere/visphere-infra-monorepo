@@ -4,26 +4,21 @@
  */
 package pl.visphere.lib.kafka;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
+import pl.visphere.lib.ISpringProp;
 
 import java.util.Arrays;
 import java.util.Objects;
 
 import static pl.visphere.lib.kafka.SyncQueueHandler.REPLY_TOPIC_SUFFIX;
 
-@Getter
 @RequiredArgsConstructor
-public enum QueueTopic {
+public enum QueueTopic implements ISpringProp {
     CHECK_USER("check-user", true);
 
     private final String topicKey;
     private final boolean hasReply;
-
-    public String getDecoded(Environment environment) {
-        return environment.getProperty("visphere.kafka.topic." + topicKey);
-    }
 
     public static String[] getAllReplyTopics(Environment environment) {
         return Arrays.stream(values())
@@ -32,5 +27,10 @@ public enum QueueTopic {
             .filter(Objects::nonNull)
             .map(topic -> topic + REPLY_TOPIC_SUFFIX)
             .toArray(String[]::new);
+    }
+
+    @Override
+    public String getKey(Environment environment) {
+        return environment.getProperty("visphere.kafka.topic." + topicKey);
     }
 }

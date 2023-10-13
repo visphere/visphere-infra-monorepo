@@ -41,7 +41,7 @@ public class SyncQueueHandler {
 
     public <R> Optional<R> sendWithBlockThread(QueueTopic topic, Object data, Class<R> returnClazz) {
         try {
-            final String decodedTopic = topic.getDecoded(environment);
+            final String decodedTopic = topic.getKey(environment);
             log.info("Started sync kafka call into {} with: {}", decodedTopic, data);
             final ProducerRecord<String, Object> record = new ProducerRecord<>(decodedTopic, data);
             final RequestReplyFuture<String, Object, Object> future = replyingKafkaTemplate.sendAndReceive(record);

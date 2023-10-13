@@ -10,6 +10,7 @@ import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.core.env.Environment;
 
 import java.util.List;
 
@@ -18,10 +19,10 @@ public class BearerConfigBuilder {
     private final String serviceVersion;
     private final Server apiGatewayServer;
 
-    public BearerConfigBuilder(AbstractBaseProperties properties) {
-        this.serviceTitle = properties.getTitle();
-        this.serviceVersion = properties.getVersion();
-        this.apiGatewayServer = new Server().url(properties.getUrl());
+    public BearerConfigBuilder(Environment environment) {
+        this.serviceTitle = OpenApiProperties.TITLE.getKey(environment);
+        this.serviceVersion = OpenApiProperties.VERSION.getKey(environment);
+        this.apiGatewayServer = new Server().url(OpenApiProperties.URL.getKey(environment));
     }
 
     public OpenAPI build() {
