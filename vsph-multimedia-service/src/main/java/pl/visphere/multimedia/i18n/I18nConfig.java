@@ -10,7 +10,7 @@ import pl.visphere.lib.i18n.AbstractI18nConfiguration;
 import pl.visphere.lib.i18n.I18nService;
 
 @Configuration
-class I18nConfiguration extends AbstractI18nConfiguration {
+class I18nConfig extends AbstractI18nConfiguration {
     @Bean
     I18nService i18nService() {
         return new I18nService(this);

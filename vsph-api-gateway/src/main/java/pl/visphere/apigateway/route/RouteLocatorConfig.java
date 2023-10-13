@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 
 @Configuration
-class RouteLocatorConfiguration {
+class RouteLocatorConfig {
     @Bean
     RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()

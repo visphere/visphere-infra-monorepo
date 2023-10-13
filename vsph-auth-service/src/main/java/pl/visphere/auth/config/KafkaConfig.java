@@ -14,13 +14,13 @@ import pl.visphere.lib.kafka.SyncQueueHandler;
 
 @Configuration
 @RequiredArgsConstructor
-public class KafkaConfig {
-    private final Environment environment;
-    private final ProducerFactory<String, Object> pf;
-    private final ConcurrentKafkaListenerContainerFactory<String, Object> factory;
-
+class KafkaConfig {
     @Bean
-    SyncQueueHandler syncQueueHandler() {
+    SyncQueueHandler syncQueueHandler(
+        Environment environment,
+        ProducerFactory<String, Object> pf,
+        ConcurrentKafkaListenerContainerFactory<String, Object> factory
+    ) {
         return new SyncQueueHandler(pf, factory, environment);
     }
 }
