@@ -11,7 +11,8 @@ import pl.visphere.lib.i18n.ILocaleExtendableSet;
 @Getter
 @RequiredArgsConstructor
 public enum LibLocaleSet implements ILocaleExtendableSet {
-    MISSING_REQUEST_PARAM_EXCEPTION_MESSAGE("vsph.lib.exc.MissingServletRequestParameterException");
+    MISSING_REQUEST_PARAM_EXCEPTION_MESSAGE("vsph.lib.exc.MissingServletRequestParameterException"),
+    UNKNOW_SERVER_EXCEPTION_MESSAGE("vsph.lib.exc.UnknowServerException");
 
     private final String holder;
 }

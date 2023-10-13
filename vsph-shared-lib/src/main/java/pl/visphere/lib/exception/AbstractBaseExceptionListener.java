@@ -61,4 +61,11 @@ public abstract class AbstractBaseExceptionListener {
         }
         return new ResponseEntity<>(new ValidationExceptionResDto(reponseStatus, req, errorsAsMap), reponseStatus);
     }
+
+    @ExceptionHandler({ Exception.class })
+    public ResponseEntity<MessageExceptionResDto> unknowServerException(HttpServletRequest req) {
+        final HttpStatus reponseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+        final String message = i18nService.getMessage(LibLocaleSet.UNKNOW_SERVER_EXCEPTION_MESSAGE);
+        return new ResponseEntity<>(new MessageExceptionResDto(reponseStatus, req, message), reponseStatus);
+    }
 }
