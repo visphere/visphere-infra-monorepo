@@ -18,7 +18,7 @@ import pl.visphere.misc.network.captcha.dto.CaptchaVerifyReqDto;
 @RequestMapping("/api/v1/misc/captcha")
 @RequiredArgsConstructor
 class CaptchaController {
-    private final ICaptchaService captchaService;
+    private final CaptchaService captchaService;
 
     @PostMapping("/verify")
     ResponseEntity<BaseMessageResDto> verify(@Valid @RequestBody CaptchaVerifyReqDto reqDto) {

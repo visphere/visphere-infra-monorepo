@@ -4,6 +4,6 @@
  */
 package pl.visphere.lib.i18n;
 
-public interface ILocaleExtendableSet {
+public interface LocaleExtendableSet {
     String getHolder();
 }

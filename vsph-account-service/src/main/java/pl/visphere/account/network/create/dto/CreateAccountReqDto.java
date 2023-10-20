@@ -8,13 +8,13 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import pl.visphere.lib.RegexConstant;
-import pl.visphere.lib.validator.IPasswordValidatorModel;
+import pl.visphere.lib.validator.PasswordValidatorModel;
 import pl.visphere.lib.validator.ValidateMatchingPasswords;
 
 @Getter
 @Setter
 @ValidateMatchingPasswords(message = "vsph.lib.jpa.passwords.notMatch")
-public class CreateAccountReqDto implements IPasswordValidatorModel {
+public class CreateAccountReqDto implements PasswordValidatorModel {
 
     @NotBlank(message = "vsph.account.jpa.username.notBlank")
     @Size(min = 2, max = 30, message = "vsph.account.jpa.username.size")

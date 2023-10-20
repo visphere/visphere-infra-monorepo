@@ -9,9 +9,9 @@ import jakarta.validation.ConstraintValidatorContext;
 
 import java.util.Objects;
 
-class PasswordMatchValidator implements ConstraintValidator<ValidateMatchingPasswords, IPasswordValidatorModel> {
+class PasswordMatchValidator implements ConstraintValidator<ValidateMatchingPasswords, PasswordValidatorModel> {
     @Override
-    public boolean isValid(IPasswordValidatorModel model, ConstraintValidatorContext context) {
+    public boolean isValid(PasswordValidatorModel model, ConstraintValidatorContext context) {
         if (model.getPassword() == null || model.getConfirmedPassword() == null) {
             return false;
         }

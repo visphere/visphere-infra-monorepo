@@ -6,11 +6,11 @@ package pl.visphere.auth.i18n;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import pl.visphere.lib.i18n.ILocaleExtendableSet;
+import pl.visphere.lib.i18n.LocaleExtendableSet;
 
 @Getter
 @RequiredArgsConstructor
-public enum LocaleSet implements ILocaleExtendableSet {
+public enum LocaleSet implements LocaleExtendableSet {
     LOGIN_RESPONSE_ERROR("vsph.i18n.login.res.error"),
     ATTEMPT_CHANGE_PASSWORD_RESPONSE_ERROR("vsph.i18n.attemptChangePassword.res.error"),
     ATTEMPT_CHANGE_PASSWORD_RESPONSE_SUCCESS("vsph.i18n.attemptChangePassword.res.success"),

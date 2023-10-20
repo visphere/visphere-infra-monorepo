@@ -18,7 +18,7 @@ import pl.visphere.lib.BaseMessageResDto;
 @RequestMapping("/api/v1/account/new")
 @RequiredArgsConstructor
 public class CreateAccountController {
-    private final ICreateAccountService createAccountService;
+    private final CreateAccountService createAccountService;
 
     @PostMapping("/create")
     ResponseEntity<BaseMessageResDto> createNew(@Valid @RequestBody CreateAccountReqDto reqDto) {

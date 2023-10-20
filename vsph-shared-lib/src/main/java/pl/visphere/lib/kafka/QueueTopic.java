@@ -6,7 +6,7 @@ package pl.visphere.lib.kafka;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
-import pl.visphere.lib.ISpringProp;
+import pl.visphere.lib.Property;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -30,7 +30,7 @@ public enum QueueTopic implements ISpringProp {
     }
 
     @Override
-    public String getKey(Environment environment) {
+    public String getValue(Environment environment) {
         return environment.getProperty("visphere.kafka.topic." + topicKey);
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @RequestMapping("/api/v1/account/check")
 @RequiredArgsConstructor
 class CheckController {
-    private final ICheckService checkService;
+    private final CheckService checkService;
 
     @GetMapping("/prop/exist")
     ResponseEntity<CheckAlreadyExistResDto> checkIfUsernameAlreadyExist(

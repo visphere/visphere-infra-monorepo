@@ -6,7 +6,7 @@ package pl.visphere.lib.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
-import pl.visphere.lib.i18n.ILocaleExtendableSet;
+import pl.visphere.lib.i18n.LocaleExtendableSet;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,17 +14,17 @@ import java.util.Map;
 @Getter
 public abstract class AbstractRestException extends RuntimeException {
     private final HttpStatus httpStatus;
-    private final ILocaleExtendableSet placeholder;
+    private final LocaleExtendableSet placeholder;
     private Map<String, Object> variables = new HashMap<>();
 
-    public AbstractRestException(HttpStatus httpStatus, ILocaleExtendableSet placeholder) {
+    public AbstractRestException(HttpStatus httpStatus, LocaleExtendableSet placeholder) {
         super(placeholder.getHolder());
         this.httpStatus = httpStatus;
         this.placeholder = placeholder;
     }
 
     public AbstractRestException(
-        HttpStatus httpStatus, ILocaleExtendableSet placeholder, Map<String, Object> variables
+        HttpStatus httpStatus, LocaleExtendableSet placeholder, Map<String, Object> variables
     ) {
         this(httpStatus, placeholder);
         this.variables = variables;

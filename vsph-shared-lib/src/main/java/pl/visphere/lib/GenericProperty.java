@@ -6,6 +6,6 @@ package pl.visphere.lib;
 
 import org.springframework.core.env.Environment;
 
-public interface ISpringProp {
-    String getKey(Environment environment);
+public interface GenericProperty extends Property {
+    <T> T getValue(Environment environment, Class<T> type);
 }

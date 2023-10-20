@@ -14,11 +14,11 @@ import java.util.Map;
 public class I18nService {
     private final AbstractI18nConfiguration configuration;
 
-    public String getMessage(ILocaleExtendableSet placeholder) {
+    public String getMessage(LocaleExtendableSet placeholder) {
         return getMessage(placeholder.getHolder(), Map.of());
     }
 
-    public String getMessage(ILocaleExtendableSet placeholder, Map<String, Object> variables) {
+    public String getMessage(LocaleExtendableSet placeholder, Map<String, Object> variables) {
         return getMessage(placeholder.getHolder(), variables);
     }
 

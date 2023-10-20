@@ -20,9 +20,9 @@ public class BearerConfigBuilder {
     private final Server apiGatewayServer;
 
     public BearerConfigBuilder(Environment environment) {
-        this.serviceTitle = OpenApiProperties.TITLE.getKey(environment);
-        this.serviceVersion = OpenApiProperties.VERSION.getKey(environment);
-        this.apiGatewayServer = new Server().url(OpenApiProperties.URL.getKey(environment));
+        this.serviceTitle = OpenApiProperties.TITLE.getValue(environment);
+        this.serviceVersion = OpenApiProperties.VERSION.getValue(environment);
+        this.apiGatewayServer = new Server().url(OpenApiProperties.URL.getValue(environment));
     }
 
     public OpenAPI build() {

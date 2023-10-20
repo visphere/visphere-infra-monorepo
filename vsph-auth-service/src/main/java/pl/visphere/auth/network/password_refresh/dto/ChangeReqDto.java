@@ -9,13 +9,13 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import pl.visphere.lib.RegexConstant;
-import pl.visphere.lib.validator.IPasswordValidatorModel;
+import pl.visphere.lib.validator.PasswordValidatorModel;
 import pl.visphere.lib.validator.ValidateMatchingPasswords;
 
 @Getter
 @Setter
 @ValidateMatchingPasswords(message = "vsph.lib.jpa.passwords.notMatch")
-public class ChangeReqDto implements IPasswordValidatorModel {
+public class ChangeReqDto implements PasswordValidatorModel {
 
     @NotBlank(message = "vsph.lib.jpa.password.notBlank")
     @Pattern(regexp = RegexConstant.PASSWORD_REQ, message = "vsph.lib.jpa.password.pattern")

@@ -4,7 +4,7 @@
  */
 package pl.visphere.lib.validator;
 
-public interface IPasswordValidatorModel {
+public interface PasswordValidatorModel {
     String getPassword();
     String getConfirmedPassword();
 }

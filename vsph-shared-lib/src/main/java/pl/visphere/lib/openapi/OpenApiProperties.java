@@ -6,10 +6,10 @@ package pl.visphere.lib.openapi;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
-import pl.visphere.lib.ISpringProp;
+import pl.visphere.lib.Property;
 
 @RequiredArgsConstructor
-public enum OpenApiProperties implements ISpringProp {
+public enum OpenApiProperties implements Property {
     TITLE("title"),
     VERSION("version"),
     URL("url");
@@ -17,7 +17,7 @@ public enum OpenApiProperties implements ISpringProp {
     private final String key;
 
     @Override
-    public String getKey(Environment environment) {
+    public String getValue(Environment environment) {
         return environment.getProperty("visphere.openapi.service" + key);
     }
 }

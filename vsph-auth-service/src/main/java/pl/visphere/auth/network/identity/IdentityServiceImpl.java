@@ -2,16 +2,16 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.auth.network.access;
+package pl.visphere.auth.network.identity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import pl.visphere.auth.i18n.LocaleSet;
-import pl.visphere.auth.network.access.dto.LoginPasswordReqDto;
-import pl.visphere.auth.network.access.dto.LoginResDto;
-import pl.visphere.auth.network.access.dto.RefreshReqDto;
-import pl.visphere.auth.network.access.dto.RefreshResDto;
+import pl.visphere.auth.network.identity.dto.LoginPasswordReqDto;
+import pl.visphere.auth.network.identity.dto.LoginResDto;
+import pl.visphere.auth.network.identity.dto.RefreshReqDto;
+import pl.visphere.auth.network.identity.dto.RefreshResDto;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
@@ -22,7 +22,7 @@ import pl.visphere.lib.kafka.payload.ResponseDto;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-class AccessService implements IAccessService {
+class IdentityServiceImpl implements IdentityService {
     private final I18nService i18nService;
     private final SyncQueueHandler syncQueueHandler;
 

@@ -6,11 +6,11 @@ package pl.visphere.lib;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import pl.visphere.lib.i18n.ILocaleExtendableSet;
+import pl.visphere.lib.i18n.LocaleExtendableSet;
 
 @Getter
 @RequiredArgsConstructor
-public enum LibLocaleSet implements ILocaleExtendableSet {
+public enum LibLocaleSet implements LocaleExtendableSet {
     MISSING_REQUEST_PARAM_EXCEPTION_MESSAGE("vsph.lib.exc.MissingServletRequestParameterException"),
     UNKNOW_SERVER_EXCEPTION_MESSAGE("vsph.lib.exc.UnknowServerException");
 

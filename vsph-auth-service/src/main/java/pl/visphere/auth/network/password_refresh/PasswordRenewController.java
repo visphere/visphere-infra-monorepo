@@ -16,7 +16,7 @@ import pl.visphere.lib.BaseMessageResDto;
 @RequestMapping("/api/v1/auth/password/renew")
 @RequiredArgsConstructor
 class PasswordRenewController {
-    private final IPasswordRenewService passwordRenewService;
+    private final PasswordRenewService passwordRenewService;
 
     @PostMapping("/request")
     ResponseEntity<BaseMessageResDto> request(@Valid @RequestBody AttemptReqDto reqDto) {
