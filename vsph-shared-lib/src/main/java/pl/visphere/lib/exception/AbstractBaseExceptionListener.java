@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -62,6 +63,13 @@ public abstract class AbstractBaseExceptionListener {
             errorsAsMap.put(error.getField(), i18nService.getMessage(error.getDefaultMessage()));
         }
         return new ResponseEntity<>(new ValidationExceptionResDto(reponseStatus, req, errorsAsMap), reponseStatus);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    ResponseEntity<MessageExceptionResDto> authenticationException(HttpServletRequest req, AuthenticationException ex) {
+        final HttpStatus responseStatus = HttpStatus.UNAUTHORIZED;
+        log.error("Spring security context exception. Cause: {}", ex.getMessage());
+        return new ResponseEntity<>(new MessageExceptionResDto(responseStatus, req, ex.getMessage()), responseStatus);
     }
 
     @ExceptionHandler({ Exception.class })
