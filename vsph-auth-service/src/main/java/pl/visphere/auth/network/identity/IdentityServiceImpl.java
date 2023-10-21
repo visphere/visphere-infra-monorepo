@@ -14,27 +14,24 @@ import pl.visphere.auth.network.identity.dto.RefreshReqDto;
 import pl.visphere.auth.network.identity.dto.RefreshResDto;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
-import pl.visphere.lib.kafka.QueueTopic;
-import pl.visphere.lib.kafka.SyncQueueHandler;
-import pl.visphere.lib.kafka.payload.RequestDto;
-import pl.visphere.lib.kafka.payload.ResponseDto;
+import pl.visphere.lib.jwt.JwtService;
+import pl.visphere.lib.jwt.TokenData;
+import pl.visphere.lib.security.user.AuthUserDetails;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 class IdentityServiceImpl implements IdentityService {
     private final I18nService i18nService;
-    private final SyncQueueHandler syncQueueHandler;
+    private final JwtService jwtService;
 
     @Override
     public LoginResDto loginViaPassword(LoginPasswordReqDto reqDto) {
         // login user via username and password
 
-        final ResponseDto response = syncQueueHandler
-            .sendWithBlockThread(QueueTopic.CHECK_USER, new RequestDto("From request"), ResponseDto.class)
-            .orElseThrow(RuntimeException::new);
+        final TokenData accessToken = jwtService.generateAccessToken(1L, "annanowak123", "annnow123@gmail.com");
+        final TokenData refreshToken = jwtService.generateRefreshToken();
 
-        System.out.println(response);
 
         return LoginResDto.builder()
             .fullName("Anna Nowak")
