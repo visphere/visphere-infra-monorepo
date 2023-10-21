@@ -39,7 +39,10 @@ vault kv put "$secret_name/vsph-common" \
     V_S3_PASSWORD="$(get_env_variable "VSPH_S3_PASSWORD")" \
     V_KAFKA_BROKER_PASSWORD="$(get_env_variable "VSPH_KAFKA_BROKER_PASSWORD")" \
     V_KAFKA_CLIENT_USERNAME="$(get_env_variable "VSPH_KAFKA_CLIENT_USERNAME")" \
-    V_KAFKA_CLIENT_PASSWORD="$(get_env_variable "VSPH_KAFKA_CLIENT_PASSWORD")"
+    V_KAFKA_CLIENT_PASSWORD="$(get_env_variable "VSPH_KAFKA_CLIENT_PASSWORD")" \
+    V_JWT_SECRET_KEY="$(get_env_variable "VSPH_JWT_SECRET_KEY")" \
+    V_JWT_ISSUER="$(get_env_variable "VSPH_JWT_ISSUER")" \
+    V_JWT_AUDIENCE="$(get_env_variable "VSPH_JWT_AUDIENCE")"
 
 vault kv put "$secret_name/vsph-config-server" \
     V_SPRING_CONFIG_GIT_USERNAME="$(get_env_variable "VSPH_SPRING_CONFIG_GIT_USERNAME")" \
