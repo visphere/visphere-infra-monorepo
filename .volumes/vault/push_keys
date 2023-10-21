@@ -35,6 +35,7 @@ vault kv put "$secret_name/vsph-common" \
     V_EUREKA_PASSWORD="$(get_env_variable "VSPH_EUREKA_PASSWORD")" \
     V_POSTGRES_USERNAME="$(get_env_variable "VSPH_POSTGRES_USERNAME")" \
     V_POSTGRES_PASSWORD="$(get_env_variable "VSPH_POSTGRES_PASSWORD")" \
+    V_REDIS_PASSWORD="$(get_env_variable "VSPH_REDIS_PASSWORD")" \
     V_S3_USERNAME="$(get_env_variable "VSPH_S3_USERNAME")" \
     V_S3_PASSWORD="$(get_env_variable "VSPH_S3_PASSWORD")" \
     V_KAFKA_BROKER_PASSWORD="$(get_env_variable "VSPH_KAFKA_BROKER_PASSWORD")" \

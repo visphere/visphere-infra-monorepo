@@ -72,6 +72,24 @@ services:
     networks:
       - visphere-infra-network
 
+  vsph-redis-db:
+    container_name: vsph-redis-db
+    image: bitnami/redis:6.2.14
+    ports:
+      - '${VSPH_DEV_REDIS_PORT}:6379'
+    volumes:
+      - ./.volumes/db/redis-volume:/bitnami
+    environment:
+      - 'REDIS_PASSWORD=${VSPH_REDIS_PASSWORD}'
+    command: /opt/bitnami/scripts/redis/run.sh --maxmemory 100mb && sysctl vm.overcommit_memory=1
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 6
+    networks:
+      - visphere-infra-network
+
   vsph-mailhog:
     container_name: vsph-mailhog
     image: mailhog/mailhog:v1.0.1
@@ -238,6 +256,7 @@ services:
       - vsph-discovery-server
       - vsph-api-gateway
       - vsph-postgresql-db
+      - vsph-redis-db
       - vsph-s3
     networks:
       - visphere-infra-network
@@ -251,6 +270,7 @@ services:
       - vsph-discovery-server
       - vsph-api-gateway
       - vsph-postgresql-db
+      - vsph-redis-db
       - vsph-s3
     networks:
       - visphere-infra-network
