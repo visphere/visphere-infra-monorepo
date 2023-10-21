@@ -13,7 +13,6 @@ public record LoginResDto(
     String emailAddress,
     String profileUrl,
     String accessToken,
-    String refreshToken,
     boolean isActivated
 ) {
 }

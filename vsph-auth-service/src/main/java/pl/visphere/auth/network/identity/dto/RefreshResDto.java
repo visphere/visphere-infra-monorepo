@@ -8,7 +8,6 @@ import lombok.Builder;
 
 @Builder
 public record RefreshResDto(
-    String renewAccessToken,
-    String refreshToken
+    String renewAccessToken
 ) {
 }

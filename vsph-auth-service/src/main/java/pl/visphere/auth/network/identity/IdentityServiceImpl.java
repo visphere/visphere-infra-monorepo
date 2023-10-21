@@ -41,8 +41,7 @@ class IdentityServiceImpl implements IdentityService {
             .username("annnow123")
             .emailAddress("annanowak@gmail.com")
             .profileUrl("https://raw.githubusercontent.com/Milosz08/schedule-management-server/master/_StaticPrivateContent/UserImages/zoqeCUQJ1QMqRBH4dDEB__julnow269.jpg")
-            .accessToken("accessToken")
-            .refreshToken("refresh token")
+            .accessToken(accessToken.token())
             .isActivated(true)
             .build();
     }
@@ -57,7 +56,6 @@ class IdentityServiceImpl implements IdentityService {
             .emailAddress("annanowak@gmail.com")
             .profileUrl("https://raw.githubusercontent.com/Milosz08/schedule-management-server/master/_StaticPrivateContent/UserImages/zoqeCUQJ1QMqRBH4dDEB__julnow269.jpg")
             .accessToken("accessToken")
-            .refreshToken("refresh token")
             .isActivated(true)
             .build();
     }
@@ -68,7 +66,6 @@ class IdentityServiceImpl implements IdentityService {
 
         return RefreshResDto.builder()
             .renewAccessToken("renew accessToken")
-            .refreshToken("refresh token")
             .build();
     }
 
