@@ -25,8 +25,8 @@ public abstract class AbstractI18nConfiguration {
 
     public AbstractI18nConfiguration() {
         this.defaultLocale = AppLocale.PL;
-        this.availableLocales = new Locale[]{AppLocale.PL, Locale.US};
-        this.localeBundles = new String[]{"i18n/messages"};
+        this.availableLocales = new Locale[]{ AppLocale.PL, Locale.US };
+        this.localeBundles = new String[]{ "i18n/messages" };
     }
 
     @Primary

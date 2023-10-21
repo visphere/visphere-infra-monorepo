@@ -12,8 +12,7 @@ import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import java.util.List;
 import java.util.Locale;
 
-class CustomHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
-
+public class CustomHeaderLocaleResolver extends AcceptHeaderLocaleResolver {
     @Override
     public Locale resolveLocale(HttpServletRequest req) {
         final String acceptLang = req.getHeader("Accept-Language");

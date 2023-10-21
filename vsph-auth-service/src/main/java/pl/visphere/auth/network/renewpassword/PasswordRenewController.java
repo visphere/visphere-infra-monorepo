@@ -2,14 +2,14 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.auth.network.password_refresh;
+package pl.visphere.auth.network.renewpassword;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import pl.visphere.auth.network.password_refresh.dto.AttemptReqDto;
-import pl.visphere.auth.network.password_refresh.dto.ChangeReqDto;
+import pl.visphere.auth.network.renewpassword.dto.AttemptReqDto;
+import pl.visphere.auth.network.renewpassword.dto.ChangeReqDto;
 import pl.visphere.lib.BaseMessageResDto;
 
 @RestController

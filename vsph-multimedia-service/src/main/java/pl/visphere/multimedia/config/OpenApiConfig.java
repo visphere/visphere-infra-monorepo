@@ -2,7 +2,7 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.multimedia.i18n;
+package pl.visphere.multimedia.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.models.OpenAPI;

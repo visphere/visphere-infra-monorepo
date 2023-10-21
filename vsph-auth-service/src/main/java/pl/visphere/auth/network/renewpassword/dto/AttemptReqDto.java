@@ -2,7 +2,7 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.auth.network.password_refresh.dto;
+package pl.visphere.auth.network.renewpassword.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

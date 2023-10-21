@@ -27,14 +27,14 @@ public abstract class AbstractBaseExceptionListener {
     private final I18nService i18nService;
 
     @ExceptionHandler(AbstractRestException.class)
-    public ResponseEntity<MessageExceptionResDto> restException(AbstractRestException ex, HttpServletRequest req) {
+    ResponseEntity<MessageExceptionResDto> restException(AbstractRestException ex, HttpServletRequest req) {
         final HttpStatus responseStatus = ex.getHttpStatus();
         final String message = i18nService.getMessage(ex.getPlaceholder(), ex.getVariables());
         return new ResponseEntity<>(new MessageExceptionResDto(responseStatus, req, message), responseStatus);
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
-    public ResponseEntity<MessageExceptionResDto> queryParamsException(
+    ResponseEntity<MessageExceptionResDto> queryParamsException(
         MissingServletRequestParameterException ex,
         HttpServletRequest req
     ) {
@@ -47,7 +47,7 @@ public abstract class AbstractBaseExceptionListener {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<? extends AbstractServerExceptionResDto> invalidArgumentException(
+    ResponseEntity<? extends AbstractServerExceptionResDto> invalidArgumentException(
         MethodArgumentNotValidException ex, HttpServletRequest req
     ) {
         final List<FieldError> errors = ex.getBindingResult().getFieldErrors();
@@ -65,7 +65,7 @@ public abstract class AbstractBaseExceptionListener {
     }
 
     @ExceptionHandler({ Exception.class })
-    public ResponseEntity<MessageExceptionResDto> unknowServerException(HttpServletRequest req, Exception ex) {
+    ResponseEntity<MessageExceptionResDto> unknowServerException(HttpServletRequest req, Exception ex) {
         final HttpStatus reponseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         final String message = i18nService.getMessage(LibLocaleSet.UNKNOW_SERVER_EXCEPTION_MESSAGE);
         log.error("Unexpected issue during server process. Cause: {}", ex.getMessage());
