@@ -47,7 +47,7 @@ class IdentityServiceImpl implements IdentityService {
     }
 
     @Override
-    public LoginResDto loginViaAccessToken(Long userId) {
+    public LoginResDto loginViaAccessToken(AuthUserDetails userDetails) {
         // login user via access token (require JWT, protected route)
 
         return LoginResDto.builder()
@@ -70,7 +70,7 @@ class IdentityServiceImpl implements IdentityService {
     }
 
     @Override
-    public BaseMessageResDto logout(Long userId) {
+    public BaseMessageResDto logout(AuthUserDetails userDetails) {
         // logout user base access token (require JWT, protected route)
 
         return BaseMessageResDto.builder()

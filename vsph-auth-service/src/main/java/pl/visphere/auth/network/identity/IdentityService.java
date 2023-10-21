@@ -9,10 +9,11 @@ import pl.visphere.auth.network.identity.dto.LoginResDto;
 import pl.visphere.auth.network.identity.dto.RefreshReqDto;
 import pl.visphere.auth.network.identity.dto.RefreshResDto;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.security.user.AuthUserDetails;
 
 interface IdentityService {
     LoginResDto loginViaPassword(LoginPasswordReqDto reqDto);
-    LoginResDto loginViaAccessToken(Long userId);
+    LoginResDto loginViaAccessToken(AuthUserDetails user);
     RefreshResDto refresh(RefreshReqDto reqDto);
-    BaseMessageResDto logout(Long userId);
+    BaseMessageResDto logout(AuthUserDetails user);
 }

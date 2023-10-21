@@ -13,6 +13,8 @@ import pl.visphere.auth.network.identity.dto.LoginResDto;
 import pl.visphere.auth.network.identity.dto.RefreshReqDto;
 import pl.visphere.auth.network.identity.dto.RefreshResDto;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.security.user.AuthUserDetails;
+import pl.visphere.lib.security.user.LoggedUser;
 
 @RestController
 @RequestMapping("/api/v1/auth/identity")
@@ -26,8 +28,8 @@ class IdentityController {
     }
 
     @PostMapping("/login/token")
-    ResponseEntity<LoginResDto> loginViaAccessToken() {
-        return ResponseEntity.ok(accessService.loginViaAccessToken(1L));
+    ResponseEntity<LoginResDto> loginViaAccessToken(@LoggedUser AuthUserDetails user) {
+        return ResponseEntity.ok(accessService.loginViaAccessToken(user));
     }
 
     @PatchMapping("/refresh")
@@ -36,7 +38,7 @@ class IdentityController {
     }
 
     @DeleteMapping("/logout")
-    ResponseEntity<BaseMessageResDto> logout() {
-        return ResponseEntity.ok(accessService.logout(1L));
+    ResponseEntity<BaseMessageResDto> logout(@LoggedUser AuthUserDetails user) {
+        return ResponseEntity.ok(accessService.logout(user));
     }
 }
