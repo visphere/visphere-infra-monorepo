@@ -2,9 +2,8 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.auth.config;
+package pl.visphere.misc.config;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -15,7 +14,6 @@ import pl.visphere.lib.kafka.SyncListenerHandler;
 import pl.visphere.lib.kafka.SyncQueueHandler;
 
 @Configuration
-@RequiredArgsConstructor
 class KafkaConfig {
     @Bean
     SyncQueueHandler syncQueueHandler(

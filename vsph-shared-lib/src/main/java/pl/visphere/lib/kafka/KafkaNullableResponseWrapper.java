@@ -2,9 +2,9 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.lib.kafka.payload;
+package pl.visphere.lib.kafka;
 
-public record RequestDto(
-    String input
+public record KafkaNullableResponseWrapper(
+    Object payload
 ) {
 }

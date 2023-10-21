@@ -4,7 +4,10 @@
  */
 package pl.visphere.lib.kafka.payload;
 
-public record ResponseDto(
-    String output
+import pl.visphere.lib.kafka.ResponseObject;
+
+public record NullableObjectWrapper<T>(
+    ResponseObject response,
+    T content
 ) {
 }

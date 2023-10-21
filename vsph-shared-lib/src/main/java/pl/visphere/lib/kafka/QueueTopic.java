@@ -14,8 +14,9 @@ import java.util.Objects;
 import static pl.visphere.lib.kafka.SyncQueueHandler.REPLY_TOPIC_SUFFIX;
 
 @RequiredArgsConstructor
-public enum QueueTopic implements ISpringProp {
-    CHECK_USER("check-user", true);
+public enum QueueTopic implements Property {
+    CHECK_USER("check-user", true),
+    JWT_IS_ON_BLACKLIST("jwt-is-on-blacklist", true);
 
     private final String topicKey;
     private final boolean hasReply;
@@ -25,7 +26,7 @@ public enum QueueTopic implements ISpringProp {
             .filter(key -> key.hasReply)
             .map(key -> environment.getProperty("visphere.kafka.topic." + key.topicKey))
             .filter(Objects::nonNull)
-            .map(topic -> topic + REPLY_TOPIC_SUFFIX)
+            .map(topic -> topic + REPLY_TOPIC_SUFFIX + SyncQueueHandler.getReplyHash(environment))
             .toArray(String[]::new);
     }
 
