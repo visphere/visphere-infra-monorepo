@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.config;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -14,5 +15,10 @@ class ServiceConfig {
     @Bean
     JwtService jwtService(Environment environment) {
         return new JwtService(environment);
+    }
+
+    @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
     }
 }
