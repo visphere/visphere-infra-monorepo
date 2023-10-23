@@ -9,6 +9,13 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-  <!-- datatables migrations -->
+  <!-- datatables migrations, common for dev and docker -->
+  <include file="migrations/2023-10-22_0000000_create-users-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-10-22_0000001_create-roles-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-10-22_0000002_create-blacklist-jwts-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-10-22_0000003_create-refresh-tokens-table.xml" relativeToChangelogFile="true"/>
+
+  <!-- data loaders, common for dev and docker -->
+  <include file="loaders/0000000_load-default-roles.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
