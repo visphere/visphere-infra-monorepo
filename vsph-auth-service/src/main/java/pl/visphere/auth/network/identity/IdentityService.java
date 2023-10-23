@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.network.identity;
 
+import jakarta.servlet.http.HttpServletRequest;
 import pl.visphere.auth.network.identity.dto.LoginPasswordReqDto;
 import pl.visphere.auth.network.identity.dto.LoginResDto;
 import pl.visphere.auth.network.identity.dto.RefreshReqDto;
@@ -15,5 +16,5 @@ interface IdentityService {
     LoginResDto loginViaPassword(LoginPasswordReqDto reqDto);
     LoginResDto loginViaAccessToken(AuthUserDetails user);
     RefreshResDto refresh(RefreshReqDto reqDto);
-    BaseMessageResDto logout(AuthUserDetails user);
+    BaseMessageResDto logout(HttpServletRequest req, AuthUserDetails user);
 }

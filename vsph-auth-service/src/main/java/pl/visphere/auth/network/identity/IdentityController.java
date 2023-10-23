@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.network.identity;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,7 +39,7 @@ class IdentityController {
     }
 
     @DeleteMapping("/logout")
-    ResponseEntity<BaseMessageResDto> logout(@LoggedUser AuthUserDetails user) {
-        return ResponseEntity.ok(accessService.logout(user));
+    ResponseEntity<BaseMessageResDto> logout(HttpServletRequest req, @LoggedUser AuthUserDetails user) {
+        return ResponseEntity.ok(accessService.logout(req, user));
     }
 }

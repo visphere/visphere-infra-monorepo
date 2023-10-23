@@ -13,6 +13,7 @@ public record LoginResDto(
     String emailAddress,
     String profileUrl,
     String accessToken,
-    boolean isActivated
+    boolean isActivated,
+    boolean isMfaEnabled
 ) {
 }

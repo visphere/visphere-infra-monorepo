@@ -15,7 +15,12 @@ public enum LibLocaleSet implements LocaleExtendableSet {
     UNKNOW_SERVER_EXCEPTION_MESSAGE("vsph.lib.exc.UnknowServerException"),
     JWT_INVALID_EXCEPTION_MESSAGE("vsph.lib.exc.JwtIsInvalid"),
     JWT_EXPIRED_EXCEPTION_MESSAGE("vsph.lib.exc.JwtIsExpired"),
-    SECURITY_AUTHENTICATION_EXCEPTION_MESSAGE("vsph.lib.exc.AuthenticationException");
+    SECURITY_AUTHENTICATION_EXCEPTION_MESSAGE("vsph.lib.exc.AuthenticationException"),
+    ROLE_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.roleNotFound"),
+    USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userByIdNotFound"),
+    USER_BY_USERNAME_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userByUsernameNotFound"),
+    USER_ALREADY_EXIST_EXCEPTION_MESSAGE("vsph.lib.exc.userAlreadyExist"),
+    USER_ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userAccountNotFound");
 
     private final String holder;
 }
