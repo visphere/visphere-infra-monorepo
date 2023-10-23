@@ -4,17 +4,14 @@
  */
 package pl.visphere.lib;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.time.Instant;
 
 @MappedSuperclass
 @NoArgsConstructor
@@ -27,12 +24,13 @@ public abstract class AbstractAuditableEntity implements Serializable {
     private Long id;
 
     @CreationTimestamp
-    private ZonedDateTime createdAt;
+    @Column(updatable = false)
+    private Instant createdAt;
 
     @UpdateTimestamp
-    private ZonedDateTime updatedAt;
+    private Instant updatedAt;
 
-    Long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -40,19 +38,19 @@ public abstract class AbstractAuditableEntity implements Serializable {
         this.id = id;
     }
 
-    ZonedDateTime getCreatedAt() {
+    Instant getCreatedAt() {
         return createdAt;
     }
 
-    void setCreatedAt(ZonedDateTime createdAt) {
+    void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 
-    ZonedDateTime getUpdatedAt() {
+    Instant getUpdatedAt() {
         return updatedAt;
     }
 
-    void setUpdatedAt(ZonedDateTime updatedAt) {
+    void setUpdatedAt(Instant updatedAt) {
         this.updatedAt = updatedAt;
     }
 

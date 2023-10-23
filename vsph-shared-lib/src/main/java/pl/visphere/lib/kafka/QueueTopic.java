@@ -15,11 +15,22 @@ import static pl.visphere.lib.kafka.SyncQueueHandler.REPLY_TOPIC_SUFFIX;
 
 @RequiredArgsConstructor
 public enum QueueTopic implements Property {
-    CHECK_USER("check-user", true),
-    JWT_IS_ON_BLACKLIST("jwt-is-on-blacklist", true);
+    CHECK_USER("check-user"),
+    JWT_IS_ON_BLACKLIST("jwt-is-on-blacklist"),
+    ACCOUNT_DETAILS("account-details"),
+    PERSIST_USER("persist-user"),
+    GENERATE_OTA_ACTIVATE_ACCOUNT("generate-ota-activate-account"),
+    GENERATE_OTA_CHANGE_PASSWORD("generate-ota-change-password"),
+    CHECK_OTA("check-ota"),
+    GENERATE_DEFAULT_USER_PROFILE("generate-default-user-profile");
 
     private final String topicKey;
     private final boolean hasReply;
+
+    QueueTopic(String topicKey) {
+        this.topicKey = topicKey;
+        this.hasReply = true;
+    }
 
     public static String[] getAllReplyTopics(Environment environment) {
         return Arrays.stream(values())
