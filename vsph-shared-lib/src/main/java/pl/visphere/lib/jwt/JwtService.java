@@ -17,7 +17,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.util.StringUtils;
 
 import java.security.Key;
+import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -28,7 +30,8 @@ public class JwtService {
     private final Environment environment;
 
     public TokenData generateAccessToken(Long userId, String username, String email) {
-        final Date expirationTime = getExpirationTime(JwtProperties.JWT_ACCESS_LIFE_MINUTES);
+        final Date expirationTime = DateUtils
+            .addMinutes(new Date(), JwtProperties.JWT_ACCESS_LIFE_MINUTES.getValue(environment, Integer.class));
         final Claims claims = Jwts.claims();
         claims.put(JwtClaim.USER_ID.getClaim(), userId);
         claims.put(JwtClaim.USER_EMAIL.getClaim(), email);
@@ -41,9 +44,11 @@ public class JwtService {
     }
 
     public TokenData generateRefreshToken() {
+        final Date expirationTime = DateUtils
+            .addDays(new Date(), JwtProperties.JWT_REFRESH_LIFE_DAYS.getValue(environment, Integer.class));
         return TokenData.builder()
             .token(UUID.randomUUID().toString())
-            .expiredAt(getExpirationTime(JwtProperties.JWT_REFRESH_LIFE_HOURS))
+            .expiredAt(expirationTime)
             .build();
     }
 
@@ -59,24 +64,40 @@ public class JwtService {
     }
 
     public JwtValidateState validate(String token) {
+        Claims claims = null;
+        JwtState state = JwtState.VALID;
         try {
-            final Claims claims = Jwts.parserBuilder()
+            claims = Jwts.parserBuilder()
                 .setSigningKey(getSignedKey()).build()
                 .parseClaimsJws(token).getBody();
-            return JwtValidateState.builder()
-                .claims(claims)
-                .isValid(true)
-                .build();
         } catch (ExpiredJwtException ex) {
             log.error("Passed token is expired. Cause: {}", ex.getMessage());
-            throw new JwtException.JwtIsExpiredException();
+            state = JwtState.EXPIRED;
+            claims = ex.getClaims();
         } catch (SignatureException ex) {
             log.error("Passed token signature is invalid. Cause: {}", ex.getMessage());
-            throw new JwtException.JwtIsInvalidException();
+            state = JwtState.INVALID;
         } catch (RuntimeException ex) {
             log.error("Passed token is malformed or corrupted. Cause: {}", ex.getMessage());
-            throw new JwtException.JwtIsInvalidException();
+            state = JwtState.INVALID;
         }
+        return JwtValidateState.builder()
+            .claims(claims)
+            .state(state)
+            .build();
+    }
+
+    public Optional<Claims> extractClaims(String token) {
+        final JwtValidateState validated = validate(token);
+        return Optional.ofNullable(validated.claims());
+    }
+
+    public ZonedDateTime convertToZonedDateTime(Date date) {
+        return ZonedDateTime.ofInstant(date.toInstant(), ZonedDateTime.now().getZone());
+    }
+
+    public <T> T getClaim(Claims claims, JwtClaim claim, Class<T> claimClazz) {
+        return claims.get(claim.getClaim(), claimClazz);
     }
 
     public String extractFromReq(HttpServletRequest req) {
@@ -85,10 +106,6 @@ public class JwtService {
             return bearerToken.substring(BEARER_PREFIX.length());
         }
         return org.apache.commons.lang3.StringUtils.EMPTY;
-    }
-
-    private Date getExpirationTime(JwtProperties life) {
-        return DateUtils.addMinutes(new Date(), life.getValue(environment, Integer.class));
     }
 
     private Key getSignedKey() {

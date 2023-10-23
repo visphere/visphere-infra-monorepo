@@ -16,7 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import pl.visphere.lib.jwt.JwtException;
 import pl.visphere.lib.jwt.JwtService;
+import pl.visphere.lib.jwt.JwtState;
 import pl.visphere.lib.jwt.JwtValidateState;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.ResponseObject;
@@ -41,9 +43,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
         final JwtValidateState validateState = jwtService.validate(token);
-        if (!validateState.isValid() || validateState.claims().isEmpty()) {
-            chain.doFilter(req, res);
-            return;
+        if (validateState.state() != JwtState.VALID) {
+            throw new JwtException.JwtGeneralException(validateState.state().getPlaceholder());
         }
         final Claims claims = validateState.claims();
         final String userLogin = claims.getSubject();

@@ -9,7 +9,7 @@ import lombok.Builder;
 
 @Builder
 public record JwtValidateState(
-    boolean isValid,
+    JwtState state,
     Claims claims
 ) {
 }
