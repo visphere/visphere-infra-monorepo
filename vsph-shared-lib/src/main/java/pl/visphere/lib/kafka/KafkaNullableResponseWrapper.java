@@ -4,7 +4,13 @@
  */
 package pl.visphere.lib.kafka;
 
+import java.util.Map;
+
 public record KafkaNullableResponseWrapper(
-    Object payload
+    Object payload,
+    boolean exOccurred,
+    String exPlaceholder,
+    int status,
+    Map<String, Object> exMessageParams
 ) {
 }

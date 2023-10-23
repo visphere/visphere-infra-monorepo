@@ -9,8 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.kafka.QueueTopic;
-import pl.visphere.lib.kafka.ResponseObject;
 import pl.visphere.lib.kafka.SyncQueueHandler;
 import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
 import pl.visphere.lib.kafka.payload.UserDetailsResDto;
@@ -21,17 +21,18 @@ public class StatelesslessUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        throwError(username == null);
-        final NullableObjectWrapper<UserDetailsResDto> userDetails = syncQueueHandler
-            .sendWithBlockThread(QueueTopic.CHECK_USER, username, UserDetailsResDto.class)
-            .orElseThrow(RuntimeException::new);
-        throwError(userDetails.response() == ResponseObject.IS_NULL);
-        return new AuthUserDetails(userDetails.content());
-    }
-
-    private void throwError(boolean isFailure) {
-        if (isFailure) {
+        UserDetailsResDto userDetails;
+        if (username == null) {
             throw new UsernameNotFoundException(StringUtils.EMPTY);
         }
+        try {
+            userDetails = syncQueueHandler
+                .sendWithBlockThread(QueueTopic.CHECK_USER, username, UserDetailsResDto.class)
+                .map(NullableObjectWrapper::content)
+                .orElseThrow(RuntimeException::new);
+        } catch (GenericRestException ignored) {
+            throw new UsernameNotFoundException(StringUtils.EMPTY);
+        }
+        return new AuthUserDetails(userDetails);
     }
 }

@@ -17,6 +17,7 @@ import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
+import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
 
 import java.util.Optional;
@@ -60,15 +61,19 @@ public class SyncQueueHandler {
 
             final RequestReplyFuture<String, Object, Object> future = replyingKafkaTemplate.sendAndReceive(record);
             final ConsumerRecord<String, Object> response = future.get();
-            final KafkaNullableResponseWrapper wrappedResponse = (KafkaNullableResponseWrapper) response.value();
+            final KafkaNullableResponseWrapper resp = (KafkaNullableResponseWrapper) response.value();
+
+            log.info("End sync kafka call into {} with response: {}", decodedTopic, resp);
 
             ResponseObject responseObject = ResponseObject.IS_NULL;
             R payload = null;
-            if (wrappedResponse.payload() != null) {
-                payload = objectMapper.convertValue(wrappedResponse.payload(), returnClazz);
+            if (resp.exOccurred()) {
+                throw new GenericRestException(resp);
+            }
+            if (resp.payload() != null) {
+                payload = objectMapper.convertValue(resp.payload(), returnClazz);
                 responseObject = ResponseObject.IS_INSTANTIATED;
             }
-            log.info("End sync kafka call into {} with response: {}", decodedTopic, payload);
             return Optional.of(new NullableObjectWrapper<>(responseObject, payload));
         } catch (ExecutionException | InterruptedException ex) {
             log.error("Unexpected issue during sync call. Cause {}", ex.getMessage());
