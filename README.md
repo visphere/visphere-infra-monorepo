@@ -2,4 +2,4 @@
 
 # Visphere Infra Monorepo
 
-in progress
+Monorepo for all Java SpringBoot microservices. Visphere backend core infrastructure.
