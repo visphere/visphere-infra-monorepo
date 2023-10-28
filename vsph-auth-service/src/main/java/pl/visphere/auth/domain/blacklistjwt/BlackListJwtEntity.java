@@ -5,10 +5,13 @@
 package pl.visphere.auth.domain.blacklistjwt;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.lib.AbstractAuditableEntity;
 
 import java.io.Serial;
@@ -28,6 +31,15 @@ public class BlackListJwtEntity extends AbstractAuditableEntity implements Seria
 
     private ZonedDateTime expiringAt;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private UserEntity user;
+
+    public BlackListJwtEntity(String expiredJwt, ZonedDateTime expiringAt) {
+        this.expiredJwt = expiredJwt;
+        this.expiringAt = expiringAt;
+    }
+
     String getExpiredJwt() {
         return expiredJwt;
     }
@@ -42,6 +54,14 @@ public class BlackListJwtEntity extends AbstractAuditableEntity implements Seria
 
     void setExpiringAt(ZonedDateTime expiringAt) {
         this.expiringAt = expiringAt;
+    }
+
+    UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 
     @Override

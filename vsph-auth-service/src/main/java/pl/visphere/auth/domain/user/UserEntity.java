@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import pl.visphere.auth.domain.blacklistjwt.BlackListJwtEntity;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.lib.AbstractAuditableEntity;
@@ -46,10 +45,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         inverseJoinColumns = { @JoinColumn(name = "role_id") }
     )
     private Set<RoleEntity> roles = new HashSet<>();
-
-    @OneToMany
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private Set<BlackListJwtEntity> blackListJwts = new HashSet<>();
 
     @OneToOne(mappedBy = "user", cascade = { CascadeType.PERSIST })
     private RefreshTokenEntity refreshToken;
@@ -110,14 +105,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.roles = roles;
     }
 
-    Set<BlackListJwtEntity> getBlackListJwts() {
-        return blackListJwts;
-    }
-
-    void setBlackListJwts(Set<BlackListJwtEntity> blackListJwts) {
-        this.blackListJwts = blackListJwts;
-    }
-
     RefreshTokenEntity getRefreshToken() {
         return refreshToken;
     }
@@ -128,10 +115,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
 
     public void addRole(RoleEntity roleEntity) {
         this.roles.add(roleEntity);
-    }
-
-    public void addExpiredJwt(BlackListJwtEntity blackListJwt) {
-        this.blackListJwts.add(blackListJwt);
     }
 
     public void persistRefreshToken(RefreshTokenEntity refreshToken) {
@@ -148,7 +131,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
             ", password=" + password +
             ", enabledMfa=" + enabledMfa +
             ", isActivated=" + isActivated +
-            ", roles=" + roles +
             '}';
     }
 }

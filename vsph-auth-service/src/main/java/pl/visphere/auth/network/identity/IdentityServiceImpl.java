@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import pl.visphere.auth.domain.blacklistjwt.BlackListJwtEntity;
+import pl.visphere.auth.domain.blacklistjwt.BlackListJwtRepository;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.exception.UserException;
@@ -47,6 +48,7 @@ class IdentityServiceImpl implements IdentityService {
     private final IdentityMapper identityMapper;
 
     private final UserRepository userRepository;
+    private final BlackListJwtRepository blackListJwtRepository;
 
     @Override
     public LoginResDto loginViaPassword(LoginPasswordReqDto reqDto) {
@@ -101,8 +103,8 @@ class IdentityServiceImpl implements IdentityService {
             .orElseThrow(() -> new UserException.UserNotExistException(userDetails.getId()));
 
         final BlackListJwtEntity blackListJwt = new BlackListJwtEntity(accessToken, expiredAt);
-        user.addExpiredJwt(blackListJwt);
-        userRepository.save(user);
+        blackListJwt.setUser(user);
+        blackListJwtRepository.save(blackListJwt);
 
         SecurityContextHolder.clearContext();
 
