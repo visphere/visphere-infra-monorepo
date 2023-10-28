@@ -25,7 +25,7 @@ public class SecurityService {
         I18nService i18nService,
         LocaleResolver localeResolver
     ) {
-        this.middlewareExceptionFilter = new MiddlewareExceptionFilter(handlerExceptionResolver);
+        this.middlewareExceptionFilter = new MiddlewareExceptionFilter(handlerExceptionResolver, localeResolver);
         this.authResolver = new AuthResolver(i18nService, localeResolver);
         this.accessDeniedResolver = new AccessDeniedResolver(i18nService, localeResolver);
     }
