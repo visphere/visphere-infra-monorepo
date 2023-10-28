@@ -45,6 +45,7 @@
     <doc.webflux.version>2.2.0</doc.webflux.version>
     <jaxb.api.version>2.3.1</jaxb.api.version>
     <jwt.version>0.11.5</jwt.version>
+    <aws.sdk.version>1.12.576</aws.sdk.version>
     <!-- End of libs versions section -->
   </properties>
 
@@ -141,6 +142,13 @@
         <groupId>io.jsonwebtoken</groupId>
         <artifactId>jjwt-impl</artifactId>
         <version>${jwt.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.amazonaws</groupId>
+        <artifactId>aws-java-sdk-bom</artifactId>
+        <version>${aws.sdk.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>
