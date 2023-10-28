@@ -4,28 +4,9 @@
  */
 package pl.visphere.account.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.core.ProducerFactory;
-import pl.visphere.lib.kafka.SyncListenerHandler;
-import pl.visphere.lib.kafka.SyncQueueHandler;
+import pl.visphere.lib.kafka.AbstractKafkaConfigBeans;
 
 @Configuration
-class KafkaConfig {
-    @Bean
-    SyncQueueHandler syncQueueHandler(
-        Environment environment,
-        ProducerFactory<String, Object> pf,
-        ConcurrentKafkaListenerContainerFactory<String, Object> factory
-    ) {
-        return new SyncQueueHandler(pf, factory, environment);
-    }
-
-    @Bean
-    SyncListenerHandler syncListenerHandler(KafkaTemplate<String, Object> kafkaTemplate) {
-        return new SyncListenerHandler(kafkaTemplate);
-    }
+class KafkaConfig extends AbstractKafkaConfigBeans {
 }
