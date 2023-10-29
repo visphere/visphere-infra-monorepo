@@ -30,7 +30,7 @@ class CorsPolicyBuilder {
         corsConfig.setAllowedMethods(extractNamesFromHttpMethods(methods));
         corsConfig.addAllowedHeader("*");
         corsConfigurationList.put(path, corsConfig);
-        log.info("Registered CORS policy for {}, methods: {}", path, methods);
+        log.info("Registered CORS policy for '{}', methods: '{}'", path, methods);
         return this;
     }
 

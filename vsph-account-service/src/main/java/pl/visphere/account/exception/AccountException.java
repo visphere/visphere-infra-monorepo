@@ -16,7 +16,7 @@ public class AccountException {
     public static class AccountNotExistException extends AbstractRestException {
         public AccountNotExistException(Long userId) {
             super(HttpStatus.NOT_FOUND, LibLocaleSet.USER_ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE, Map.of("userId", userId));
-            log.error("Searching account by user id: {} not found in database", userId);
+            log.error("Searching account by user id: '{}' not found in database", userId);
         }
     }
 }

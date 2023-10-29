@@ -69,7 +69,7 @@ class CreateAccountServiceImpl implements CreateAccountService {
 
         accountRepository.save(account);
 
-        log.info("Successfully created new user account: {}", account);
+        log.info("Successfully created new user account: '{}'", account);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.CREATE_ACCOUNT_RESPONSE_SUCCESS))
             .build();

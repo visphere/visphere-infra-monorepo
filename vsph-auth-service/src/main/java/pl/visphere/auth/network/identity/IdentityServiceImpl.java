@@ -61,7 +61,7 @@ class IdentityServiceImpl implements IdentityService {
         final AuthUserDetails principal = (AuthUserDetails) auth.getPrincipal();
         final LoginResDto resDto = checkIfUserExistAndParseLoginResponse(principal.getId());
 
-        log.info("Successfully login via username and password for user: {}", resDto);
+        log.info("Successfully login via username and password for user: '{}'", resDto);
         return resDto;
     }
 
@@ -69,7 +69,7 @@ class IdentityServiceImpl implements IdentityService {
     public LoginResDto loginViaAccessToken(AuthUserDetails userDetails) {
         final LoginResDto resDto = checkIfUserExistAndParseLoginResponse(userDetails.getId());
 
-        log.info("Successfully login via access token for user: {}", resDto);
+        log.info("Successfully login via access token for user: '{}'", resDto);
         return resDto;
     }
 
@@ -84,7 +84,7 @@ class IdentityServiceImpl implements IdentityService {
             .findById(userId)
             .orElseThrow(() -> new UserException.UserNotExistException(userId));
 
-        log.info("Successfully refresh expired access token for user: {}", user);
+        log.info("Successfully refresh expired access token for user: '{}'", user);
         return RefreshResDto.builder()
             .renewAccessToken(generateToken(user))
             .build();
@@ -108,7 +108,7 @@ class IdentityServiceImpl implements IdentityService {
 
         SecurityContextHolder.clearContext();
 
-        log.info("Successfully logged out user: {}", user);
+        log.info("Successfully logged out user: '{}'", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.LOGOUT_RESPONSE_SUCCESS))
             .build();

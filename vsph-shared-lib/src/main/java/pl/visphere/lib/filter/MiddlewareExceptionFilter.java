@@ -36,7 +36,7 @@ public class MiddlewareExceptionFilter extends OncePerRequestFilter {
             LocaleContextHolder.setLocale(locale);
             chain.doFilter(req, res);
         } catch (final Exception ex) {
-            log.error("Filter chain exception resolver executed exception. Details: {}", ex.getMessage());
+            log.error("Filter chain exception resolver executed exception. Details: '{}'", ex.getMessage());
             resolver.resolveException(req, res, null, ex);
         }
     }
