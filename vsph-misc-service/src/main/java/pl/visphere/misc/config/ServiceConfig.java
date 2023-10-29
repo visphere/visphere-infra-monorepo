@@ -6,19 +6,13 @@ package pl.visphere.misc.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
-import pl.visphere.lib.jwt.JwtService;
+import pl.visphere.lib.AbstractBaseServiceBeans;
 
 @Configuration
-class ServiceConfig {
+class ServiceConfig extends AbstractBaseServiceBeans {
     @Bean
     RestTemplate restTemplate() {
         return new RestTemplate();
-    }
-
-    @Bean
-    JwtService jwtService(Environment environment) {
-        return new JwtService(environment);
     }
 }
