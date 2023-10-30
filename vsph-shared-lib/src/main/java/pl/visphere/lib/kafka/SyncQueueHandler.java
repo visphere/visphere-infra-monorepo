@@ -25,6 +25,8 @@ import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 @Slf4j
 public class SyncQueueHandler {
@@ -63,7 +65,7 @@ public class SyncQueueHandler {
             record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes()));
 
             final RequestReplyFuture<String, Object, Object> future = replyingKafkaTemplate.sendAndReceive(record);
-            final ConsumerRecord<String, Object> response = future.get();
+            final ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
             final KafkaNullableResponseWrapper resp = (KafkaNullableResponseWrapper) response.value();
 
             log.info("End sync kafka call into '{}' with response: '{}'", decodedTopic, resp);
@@ -78,7 +80,7 @@ public class SyncQueueHandler {
                 responseObject = ResponseObject.IS_INSTANTIATED;
             }
             return Optional.of(new NullableObjectWrapper<>(responseObject, payload));
-        } catch (ExecutionException | InterruptedException ex) {
+        } catch (ExecutionException | InterruptedException | TimeoutException ex) {
             log.error("Unexpected issue during sync call. Cause '{}'", ex.getMessage());
             return Optional.empty();
         }
