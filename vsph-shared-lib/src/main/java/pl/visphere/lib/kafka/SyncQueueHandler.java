@@ -15,6 +15,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
+import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.requestreply.RequestReplyFuture;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -87,8 +88,9 @@ public class SyncQueueHandler {
         final String groupId = environment.getProperty("visphere.kafka.group-id", "default-group");
         final String[] replyTopics = QueueTopic.getAllReplyTopics(environment);
         final ConcurrentMessageListenerContainer<String, Object> replyContainer = factory.createContainer(replyTopics);
-        replyContainer.getContainerProperties().setMissingTopicsFatal(false);
-        replyContainer.getContainerProperties().setGroupId(groupId);
+        final ContainerProperties props = replyContainer.getContainerProperties();
+        props.setMissingTopicsFatal(false);
+        props.setGroupId(groupId);
         log.info("Fabricated reply templates for '{}': '{}'", groupId, replyTopics);
         return new ReplyingKafkaTemplate<>(pf, replyContainer);
     }

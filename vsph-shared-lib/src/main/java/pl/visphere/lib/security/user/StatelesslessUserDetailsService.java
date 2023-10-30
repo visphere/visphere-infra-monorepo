@@ -13,7 +13,7 @@ import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.SyncQueueHandler;
 import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
-import pl.visphere.lib.kafka.payload.UserDetailsResDto;
+import pl.visphere.lib.kafka.payload.auth.CheckUserResDto;
 
 @RequiredArgsConstructor
 public class StatelesslessUserDetailsService implements UserDetailsService {
@@ -21,18 +21,18 @@ public class StatelesslessUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserDetailsResDto userDetails;
+        CheckUserResDto resDto;
         if (username == null) {
             throw new UsernameNotFoundException(StringUtils.EMPTY);
         }
         try {
-            userDetails = syncQueueHandler
-                .sendWithBlockThread(QueueTopic.CHECK_USER, username, UserDetailsResDto.class)
+            resDto = syncQueueHandler
+                .sendWithBlockThread(QueueTopic.CHECK_USER, username, CheckUserResDto.class)
                 .map(NullableObjectWrapper::content)
                 .orElseThrow(RuntimeException::new);
         } catch (GenericRestException ignored) {
             throw new UsernameNotFoundException(StringUtils.EMPTY);
         }
-        return new AuthUserDetails(userDetails);
+        return new AuthUserDetails(resDto);
     }
 }

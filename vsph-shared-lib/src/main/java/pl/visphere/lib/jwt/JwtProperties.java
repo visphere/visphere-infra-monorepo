@@ -14,7 +14,7 @@ public enum JwtProperties implements GenericProperty {
     JWT_ISSUER("issuer"),
     JWT_AUDIENCE("audience"),
     JWT_ACCESS_LIFE_MINUTES("access.life-minutes"),
-    JWT_REFRESH_LIFE_DAYS("refresh.life-days");
+    JWT_REFRESH_LIFE_HOURS("refresh.life-hours");
 
     private final String key;
 

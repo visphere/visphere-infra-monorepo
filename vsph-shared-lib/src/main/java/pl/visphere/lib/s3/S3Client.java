@@ -39,7 +39,7 @@ public class S3Client {
             .build();
         try {
             final List<String> buckets = client.listBuckets().stream().map(Bucket::getName).toList();
-            log.info("Successfully connected with S3 service. Found buckets: {}", buckets);
+            log.info("Successfully connected with S3 service. Found buckets: '{}'", buckets);
         } catch (AmazonServiceException ex) {
             log.error("Unable to connect with S3 service. Cause: {}", ex.getMessage());
         }
