@@ -31,8 +31,8 @@ import pl.visphere.lib.jwt.JwtException;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.SyncQueueHandler;
-import pl.visphere.lib.kafka.payload.AccountDetailsResDto;
 import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
+import pl.visphere.lib.kafka.payload.account.AccountDetailsResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
 import java.time.ZonedDateTime;

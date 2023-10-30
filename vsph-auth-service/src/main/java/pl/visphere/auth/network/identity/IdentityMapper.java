@@ -7,7 +7,7 @@ package pl.visphere.auth.network.identity;
 import org.springframework.stereotype.Component;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.network.identity.dto.LoginResDto;
-import pl.visphere.lib.kafka.payload.AccountDetailsResDto;
+import pl.visphere.lib.kafka.payload.account.AccountDetailsResDto;
 
 @Component
 class IdentityMapper {

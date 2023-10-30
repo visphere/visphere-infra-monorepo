@@ -6,12 +6,11 @@ package pl.visphere.account.network.create;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import pl.visphere.account.domain.account.AccountEntity;
 import pl.visphere.account.domain.account.AccountRepository;
+import pl.visphere.account.exception.AccountException;
 import pl.visphere.account.i18n.LocaleSet;
 import pl.visphere.account.network.create.dto.ActivateAccountReqDto;
 import pl.visphere.account.network.create.dto.ActivateAccountResDto;
@@ -20,10 +19,14 @@ import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.SyncQueueHandler;
-import pl.visphere.lib.kafka.payload.GenerateDefaultUserProfileReqDto;
-import pl.visphere.lib.kafka.payload.GenerateOtaAndSendReqDto;
 import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
-import pl.visphere.lib.kafka.payload.PersistUserReqDto;
+import pl.visphere.lib.kafka.payload.SendTokenEmailReqDto;
+import pl.visphere.lib.kafka.payload.auth.ActivateUserReqDto;
+import pl.visphere.lib.kafka.payload.auth.ActivateUserResDto;
+import pl.visphere.lib.kafka.payload.auth.CreateUserReqDto;
+import pl.visphere.lib.kafka.payload.auth.CreateUserResDto;
+import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileResDto;
 
 @Slf4j
 @Service
@@ -37,39 +40,24 @@ class CreateAccountServiceImpl implements CreateAccountService {
     private final AccountRepository accountRepository;
 
     @Override
-    @CacheEvict(cacheNames = { "user_by_id", "user_by_username_or_email", "user_exist_by_username_or_email" },
-        allEntries = true)
     public BaseMessageResDto createNew(CreateAccountReqDto reqDto) {
-        final PersistUserReqDto persistUserReqDto = modelMapper.map(reqDto, PersistUserReqDto.class);
+        final CreateUserReqDto createUserReqDto = modelMapper.map(reqDto, CreateUserReqDto.class);
 
-        final Long persistUserId = syncQueueHandler
-            .sendWithBlockThread(QueueTopic.PERSIST_USER, persistUserReqDto, Long.class)
+        final CreateUserResDto resDto = syncQueueHandler
+            .sendWithBlockThread(QueueTopic.CREATE_USER, createUserReqDto, CreateUserResDto.class)
             .map(NullableObjectWrapper::content)
             .orElseThrow(RuntimeException::new);
 
-        final GenerateDefaultUserProfileReqDto profileReqDto = GenerateDefaultUserProfileReqDto.builder()
-            .initials(new char[]{ reqDto.getFirstName().charAt(0), reqDto.getLastName().charAt(0) })
-            .userId(persistUserId)
-            .build();
-
-        final String randomImageColor = syncQueueHandler
-            .sendWithBlockThread(QueueTopic.GENERATE_DEFAULT_USER_PROFILE, profileReqDto, String.class)
-            .map(NullableObjectWrapper::content)
-            .orElseThrow(RuntimeException::new);
-
-        final GenerateOtaAndSendReqDto otaReqDto = modelMapper.map(reqDto, GenerateOtaAndSendReqDto.class);
-        otaReqDto.setFullName(reqDto.getFirstName() + StringUtils.SPACE + reqDto.getLastName());
+        final SendTokenEmailReqDto emailReqDto = createAccountMapper.mapToSendTokenEmailReq(reqDto, resDto);
 
         syncQueueHandler
-            .sendWithBlockThread(QueueTopic.GENERATE_OTA_ACTIVATE_ACCOUNT, otaReqDto, Boolean.class)
+            .sendWithBlockThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, emailReqDto, Object.class)
             .orElseThrow(RuntimeException::new);
 
-        final AccountEntity account = createAccountMapper
-            .mapToAccountEntity(reqDto, persistUserId, randomImageColor);
-
+        final AccountEntity account = createAccountMapper.mapToAccountEntity(reqDto, resDto.userId());
         accountRepository.save(account);
 
-        log.info("Successfully created new user account: '{}'", account);
+        log.info("Successfully created user account: '{}'", account);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.CREATE_ACCOUNT_RESPONSE_SUCCESS))
             .build();
@@ -77,11 +65,38 @@ class CreateAccountServiceImpl implements CreateAccountService {
 
     @Override
     public ActivateAccountResDto activate(String token, ActivateAccountReqDto reqDto) {
-        // activate created account via email message
+        final ActivateUserReqDto activateUserReqDto = ActivateUserReqDto.builder()
+            .token(token)
+            .emailAddress(reqDto.getEmailAddress())
+            .build();
 
+        final ActivateUserResDto resDto = syncQueueHandler
+            .sendWithBlockThread(QueueTopic.ACTIVATE_USER, activateUserReqDto, ActivateUserResDto.class)
+            .map(NullableObjectWrapper::content)
+            .orElseThrow(RuntimeException::new);
+
+        final AccountEntity account = accountRepository.findByUserId(resDto.userId())
+            .orElseThrow(() -> new AccountException.AccountNotExistException(resDto.userId()));
+
+        final DefaultUserProfileReqDto profileReqDto = DefaultUserProfileReqDto.builder()
+            .initials(new char[]{ account.getFirstName().charAt(0), account.getLastName().charAt(0) })
+            .userId(resDto.userId())
+            .username(resDto.username())
+            .build();
+
+        final DefaultUserProfileResDto userProfileResDto = syncQueueHandler
+            .sendWithBlockThread(QueueTopic.GENERATE_DEFAULT_USER_PROFILE, profileReqDto, DefaultUserProfileResDto.class)
+            .map(NullableObjectWrapper::content)
+            .orElseThrow(RuntimeException::new);
+
+        account.setProfileColor(userProfileResDto.color());
+        account.setProfileImageUuid(userProfileResDto.uuid());
+        accountRepository.save(account);
+
+        log.info("Successfully activated account for user: '{}'", resDto.username());
         return ActivateAccountResDto.builder()
             .message(i18nService.getMessage(LocaleSet.ACTIVATE_ACCOUNT_RESPONSE_SUCCESS))
-            .mfaEnabled(false)
+            .mfaEnabled(resDto.isMfaEnabled())
             .build();
     }
 

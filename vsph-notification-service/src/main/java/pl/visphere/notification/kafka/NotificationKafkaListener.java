@@ -10,8 +10,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import pl.visphere.lib.kafka.SyncListenerHandler;
-import pl.visphere.lib.kafka.payload.CheckOtaReqDto;
-import pl.visphere.lib.kafka.payload.GenerateOtaAndSendReqDto;
+import pl.visphere.lib.kafka.payload.SendTokenEmailReqDto;
 
 @Slf4j
 @Component
@@ -19,30 +18,21 @@ import pl.visphere.lib.kafka.payload.GenerateOtaAndSendReqDto;
 class NotificationKafkaListener {
     private final SyncListenerHandler syncListenerHandler;
 
-    @KafkaListener(topics = "${visphere.kafka.topic.generate-ota-activate-account}")
-    void generateOtaAndSendForActivateAccount(Message<GenerateOtaAndSendReqDto> payload) {
+    @KafkaListener(topics = "${visphere.kafka.topic.email-activate-account}")
+    void sendForActivateAccount(Message<SendTokenEmailReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, reqDto -> {
-            // generate ota token, save in db, send email message
+            // send email message
 
-            return true;
+            return null;
         });
     }
 
-    @KafkaListener(topics = "${visphere.kafka.topic.generate-ota-change-password}")
-    void generateOtaAndSendForChangePassword(Message<GenerateOtaAndSendReqDto> payload) {
+    @KafkaListener(topics = "${visphere.kafka.topic.email-change-password}")
+    void sendForChangePassword(Message<SendTokenEmailReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, reqDto -> {
-            // generate ota token, save in db, send email message
+            // send email message
 
-            return true;
-        });
-    }
-
-    @KafkaListener(topics = "${visphere.kafka.topic.check-ota}")
-    void checkIfOtaExist(Message<CheckOtaReqDto> payload) {
-        syncListenerHandler.parseAndSendResponse(payload, reqDto -> {
-            // check, if ota is valid (exist, not expired and valid for checking purpose)
-
-            return true;
+            return null;
         });
     }
 }

@@ -11,5 +11,6 @@
 
   <!-- datatables migrations -->
   <include file="migrations/2023-10-22_0000000_create-accounts-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-10-29_0000000_change-color-column.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

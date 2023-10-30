@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.visphere.lib.kafka.payload.UserDetailsResDto;
+import pl.visphere.lib.kafka.payload.auth.CheckUserResDto;
 
 import java.util.Collection;
 import java.util.Set;
@@ -22,16 +22,12 @@ public class AuthUserDetails implements UserDetails {
     private final String username;
     private final String password;
     private final Set<AppGrantedAuthority> authorities;
-    private final boolean isNonLocked;
-    private final boolean isEnabled;
 
-    public AuthUserDetails(UserDetailsResDto resDto) {
-        this.id = resDto.id();
-        this.username = resDto.username();
-        this.password = resDto.password();
-        this.authorities = resDto.authorities();
-        this.isNonLocked = resDto.isNonLocked();
-        this.isEnabled = resDto.isEnabled();
+    public AuthUserDetails(CheckUserResDto resDto) {
+        this.id = resDto.getId();
+        this.username = resDto.getUsername();
+        this.password = resDto.getPassword();
+        this.authorities = resDto.getAuthorities();
     }
 
     @Override
@@ -56,7 +52,7 @@ public class AuthUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return isNonLocked;
+        return true;
     }
 
     @Override
@@ -66,6 +62,6 @@ public class AuthUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return true;
     }
 }

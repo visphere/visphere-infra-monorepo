@@ -93,7 +93,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         return isActivated;
     }
 
-    void setActivated(Boolean activated) {
+    public void setActivated(Boolean activated) {
         isActivated = activated;
     }
 

@@ -6,6 +6,7 @@ package pl.visphere.auth.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.exception.AbstractRestException;
 
@@ -30,6 +31,14 @@ public class UserException {
         public UserAlreadyExistException(String username, String emailAddress) {
             super(HttpStatus.BAD_REQUEST, LibLocaleSet.USER_ALREADY_EXIST_EXCEPTION_MESSAGE);
             log.error("Attempt to create user with same username: '{}' or email address: '{}'", username, emailAddress);
+        }
+    }
+
+    @Slf4j
+    public static class UserAlreadyActivatedException extends AbstractRestException {
+        public UserAlreadyActivatedException(UserEntity user) {
+            super(HttpStatus.BAD_REQUEST, LibLocaleSet.USER_ALREADY_ACTIVATED_EXCEPTION_MESSAGE);
+            log.error("Attempt to already activated user: '{}'", user);
         }
     }
 }

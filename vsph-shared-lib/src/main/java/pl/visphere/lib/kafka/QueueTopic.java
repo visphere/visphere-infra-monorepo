@@ -11,17 +11,15 @@ import pl.visphere.lib.Property;
 import java.util.Arrays;
 import java.util.Objects;
 
-import static pl.visphere.lib.kafka.SyncQueueHandler.REPLY_TOPIC_SUFFIX;
-
 @RequiredArgsConstructor
 public enum QueueTopic implements Property {
-    CHECK_USER("check-user"),
     JWT_IS_ON_BLACKLIST("jwt-is-on-blacklist"),
     ACCOUNT_DETAILS("account-details"),
-    PERSIST_USER("persist-user"),
-    GENERATE_OTA_ACTIVATE_ACCOUNT("generate-ota-activate-account"),
-    GENERATE_OTA_CHANGE_PASSWORD("generate-ota-change-password"),
-    CHECK_OTA("check-ota"),
+    CREATE_USER("create-user"),
+    CHECK_USER("check-user"),
+    ACTIVATE_USER("activate-user"),
+    EMAIL_ACTIVATE_ACCOUNT("email-activate-account"),
+    EMAIL_CHANGE_PASSWORD("email-change-password"),
     GENERATE_DEFAULT_USER_PROFILE("generate-default-user-profile");
 
     private final String topicKey;
@@ -34,10 +32,13 @@ public enum QueueTopic implements Property {
 
     public static String[] getAllReplyTopics(Environment environment) {
         return Arrays.stream(values())
-            .filter(key -> key.hasReply)
+            .filter(key -> {
+                final Object replyKey = environment.getProperty("visphere.kafka.reply-topic." + key.topicKey);
+                return key.hasReply && replyKey != null;
+            })
             .map(key -> environment.getProperty("visphere.kafka.topic." + key.topicKey))
             .filter(Objects::nonNull)
-            .map(topic -> topic + REPLY_TOPIC_SUFFIX + SyncQueueHandler.getReplyHash(environment))
+            .map(topic -> topic + SyncQueueHandler.REPLY_TOPIC_SUFFIX + SyncQueueHandler.getReplyHash(environment))
             .toArray(String[]::new);
     }
 

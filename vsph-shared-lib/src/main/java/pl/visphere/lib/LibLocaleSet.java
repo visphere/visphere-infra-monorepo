@@ -20,7 +20,10 @@ public enum LibLocaleSet implements LocaleExtendableSet {
     USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userByIdNotFound"),
     USER_BY_USERNAME_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userByUsernameNotFound"),
     USER_ALREADY_EXIST_EXCEPTION_MESSAGE("vsph.lib.exc.userAlreadyExist"),
-    USER_ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userAccountNotFound");
+    USER_ALREADY_ACTIVATED_EXCEPTION_MESSAGE("vsph.lib.exc.userAlreadyActivated"),
+    USER_ACCOUNT_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userAccountNotFound"),
+    UNABLE_TO_CALL_EXTERNAL_SERVICE_EXCEPTION_MESSAGE("vsph.lib.exc.unableToCallExternalService"),
+    OTA_TOKEN_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.otaTokenNotFound");
 
     private final String holder;
 }

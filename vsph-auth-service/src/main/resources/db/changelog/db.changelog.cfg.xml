@@ -14,6 +14,7 @@
   <include file="migrations/2023-10-22_0000001_create-roles-table.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-10-22_0000002_create-blacklist-jwts-table.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-10-22_0000003_create-refresh-tokens-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-10-29_0000000_create-ota-tokens-table.xml" relativeToChangelogFile="true"/>
 
   <!-- data loaders, common for dev and docker -->
   <include file="loaders/0000000_load-default-roles.xml" relativeToChangelogFile="true"/>

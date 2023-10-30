@@ -28,7 +28,9 @@ public class AccountEntity extends AbstractAuditableEntity implements Serializab
 
     private String lastName;
 
-    private String defaultColor;
+    private String profileColor;
+
+    private String profileImageUuid;
 
     private LocalDate birthDate;
 
@@ -40,7 +42,7 @@ public class AccountEntity extends AbstractAuditableEntity implements Serializab
         return firstName;
     }
 
-    void setFirstName(String firstName) {
+    public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
 
@@ -48,23 +50,31 @@ public class AccountEntity extends AbstractAuditableEntity implements Serializab
         return lastName;
     }
 
-    void setLastName(String lastName) {
+    public void setLastName(String lastName) {
         this.lastName = lastName;
     }
 
-    String getDefaultColor() {
-        return defaultColor;
+    String getProfileColor() {
+        return profileColor;
     }
 
-    void setDefaultColor(String defaultColor) {
-        this.defaultColor = defaultColor;
+    public void setProfileColor(String profileColor) {
+        this.profileColor = profileColor;
+    }
+
+    public String getProfileImageUuid() {
+        return profileImageUuid;
+    }
+
+    public void setProfileImageUuid(String profileImageUuid) {
+        this.profileImageUuid = profileImageUuid;
     }
 
     LocalDate getBirthDate() {
         return birthDate;
     }
 
-    void setBirthDate(LocalDate birthDate) {
+    public void setBirthDate(LocalDate birthDate) {
         this.birthDate = birthDate;
     }
 
@@ -72,7 +82,7 @@ public class AccountEntity extends AbstractAuditableEntity implements Serializab
         return allowNotifs;
     }
 
-    void setAllowNotifs(Boolean allowNotifs) {
+    public void setAllowNotifs(Boolean allowNotifs) {
         this.allowNotifs = allowNotifs;
     }
 
@@ -80,7 +90,7 @@ public class AccountEntity extends AbstractAuditableEntity implements Serializab
         return userId;
     }
 
-    void setUserId(Long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -89,7 +99,7 @@ public class AccountEntity extends AbstractAuditableEntity implements Serializab
         return "{" +
             "firstName=" + firstName +
             ", lastName=" + lastName +
-            ", defaultColor=" + defaultColor +
+            ", profileColor=" + profileColor +
             ", birthDate=" + birthDate +
             ", allowNotifs=" + allowNotifs +
             ", userId=" + userId +
