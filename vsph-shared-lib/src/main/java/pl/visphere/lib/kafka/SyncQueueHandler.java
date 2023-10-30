@@ -5,6 +5,7 @@
 package pl.visphere.lib.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -44,6 +45,7 @@ public class SyncQueueHandler {
         this.factory = factory;
         this.environment = environment;
         this.objectMapper = new ObjectMapper();
+        this.objectMapper.registerModule(new JavaTimeModule());
         this.replyingKafkaTemplate = fabricateTemplate(environment);
         this.replyingKafkaTemplate.start();
     }
