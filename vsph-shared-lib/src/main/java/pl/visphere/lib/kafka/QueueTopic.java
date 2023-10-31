@@ -15,10 +15,12 @@ import java.util.Objects;
 public enum QueueTopic implements Property {
     JWT_IS_ON_BLACKLIST("jwt-is-on-blacklist"),
     CHECK_USER("check-user"),
-    ACTIVATE_USER("activate-user"),
-    EMAIL_ACTIVATE_ACCOUNT("email-activate-account"),
-    EMAIL_CHANGE_PASSWORD("email-change-password"),
-    GENERATE_DEFAULT_USER_PROFILE("generate-default-user-profile");
+    EMAIL_ACTIVATE_ACCOUNT("email-activate-account", false),
+    EMAIL_NEW_ACCOUNT("email-new-account", false),
+    EMAIL_CHANGE_PASSWORD("email-change-password", false),
+    EMAIL_PASSWORD_CHANGED("email-password-changed", false),
+    GENERATE_DEFAULT_USER_PROFILE("generate-default-user-profile"),
+    PROFILE_IMAGE_DETAILS("profile-image-details");
 
     private final String topicKey;
     private final boolean hasReply;
