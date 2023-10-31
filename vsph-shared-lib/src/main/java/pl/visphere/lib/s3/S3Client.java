@@ -13,6 +13,8 @@ import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
+import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3ObjectSummary;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.env.Environment;
 
@@ -72,6 +74,17 @@ public class S3Client {
             .uuid(uuid)
             .fullPath(joiner.toString())
             .build();
+    }
+
+    public void clearObjects(S3Bucket bucket, String resourceDir, String resourcePrefix) {
+        final ObjectListing objects = client.listObjects(bucket.getName(), resourceDir);
+        final List<String> objectKeys = objects.getObjectSummaries().stream()
+            .map(S3ObjectSummary::getKey)
+            .filter(key -> key.contains(resourcePrefix))
+            .toList();
+        for (final String objectKey : objectKeys) {
+            client.deleteObject(bucket.getName(), objectKey);
+        }
     }
 
     private void convertBytesToTempFile(FilePayload payload, Consumer<File> consumer) {
