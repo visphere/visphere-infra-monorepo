@@ -10,5 +10,4 @@ import pl.visphere.lib.security.OtaToken;
 
 public interface OtaTokenService {
     GenerateOtaResDto generate(UserEntity user, OtaToken type);
-    void validate(Long userId, String token, OtaToken type);
 }

@@ -26,6 +26,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class JwtService {
     private static final String BEARER_PREFIX = "Bearer ";
+    private static final String X_REFRESH_TOKEN = "X-RefreshToken";
 
     private final Environment environment;
 
@@ -106,6 +107,14 @@ public class JwtService {
             return bearerToken.substring(BEARER_PREFIX.length());
         }
         return org.apache.commons.lang3.StringUtils.EMPTY;
+    }
+
+    public String extractRefreshFromReq(HttpServletRequest req) {
+        final String refreshToken = req.getHeader(X_REFRESH_TOKEN);
+        if (refreshToken == null) {
+            return org.apache.commons.lang3.StringUtils.EMPTY;
+        }
+        return refreshToken;
     }
 
     private Key getSignedKey() {

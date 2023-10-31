@@ -29,8 +29,11 @@ class IdentityController {
     }
 
     @PostMapping("/login/token")
-    ResponseEntity<LoginResDto> loginViaAccessToken(@LoggedUser AuthUserDetails user) {
-        return ResponseEntity.ok(accessService.loginViaAccessToken(user));
+    ResponseEntity<LoginResDto> loginViaAccessToken(
+        HttpServletRequest req,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(accessService.loginViaAccessToken(req, user));
     }
 
     @PatchMapping("/refresh")
@@ -39,7 +42,10 @@ class IdentityController {
     }
 
     @DeleteMapping("/logout")
-    ResponseEntity<BaseMessageResDto> logout(HttpServletRequest req, @LoggedUser AuthUserDetails user) {
+    ResponseEntity<BaseMessageResDto> logout(
+        HttpServletRequest req,
+        @LoggedUser AuthUserDetails user
+    ) {
         return ResponseEntity.ok(accessService.logout(req, user));
     }
 }

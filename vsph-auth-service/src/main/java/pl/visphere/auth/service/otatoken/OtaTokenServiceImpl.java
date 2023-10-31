@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
 import pl.visphere.auth.domain.user.UserEntity;
-import pl.visphere.auth.exception.OtaTokenException;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.security.OtaToken;
 
@@ -49,17 +48,5 @@ public class OtaTokenServiceImpl implements OtaTokenService {
 
         log.info("Successfully generated and saved ota token: '{}'", resDto);
         return resDto;
-    }
-
-    @Override
-    public void validate(Long userId, String token, OtaToken type) {
-        final OtaTokenEntity otaToken = otaTokenRepository
-            .findTokenByType(token, type, userId)
-            .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
-
-        otaToken.setUsed(true);
-        final OtaTokenEntity updatedOtaToken = otaTokenRepository.save(otaToken);
-
-        log.info("Successfully validated ota token: '{}'", updatedOtaToken);
     }
 }

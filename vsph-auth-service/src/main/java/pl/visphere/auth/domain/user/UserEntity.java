@@ -8,7 +8,6 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.lib.AbstractAuditableEntity;
 
@@ -53,9 +52,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
     )
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @OneToOne(mappedBy = "user", cascade = { CascadeType.PERSIST })
-    private RefreshTokenEntity refreshToken;
-
     public String getUsername() {
         return username;
     }
@@ -72,7 +68,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.emailAddress = emailAddress;
     }
 
-    String getSecondEmailAddress() {
+    public String getSecondEmailAddress() {
         return secondEmailAddress;
     }
 
@@ -136,21 +132,8 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.roles = roles;
     }
 
-    RefreshTokenEntity getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(RefreshTokenEntity refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
     public void addRole(RoleEntity roleEntity) {
         this.roles.add(roleEntity);
-    }
-
-    public void persistRefreshToken(RefreshTokenEntity refreshToken) {
-        this.refreshToken = refreshToken;
-        refreshToken.setUser(this);
     }
 
     @Override
@@ -158,8 +141,8 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         return "{" +
             "username=" + username +
             ", emailAddress=" + emailAddress +
-            ", secondEmailAddress=" + secondEmailAddress +
             ", password=" + password +
+            ", secondEmailAddress=" + secondEmailAddress +
             ", firstName=" + firstName +
             ", lastName=" + lastName +
             ", birthDate=" + birthDate +

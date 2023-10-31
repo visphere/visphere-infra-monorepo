@@ -4,20 +4,27 @@
  */
 package pl.visphere.auth.network.identity;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.network.identity.dto.LoginResDto;
-import pl.visphere.lib.kafka.payload.account.AccountDetailsResDto;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 
 @Component
 class IdentityMapper {
-    LoginResDto mapToLoginResDto(AccountDetailsResDto accountDetails, UserEntity user, String token) {
+    LoginResDto mapToLoginResDto(
+        ProfileImageDetailsResDto profileImageDetails,
+        UserEntity user,
+        String token,
+        String refreshToken
+    ) {
         return LoginResDto.builder()
-            .fullName(accountDetails.fullName())
+            .fullName(user.getFirstName() + StringUtils.SPACE + user.getLastName())
             .username(user.getUsername())
             .emailAddress(user.getEmailAddress())
-            .profileUrl(accountDetails.profileUrl())
+            .profileUrl(profileImageDetails.profileImagePath())
             .accessToken(token)
+            .refreshToken(refreshToken)
             .isActivated(user.getActivated())
             .isMfaEnabled(user.getEnabledMfa())
             .build();

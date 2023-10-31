@@ -6,7 +6,7 @@ package pl.visphere.auth.domain.refreshtoken;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,11 +31,11 @@ public class RefreshTokenEntity extends AbstractAuditableEntity implements Seria
 
     private ZonedDateTime expiringAt;
 
-    @OneToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    String getRefreshToken() {
+    public String getRefreshToken() {
         return refreshToken;
     }
 

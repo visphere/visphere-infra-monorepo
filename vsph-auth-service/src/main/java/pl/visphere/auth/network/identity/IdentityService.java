@@ -14,7 +14,7 @@ import pl.visphere.lib.security.user.AuthUserDetails;
 
 interface IdentityService {
     LoginResDto loginViaPassword(LoginPasswordReqDto reqDto);
-    LoginResDto loginViaAccessToken(AuthUserDetails user);
+    LoginResDto loginViaAccessToken(HttpServletRequest req, AuthUserDetails user);
     RefreshResDto refresh(RefreshReqDto reqDto);
     BaseMessageResDto logout(HttpServletRequest req, AuthUserDetails user);
 }

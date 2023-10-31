@@ -23,9 +23,17 @@ public interface OtaTokenRepository extends JpaRepository<OtaTokenEntity, Long> 
             and e.type = :type
             and u.id = :userId
         """)
-    Optional<OtaTokenEntity> findTokenByType(
+    Optional<OtaTokenEntity> findTokenByTypeAndUserId(
         @Param("token") String token,
         @Param("type") OtaToken type,
         @Param("userId") Long userId
     );
+
+    @Query(value = """
+            from OtaTokenEntity e join fetch e.user where e.token = :token
+            and e.expiredAt > current_timestamp()
+            and e.isUsed = false
+            and e.type = :type
+        """)
+    Optional<OtaTokenEntity> findTokenByType(@Param("token") String token, @Param("type") OtaToken type);
 }
