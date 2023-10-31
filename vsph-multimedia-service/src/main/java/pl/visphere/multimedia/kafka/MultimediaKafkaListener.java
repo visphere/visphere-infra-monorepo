@@ -10,23 +10,23 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import pl.visphere.lib.kafka.SyncListenerHandler;
-import pl.visphere.lib.kafka.payload.GenerateDefaultUserProfileReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
+import pl.visphere.multimedia.service.image.ImageService;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 class MultimediaKafkaListener {
     private final SyncListenerHandler syncListenerHandler;
+    private final ImageService imageService;
 
     @KafkaListener(topics = "${visphere.kafka.topic.generate-default-user-profile}")
-    void generateDefaultUserProfileListener(Message<GenerateDefaultUserProfileReqDto> payload) {
-        syncListenerHandler.parseAndSendResponse(payload, reqDto -> {
-            // generate default initials image, before up get random background color
+    void generateDefaultUserProfileListener(Message<DefaultUserProfileReqDto> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::generateDefaultProfile);
+    }
 
-            final String color = "#ffffff";
-
-            log.info("Successfully generated default profile image for user: '{}' with color: '{}'", reqDto, color);
-            return color;
-        });
+    @KafkaListener(topics = "${visphere.kafka.topic.profile-image-details}")
+    void getProfileImageDetails(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::getProfileImageDetails);
     }
 }

@@ -20,25 +20,16 @@
   <property name="textType" value="text" dbms="mysql,postgresql"/>
   <property name="textType" value="varchar(1000000)" dbms="h2"/>
 
-  <changeSet id="2023-10-22_0000000_create-accounts-table" author="milosz08" context="lq_dev, lq_docker">
-    <createTable tableName="accounts">
+  <changeSet id="2023-10-31_0000000_create-user-account-details" author="milosz08" context="lq_dev, lq_docker">
+    <createTable tableName="account_profiles">
       <column name="id" autoIncrement="true" type="${keyType}">
         <constraints nullable="false" primaryKey="true"/>
       </column>
 
-      <column name="first_name" type="varchar(80)">
+      <column name="profile_color" type="varchar(7)">
         <constraints nullable="false"/>
       </column>
-      <column name="last_name" type="varchar(80)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="default_color" type="varchar(7)">
-        <constraints nullable="false"/>
-      </column>
-      <column name="birth_date" type="date">
-        <constraints nullable="false"/>
-      </column>
-      <column name="allow_notifs" type="boolean">
+      <column name="profile_image_uuid" type="varchar(36)">
         <constraints nullable="false"/>
       </column>
       <column name="user_id" type="${keyType}">

@@ -9,8 +9,9 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-  <!-- datatables migrations -->
-  <include file="migrations/2023-10-22_0000000_create-accounts-table.xml" relativeToChangelogFile="true"/>
-  <include file="migrations/2023-10-29_0000000_change-color-column.xml" relativeToChangelogFile="true"/>
+  <!-- datatables migrations, common for dev and docker -->
+  <include file="migrations/2023-10-31_0000000_create-user-account-details.xml" relativeToChangelogFile="true"/>
+
+  <!-- data loaders, common for dev and docker -->
 
 </databaseChangeLog>
