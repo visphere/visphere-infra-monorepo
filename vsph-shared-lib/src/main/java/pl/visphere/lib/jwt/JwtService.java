@@ -46,7 +46,7 @@ public class JwtService {
 
     public TokenData generateRefreshToken() {
         final Date expirationTime = DateUtils
-            .addHours(new Date(), JwtProperties.JWT_REFRESH_LIFE_HOURS.getValue(environment, Integer.class));
+            .addDays(new Date(), JwtProperties.JWT_REFRESH_LIFE_DAYS.getValue(environment, Integer.class));
         return TokenData.builder()
             .token(UUID.randomUUID().toString())
             .expiredAt(expirationTime)
