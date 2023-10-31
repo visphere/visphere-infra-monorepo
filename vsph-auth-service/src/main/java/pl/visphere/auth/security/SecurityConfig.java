@@ -37,6 +37,9 @@ class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/v1/auth/identity/login").permitAll()
                 .requestMatchers("/api/v1/auth/identity/refresh").permitAll()
+                .requestMatchers("/api/v1/auth/account/new").permitAll()
+                .requestMatchers("/api/v1/auth/account/activate/{token}").permitAll()
+                .requestMatchers("/api/v1/auth/account/activate/resend").permitAll()
                 .requestMatchers("/api/v1/auth/password/renew/request").permitAll()
                 .requestMatchers("/api/v1/auth/password/renew/{token}/verify").permitAll()
                 .requestMatchers("/api/v1/auth/password/renew/resend").permitAll()

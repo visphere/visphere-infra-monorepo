@@ -247,20 +247,6 @@ services:
     networks:
       - visphere-infra-network
 
-  vsph-account-service:
-    extends:
-      file: ./vsph-account-service/docker-compose.yml
-      service: vsph-account-service-template
-    depends_on:
-      - vsph-config-server
-      - vsph-discovery-server
-      - vsph-api-gateway
-      - vsph-postgresql-db
-      - vsph-redis-db
-      - vsph-s3
-    networks:
-      - visphere-infra-network
-
   vsph-auth-service:
     extends:
       file: ./vsph-auth-service/docker-compose.yml

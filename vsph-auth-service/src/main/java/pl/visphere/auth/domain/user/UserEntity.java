@@ -14,6 +14,7 @@ import pl.visphere.lib.AbstractAuditableEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +34,12 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
     private String password;
 
     private String secondEmailAddress;
+
+    private String firstName;
+
+    private String lastName;
+
+    private LocalDate birthDate;
 
     private Boolean enabledMfa;
 
@@ -79,6 +86,30 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public Boolean getEnabledMfa() {
@@ -129,6 +160,9 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
             ", emailAddress=" + emailAddress +
             ", secondEmailAddress=" + secondEmailAddress +
             ", password=" + password +
+            ", firstName=" + firstName +
+            ", lastName=" + lastName +
+            ", birthDate=" + birthDate +
             ", enabledMfa=" + enabledMfa +
             ", isActivated=" + isActivated +
             '}';

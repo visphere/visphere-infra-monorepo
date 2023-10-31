@@ -4,10 +4,8 @@
  */
 package pl.visphere.auth.service.user;
 
-import pl.visphere.lib.kafka.payload.auth.*;
+import pl.visphere.lib.kafka.payload.auth.CheckUserResDto;
 
 public interface UserService {
-    CreateUserResDto createUser(CreateUserReqDto reqDto);
-    ActivateUserResDto activateUser(ActivateUserReqDto reqDto);
     CheckUserResDto checkUser(String username);
 }

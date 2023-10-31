@@ -24,7 +24,6 @@
     <module>vsph-api-gateway</module>
     <module>vsph-discovery-server</module>
     <module>vsph-shared-lib</module>
-    <module>vsph-account-service</module>
     <module>vsph-config-server</module>
     <module>vsph-auth-service</module>
     <module>vsph-misc-service</module>

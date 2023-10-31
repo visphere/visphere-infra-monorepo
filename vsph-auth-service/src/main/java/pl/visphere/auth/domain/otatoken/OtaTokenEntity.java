@@ -71,7 +71,7 @@ public class OtaTokenEntity extends AbstractAuditableEntity implements Serializa
         this.type = type;
     }
 
-    UserEntity getUser() {
+    public UserEntity getUser() {
         return user;
     }
 

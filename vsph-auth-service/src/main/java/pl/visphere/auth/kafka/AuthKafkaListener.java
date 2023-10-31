@@ -12,8 +12,6 @@ import org.springframework.stereotype.Component;
 import pl.visphere.auth.domain.blacklistjwt.BlackListJwtRepository;
 import pl.visphere.auth.service.user.UserService;
 import pl.visphere.lib.kafka.SyncListenerHandler;
-import pl.visphere.lib.kafka.payload.auth.ActivateUserReqDto;
-import pl.visphere.lib.kafka.payload.auth.CreateUserReqDto;
 
 @Slf4j
 @Component
@@ -27,16 +25,6 @@ class AuthKafkaListener {
     @KafkaListener(topics = "${visphere.kafka.topic.jwt-is-on-blacklist}")
     void jwtIsOnBlaclistListener(Message<String> token) {
         syncListenerHandler.parseAndSendResponse(token, blackListJwtRepository::existsByExpiredJwt);
-    }
-
-    @KafkaListener(topics = "${visphere.kafka.topic.create-user}")
-    void createUserListener(Message<CreateUserReqDto> reqDto) {
-        syncListenerHandler.parseAndSendResponse(reqDto, userService::createUser);
-    }
-
-    @KafkaListener(topics = "${visphere.kafka.topic.activate-user}")
-    void activateUserListener(Message<ActivateUserReqDto> reqDto) {
-        syncListenerHandler.parseAndSendResponse(reqDto, userService::activateUser);
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.check-user}")

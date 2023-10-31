@@ -21,7 +21,15 @@ public enum LocaleSet implements LocaleExtendableSet {
     CHANGE_PASSWORD_RESPONSE_ERROR("vsph.i18n.changePassword.res.error"),
     CHANGE_PASSWORD_RESPONSE_SUCCESS("vsph.i18n.changePassword.res.success"),
     LOGOUT_RESPONSE_ERROR("vsph.i18n.logout.res.error"),
-    LOGOUT_RESPONSE_SUCCESS("vsph.i18n.logout.res.success");
-
+    LOGOUT_RESPONSE_SUCCESS("vsph.i18n.logout.res.success"),
+    REFRESH_TOKEN_NOT_FOUND_EXCEPTION_MESSAGE("vsph.auth.exc.refreshTokenNotFound"),
+    REFRESH_TOKEN_EXPIRED_EXCEPTION_MESSAGE("vsph.auth.exc.refreshTokenExpired"),
+    CREATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.createAccount.res.success"),
+    CREATE_ACCOUNT_RESPONSE_ERROR("vsph.i18n.createAccount.res.error"),
+    ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.activateAccount.res.success"),
+    ACTIVATE_ACCOUNT_RESPONSE_ERROR("vsph.i18n.activateAccount.res.error"),
+    RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.resendActivateAccount.res.success"),
+    RESEND_ACTIVATE_ACCOUNT_RESPONSE_ERROR("vsph.i18n.resendActivateAccount.res.error");
+    
     private final String holder;
 }
