@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import pl.visphere.lib.AbstractBaseServiceBeans;
 import pl.visphere.lib.s3.S3Client;
+import pl.visphere.lib.s3.S3Helper;
 
 @Configuration
 class ServiceConfig extends AbstractBaseServiceBeans {
@@ -17,5 +18,10 @@ class ServiceConfig extends AbstractBaseServiceBeans {
         final S3Client s3Client = new S3Client(environment);
         s3Client.initialize();
         return s3Client;
+    }
+
+    @Bean
+    S3Helper s3Helper(Environment environment) {
+        return new S3Helper(environment);
     }
 }

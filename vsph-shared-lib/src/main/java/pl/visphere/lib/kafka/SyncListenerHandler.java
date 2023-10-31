@@ -16,6 +16,7 @@ import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.exception.AbstractRestException;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 @RequiredArgsConstructor
@@ -55,5 +56,12 @@ public class SyncListenerHandler {
         final ProducerRecord<String, Object> record = new ProducerRecord<>(reply, null, key, responseWrapper);
         record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, messageId));
         kafkaTemplate.send(record);
+    }
+
+    public <T> void parseAndSendResponse(Message<T> message, Consumer<T> callback) {
+        parseAndSendResponse(message, data -> {
+            callback.accept(data);
+            return null;
+        });
     }
 }

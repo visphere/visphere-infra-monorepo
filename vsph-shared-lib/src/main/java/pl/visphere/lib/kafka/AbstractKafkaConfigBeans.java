@@ -21,6 +21,14 @@ public abstract class AbstractKafkaConfigBeans {
     }
 
     @Bean
+    AsyncQueueHandler asyncQueueHandler(
+        Environment environment,
+        KafkaTemplate<String, Object> kafkaTemplate
+    ) {
+        return new AsyncQueueHandler(kafkaTemplate, environment);
+    }
+    
+    @Bean
     SyncListenerHandler syncListenerHandler(KafkaTemplate<String, Object> kafkaTemplate) {
         return new SyncListenerHandler(kafkaTemplate);
     }

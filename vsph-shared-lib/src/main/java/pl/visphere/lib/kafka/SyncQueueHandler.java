@@ -86,6 +86,16 @@ public class SyncQueueHandler {
         }
     }
 
+    public void sendEmptyWithBlockThread(QueueTopic topic, Object data) {
+        sendWithBlockThread(topic, data, Object.class);
+    }
+
+    public <R> R sendNotNullWithBlockThread(QueueTopic topic, Object data, Class<R> returnClazz) {
+        return sendWithBlockThread(topic, data, returnClazz)
+            .map(NullableObjectWrapper::content)
+            .orElseThrow(RuntimeException::new);
+    }
+
     private ReplyingKafkaTemplate<String, Object, Object> fabricateTemplate(Environment environment) {
         final String groupId = environment.getProperty("visphere.kafka.group-id", "default-group");
         final String[] replyTopics = QueueTopic.getAllReplyTopics(environment);
