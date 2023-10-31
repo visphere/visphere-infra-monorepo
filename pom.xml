@@ -3,8 +3,8 @@
   ~ Copyright (c) 2023 by Visphere & Vsph Technologies
   ~ Originally developed by Miłosz Gilga <https://miloszgilga.pl>
   -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
@@ -25,10 +25,11 @@
     <module>vsph-discovery-server</module>
     <module>vsph-shared-lib</module>
     <module>vsph-config-server</module>
-    <module>vsph-auth-service</module>
-    <module>vsph-misc-service</module>
-    <module>vsph-notification-service</module>
-    <module>vsph-multimedia-service</module>
+    <module>vsph-m-auth-service</module>
+    <module>vsph-m-misc-service</module>
+    <module>vsph-m-notification-service</module>
+    <module>vsph-m-multimedia-service</module>
+    <module>vsph-m-sphere-service</module>
   </modules>
 
   <properties>

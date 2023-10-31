@@ -247,10 +247,10 @@ services:
     networks:
       - visphere-infra-network
 
-  vsph-auth-service:
+  vsph-m-auth-service:
     extends:
-      file: ./vsph-auth-service/docker-compose.yml
-      service: vsph-auth-service-template
+      file: ./vsph-m-auth-service/docker-compose.yml
+      service: vsph-m-auth-service-template
     depends_on:
       - vsph-config-server
       - vsph-discovery-server
@@ -261,37 +261,59 @@ services:
     networks:
       - visphere-infra-network
 
-  vsph-misc-service:
+  vsph-m-misc-service:
     extends:
-      file: ./vsph-misc-service/docker-compose.yml
-      service: vsph-misc-service-template
+      file: ./vsph-m-misc-service/docker-compose.yml
+      service: vsph-m-misc-service-template
     depends_on:
       - vsph-config-server
       - vsph-discovery-server
       - vsph-api-gateway
-    networks:
-      - visphere-infra-network
-
-  vsph-multimedia-service:
-    extends:
-      file: ./vsph-multimedia-service/docker-compose.yml
-      service: vsph-multimedia-service-template
-    depends_on:
-      - vsph-config-server
-      - vsph-discovery-server
-      - vsph-api-gateway
+      - vsph-postgresql-db
+      - vsph-redis-db
       - vsph-s3
     networks:
       - visphere-infra-network
 
-  vsph-notification-service:
+  vsph-m-multimedia-service:
     extends:
-      file: ./vsph-notification-service/docker-compose.yml
-      service: vsph-notification-service-template
+      file: ./vsph-m-multimedia-service/docker-compose.yml
+      service: vsph-m-multimedia-service-template
     depends_on:
       - vsph-config-server
       - vsph-discovery-server
       - vsph-api-gateway
+      - vsph-postgresql-db
+      - vsph-redis-db
+      - vsph-s3
+    networks:
+      - visphere-infra-network
+
+  vsph-m-notification-service:
+    extends:
+      file: ./vsph-m-notification-service/docker-compose.yml
+      service: vsph-m-notification-service-template
+    depends_on:
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
+      - vsph-postgresql-db
+      - vsph-redis-db
+      - vsph-s3
+    networks:
+      - visphere-infra-network
+
+  vsph-m-shpere-service:
+    extends:
+      file: ./vsph-m-sphere-service/docker-compose.yml
+      service: vsph-m-sphere-service-template
+    depends_on:
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
+      - vsph-postgresql-db
+      - vsph-redis-db
+      - vsph-s3
     networks:
       - visphere-infra-network
 
