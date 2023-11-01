@@ -5,6 +5,8 @@
 package pl.visphere.multimedia.domain.accountprofile;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,13 +29,16 @@ public class AccountProfileEntity extends AbstractAuditableEntity implements Ser
 
     private String profileImageUuid;
 
+    @Enumerated(EnumType.STRING)
+    private ImageType imageType;
+
     private Long userId;
 
     public String getProfileColor() {
         return profileColor;
     }
 
-    void setProfileColor(String profileColor) {
+    public void setProfileColor(String profileColor) {
         this.profileColor = profileColor;
     }
 
@@ -41,8 +46,16 @@ public class AccountProfileEntity extends AbstractAuditableEntity implements Ser
         return profileImageUuid;
     }
 
-    void setProfileImageUuid(String profileImageUuid) {
+    public void setProfileImageUuid(String profileImageUuid) {
         this.profileImageUuid = profileImageUuid;
+    }
+
+    public ImageType getImageType() {
+        return imageType;
+    }
+
+    public void setImageType(ImageType imageType) {
+        this.imageType = imageType;
     }
 
     Long getUserId() {
@@ -58,6 +71,7 @@ public class AccountProfileEntity extends AbstractAuditableEntity implements Ser
         return "{" +
             "profileColor=" + profileColor +
             ", profileImageUuid=" + profileImageUuid +
+            ", imageType=" + imageType +
             ", userId=" + userId +
             '}';
     }

@@ -4,13 +4,14 @@
   ~ Originally developed by Miłosz Gilga <https://miloszgilga.pl>
   -->
 <databaseChangeLog
-  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <!-- datatables migrations, common for dev and docker -->
   <include file="migrations/2023-10-31_0000000_create-user-account-details.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-11-01_0000000_add-image-type-column.xml" relativeToChangelogFile="true"/>
 
   <!-- data loaders, common for dev and docker -->
 

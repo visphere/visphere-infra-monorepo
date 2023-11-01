@@ -12,6 +12,7 @@ import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.s3.*;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileEntity;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileRepository;
+import pl.visphere.multimedia.domain.accountprofile.ImageType;
 import pl.visphere.multimedia.exception.AccountProfileException;
 import pl.visphere.multimedia.processing.drawer.InitialsDrawer;
 
@@ -42,6 +43,7 @@ public class ImageServiceImpl implements ImageService {
         final AccountProfileEntity accountProfile = AccountProfileEntity.builder()
             .profileColor(randomColor)
             .profileImageUuid(res.uuid())
+            .imageType(ImageType.DEFAULT)
             .userId(reqDto.userId())
             .build();
 
