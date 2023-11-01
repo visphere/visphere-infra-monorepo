@@ -7,7 +7,7 @@ package pl.visphere.multimedia.processing;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import pl.visphere.multimedia.processing.drawer.GravatarDrawer;
+import pl.visphere.multimedia.processing.drawer.IdenticonDrawer;
 import pl.visphere.multimedia.processing.drawer.ImageDrawer;
 import pl.visphere.multimedia.processing.drawer.InitialsDrawer;
 
@@ -17,8 +17,8 @@ public class ProcessingBeansConfiguration {
     private final ImageProperties imageProperties;
 
     @Bean
-    GravatarDrawer gravatarDrawer() {
-        return new GravatarDrawer(imageProperties);
+    IdenticonDrawer identiconDrawer() {
+        return new IdenticonDrawer(imageProperties);
     }
 
     @Bean

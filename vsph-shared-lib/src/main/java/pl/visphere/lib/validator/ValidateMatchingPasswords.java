@@ -15,6 +15,6 @@ import java.lang.annotation.*;
 @Documented
 public @interface ValidateMatchingPasswords {
     String message();
-    Class<?>[] groups() default {};
-    Class<? extends Payload>[] payload() default {};
+    Class<?>[] groups() default { };
+    Class<? extends Payload>[] payload() default { };
 }

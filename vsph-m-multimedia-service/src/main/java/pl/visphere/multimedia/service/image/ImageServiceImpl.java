@@ -28,10 +28,10 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public void generateDefaultProfile(DefaultUserProfileReqDto reqDto) {
         final String randomColor = initialsDrawer.getRandomColor();
-        final byte[] imageData = initialsDrawer.drawImage(reqDto.username(), reqDto.initials(), randomColor);
+        final byte[] imageData = initialsDrawer.drawImage(reqDto.initials(), randomColor);
 
         final FilePayload filePayload = FilePayload.builder()
-            .name("profile")
+            .prefix(S3ResourcePrefix.PROFILE)
             .data(imageData)
             .extension(FileExtension.JPEG)
             .build();

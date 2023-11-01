@@ -63,7 +63,7 @@ public class S3Client {
 
     public InsertedObjectRes putObject(S3Bucket bucket, String resourceDir, FilePayload payload) {
         final String uuid = UUID.randomUUID().toString();
-        final String fileName = String.format("%s-%s.%s", payload.name(), uuid, payload.extension().getExt());
+        final String fileName = String.format("%s-%s.%s", payload.prefix().getPrefix(), uuid, payload.extension().getExt());
         final String filePath = resourceDir + "/" + fileName;
         convertBytesToTempFile(payload, file -> client.putObject(bucket.getName(), filePath, file));
         final StringJoiner joiner = new StringJoiner("/")
@@ -76,21 +76,29 @@ public class S3Client {
             .build();
     }
 
-    public void clearObjects(S3Bucket bucket, String resourceDir, String resourcePrefix) {
+    public InsertedObjectRes putObject(S3Bucket bucket, Long resourceDir, FilePayload payload) {
+        return putObject(bucket, String.valueOf(resourceDir), payload);
+    }
+
+    public void clearObjects(S3Bucket bucket, String resourceDir, S3ResourcePrefix resourcePrefix) {
         final ObjectListing objects = client.listObjects(bucket.getName(), resourceDir);
         final List<String> objectKeys = objects.getObjectSummaries().stream()
             .map(S3ObjectSummary::getKey)
-            .filter(key -> key.contains(resourcePrefix))
+            .filter(key -> key.contains(resourcePrefix.getPrefix()))
             .toList();
         for (final String objectKey : objectKeys) {
             client.deleteObject(bucket.getName(), objectKey);
         }
     }
 
+    public void clearObjects(S3Bucket bucket, Long resourceDir, S3ResourcePrefix resourcePrefix) {
+        clearObjects(bucket, String.valueOf(resourceDir), resourcePrefix);
+    }
+
     private void convertBytesToTempFile(FilePayload payload, Consumer<File> consumer) {
         File tempFile = null;
         try {
-            tempFile = File.createTempFile(payload.name(), "." + payload.extension().getExt());
+            tempFile = File.createTempFile(payload.prefix().getPrefix(), "." + payload.extension().getExt());
             Files.write(tempFile.toPath(), payload.data());
             log.info("Successfully created temp file: '{}' and fill with bytes data", tempFile.getName());
             consumer.accept(tempFile);

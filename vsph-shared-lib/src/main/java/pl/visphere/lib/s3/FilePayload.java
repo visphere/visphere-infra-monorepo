@@ -8,7 +8,7 @@ import lombok.Builder;
 
 @Builder
 public record FilePayload(
-    String name,
+    S3ResourcePrefix prefix,
     byte[] data,
     FileExtension extension
 ) {
