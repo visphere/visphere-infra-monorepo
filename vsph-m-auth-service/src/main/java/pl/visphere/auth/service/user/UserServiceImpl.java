@@ -13,6 +13,7 @@ import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.exception.UserException;
 import pl.visphere.lib.kafka.payload.auth.CheckUserResDto;
+import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
 import pl.visphere.lib.security.user.AppGrantedAuthority;
 
 import java.util.Set;
@@ -25,7 +26,7 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
 
     private final UserRepository userRepository;
-    
+
     @Override
     public CheckUserResDto checkUser(String usernameOrEmailAddress) {
         final UserEntity user = userRepository
@@ -40,6 +41,18 @@ public class UserServiceImpl implements UserService {
         resDto.setAuthorities(roles);
 
         log.info("Successfully find user with details: '{}'", resDto);
+        return resDto;
+    }
+
+    @Override
+    public UserDetailsResDto getUserDetails(Long userId) {
+        final UserEntity user = userRepository
+            .findById(userId)
+            .orElseThrow(() -> new UserException.UserNotExistException(userId));
+
+        final UserDetailsResDto resDto = modelMapper.map(user, UserDetailsResDto.class);
+
+        log.info("Successfully find user and map to details: '{}'", resDto);
         return resDto;
     }
 }
