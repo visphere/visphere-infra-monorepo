@@ -15,6 +15,7 @@ import java.util.Objects;
 public enum QueueTopic implements Property {
     JWT_IS_ON_BLACKLIST("jwt-is-on-blacklist"),
     CHECK_USER("check-user"),
+    USER_DETAILS("user-details"),
     EMAIL_ACTIVATE_ACCOUNT("email-activate-account", false),
     EMAIL_NEW_ACCOUNT("email-new-account", false),
     EMAIL_CHANGE_PASSWORD("email-change-password", false),

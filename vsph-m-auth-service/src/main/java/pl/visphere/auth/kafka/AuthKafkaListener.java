@@ -31,4 +31,9 @@ class AuthKafkaListener {
     void checkUserListener(Message<String> username) {
         syncListenerHandler.parseAndSendResponse(username, userService::checkUser);
     }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.user-details}")
+    void userDetailsListener(Message<Long> userId) {
+        syncListenerHandler.parseAndSendResponse(userId, userService::getUserDetails);
+    }
 }
