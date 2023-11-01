@@ -20,4 +20,9 @@ import java.util.List;
 public class ImageProperties {
     private String defaultColor;
     private List<String> colors;
+    private String fontName;
+    private String fontPath;
+    private int fontSize;
+    private int size;
+    private int maxSizeMb;
 }
