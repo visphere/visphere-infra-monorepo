@@ -35,6 +35,7 @@ class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         securityService().configureStatelessSecurity(httpSecurity, "api/v1/multimedia/**")
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/multimedia/profile/color/all").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
