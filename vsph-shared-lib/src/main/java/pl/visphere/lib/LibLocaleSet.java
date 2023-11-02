@@ -11,11 +11,11 @@ import pl.visphere.lib.i18n.LocaleExtendableSet;
 @Getter
 @RequiredArgsConstructor
 public enum LibLocaleSet implements LocaleExtendableSet {
-    MISSING_REQUEST_PARAM_EXCEPTION_MESSAGE("vsph.lib.exc.MissingServletRequestParameterException"),
-    UNKNOW_SERVER_EXCEPTION_MESSAGE("vsph.lib.exc.UnknowServerException"),
-    JWT_INVALID_EXCEPTION_MESSAGE("vsph.lib.exc.JwtIsInvalid"),
-    JWT_EXPIRED_EXCEPTION_MESSAGE("vsph.lib.exc.JwtIsExpired"),
-    SECURITY_AUTHENTICATION_EXCEPTION_MESSAGE("vsph.lib.exc.AuthenticationException"),
+    MISSING_REQUEST_PARAM_EXCEPTION_MESSAGE("vsph.lib.exc.missingServletRequestParameterException"),
+    UNKNOW_SERVER_EXCEPTION_MESSAGE("vsph.lib.exc.unknowServerException"),
+    JWT_INVALID_EXCEPTION_MESSAGE("vsph.lib.exc.jwtIsInvalid"),
+    JWT_EXPIRED_EXCEPTION_MESSAGE("vsph.lib.exc.jwtIsExpired"),
+    SECURITY_AUTHENTICATION_EXCEPTION_MESSAGE("vsph.lib.exc.authenticationException"),
     ROLE_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.roleNotFound"),
     USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userByIdNotFound"),
     USER_BY_USERNAME_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userByUsernameNotFound"),
