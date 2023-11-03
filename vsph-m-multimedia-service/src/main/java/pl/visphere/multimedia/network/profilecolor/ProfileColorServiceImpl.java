@@ -14,11 +14,12 @@ import pl.visphere.lib.kafka.SyncQueueHandler;
 import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
 import pl.visphere.lib.s3.*;
 import pl.visphere.lib.security.user.AuthUserDetails;
+import pl.visphere.multimedia.domain.ImageType;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileEntity;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileRepository;
-import pl.visphere.multimedia.domain.accountprofile.ImageType;
 import pl.visphere.multimedia.dto.MessageWithResourcePathResDto;
 import pl.visphere.multimedia.exception.AccountProfileException;
+import pl.visphere.multimedia.exception.ColorException;
 import pl.visphere.multimedia.i18n.LocaleSet;
 import pl.visphere.multimedia.network.profilecolor.dto.UpdateProfileColorReqDto;
 import pl.visphere.multimedia.processing.ImageProperties;
@@ -68,7 +69,7 @@ public class ProfileColorServiceImpl implements ProfileColorService {
             }
             case IDENTICON -> updatedImage = identiconDrawer
                 .drawImage(user.getUsername(), reqDto.getColor());
-            default -> throw new AccountProfileException.ColorUpdateNotAvailableException(ImageType.CUSTOM);
+            default -> throw new ColorException.ColorUpdateNotAvailableException(ImageType.CUSTOM);
         }
 
         s3Client.clearObjects(S3Bucket.USERS, user.getId(), S3ResourcePrefix.PROFILE);

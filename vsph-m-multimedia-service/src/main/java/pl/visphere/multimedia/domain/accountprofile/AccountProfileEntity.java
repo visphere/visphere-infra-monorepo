@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import pl.visphere.lib.AbstractAuditableEntity;
+import pl.visphere.multimedia.domain.ImageType;
 
 import java.io.Serial;
 import java.io.Serializable;

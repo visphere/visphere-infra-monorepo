@@ -8,8 +8,8 @@ import jakarta.validation.constraints.*;
 import lombok.Getter;
 import lombok.Setter;
 import pl.visphere.lib.RegexConstant;
-import pl.visphere.lib.validator.PasswordValidatorModel;
-import pl.visphere.lib.validator.ValidateMatchingPasswords;
+import pl.visphere.lib.validator.password.PasswordValidatorModel;
+import pl.visphere.lib.validator.password.ValidateMatchingPasswords;
 
 @Getter
 @Setter
