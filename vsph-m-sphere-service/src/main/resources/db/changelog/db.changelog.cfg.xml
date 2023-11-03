@@ -10,5 +10,6 @@
         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
   <!-- datatables migrations, common for dev and docker -->
+  <include file="migrations/2023-11-04_0000000_add-guild-and-guild-links-tables.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>
