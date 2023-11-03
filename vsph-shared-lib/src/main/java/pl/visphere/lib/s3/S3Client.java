@@ -61,18 +61,27 @@ public class S3Client {
         }
     }
 
+    public String createFullResourcePath(S3Bucket bucket, String resourceDir, FilePayload payload, String uuid) {
+        final String fileName = String.format("%s-%s.%s", payload.prefix().getPrefix(), uuid, payload.extension().getExt());
+        final StringJoiner joiner = new StringJoiner("/")
+            .add(cdnBaseUrl)
+            .add(bucket.getName())
+            .add(resourceDir + "/" + fileName);
+        return joiner.toString();
+    }
+
+    public String createFullResourcePath(S3Bucket bucket, Long resourceDir, FilePayload payload, String uuid) {
+        return createFullResourcePath(bucket, String.valueOf(resourceDir), payload, uuid);
+    }
+
     public InsertedObjectRes putObject(S3Bucket bucket, String resourceDir, FilePayload payload) {
         final String uuid = UUID.randomUUID().toString();
         final String fileName = String.format("%s-%s.%s", payload.prefix().getPrefix(), uuid, payload.extension().getExt());
         final String filePath = resourceDir + "/" + fileName;
         convertBytesToTempFile(payload, file -> client.putObject(bucket.getName(), filePath, file));
-        final StringJoiner joiner = new StringJoiner("/")
-            .add(cdnBaseUrl)
-            .add(bucket.getName())
-            .add(filePath);
         return InsertedObjectRes.builder()
             .uuid(uuid)
-            .fullPath(joiner.toString())
+            .fullPath(createFullResourcePath(bucket, resourceDir, payload, uuid))
             .build();
     }
 
