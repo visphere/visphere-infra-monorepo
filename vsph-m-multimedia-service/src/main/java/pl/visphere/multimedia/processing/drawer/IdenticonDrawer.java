@@ -15,8 +15,8 @@ import java.awt.image.BufferedImage;
 
 @Slf4j
 public class IdenticonDrawer extends AbstractImageDrawer<String> {
-    private static final int SECTOR_SIZE = 46;
-    private static final int MARGIN = 10;
+    private static final int SECTOR_SIZE = 34;
+    private static final int MARGIN = 40;
 
     public IdenticonDrawer(ImageProperties imageProperties) {
         super(imageProperties);
@@ -44,16 +44,17 @@ public class IdenticonDrawer extends AbstractImageDrawer<String> {
 
             final BufferedImage bufferedImage = new BufferedImage(size, size, BufferedImage.TYPE_INT_RGB);
             final Graphics2D graphics2D = bufferedImage.createGraphics();
+            final Color background = Color.decode(color);
 
             graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             graphics2D.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-            graphics2D.setColor(Color.WHITE);
+            graphics2D.setColor(background);
             graphics2D.fillRect(0, 0, size, size);
 
             for (int i = 0; i < length; i++) {
                 for (int j = 0; j < length; j++) {
-                    graphics2D.setColor(grid[i][j] % 2 == 0 ? Color.decode(color) : Color.WHITE);
+                    graphics2D.setColor(grid[i][j] % 2 == 0 ? Color.WHITE : background);
                     graphics2D.fillRect(j * SECTOR_SIZE + MARGIN, i * SECTOR_SIZE + MARGIN, SECTOR_SIZE, SECTOR_SIZE);
                 }
             }
