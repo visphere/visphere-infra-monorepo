@@ -49,6 +49,7 @@
     <imgscalr.version>4.2</imgscalr.version>
     <apache.commons.codec.version>1.16.0</apache.commons.codec.version>
     <apache.commons.io.version>2.15.0</apache.commons.io.version>
+    <mustache.version>0.9.10</mustache.version>
     <!-- End of libs versions section -->
   </properties>
 
@@ -171,6 +172,11 @@
         <groupId>commons-io</groupId>
         <artifactId>commons-io</artifactId>
         <version>${apache.commons.io.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.spullara.mustache.java</groupId>
+        <artifactId>compiler</artifactId>
+        <version>${mustache.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

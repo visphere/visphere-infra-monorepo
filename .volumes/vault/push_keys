@@ -11,19 +11,19 @@ mounted_env_path="../../.env"
 secret_name="visphere"
 
 get_env_variable() {
-    variable_name=$1
-    if [ -f "$mounted_env_path" ]; then
-        while IFS="=" read -r name value; do
-            if [ "$name" = "$variable_name" ]; then
-                echo "$value" | tr -d '\r'
-                return
-            fi
-        done <"$mounted_env_path"
-    fi
-    echo ""
+  variable_name=$1
+  if [ -f "$mounted_env_path" ]; then
+    while IFS="=" read -r name value; do
+      if [ "$name" = "$variable_name" ]; then
+        echo "$value" | tr -d '\r'
+        return
+      fi
+    done <"$mounted_env_path"
+  fi
+  echo ""
 }
 
-vault operator unseal "$(get_env_variable "VSPH_VAULT_UNSEAL_KEY")="
+vault operator unseal "$(get_env_variable "VSPH_VAULT_UNSEAL_KEY")"
 
 vault_token="$(get_env_variable "VSPH_VAULT_ROOT_TOKEN")"
 export VAULT_TOKEN=$vault_token
@@ -31,28 +31,32 @@ export VAULT_TOKEN=$vault_token
 vault secrets enable -path=$secret_name kv
 
 vault kv put "$secret_name/vsph-common" \
-    V_EUREKA_USERNAME="$(get_env_variable "VSPH_EUREKA_USERNAME")" \
-    V_EUREKA_PASSWORD="$(get_env_variable "VSPH_EUREKA_PASSWORD")" \
-    V_POSTGRES_USERNAME="$(get_env_variable "VSPH_POSTGRES_USERNAME")" \
-    V_POSTGRES_PASSWORD="$(get_env_variable "VSPH_POSTGRES_PASSWORD")" \
-    V_REDIS_PASSWORD="$(get_env_variable "VSPH_REDIS_PASSWORD")" \
-    V_S3_USERNAME="$(get_env_variable "VSPH_S3_USERNAME")" \
-    V_S3_PASSWORD="$(get_env_variable "VSPH_S3_PASSWORD")" \
-    V_KAFKA_BROKER_PASSWORD="$(get_env_variable "VSPH_KAFKA_BROKER_PASSWORD")" \
-    V_KAFKA_CLIENT_USERNAME="$(get_env_variable "VSPH_KAFKA_CLIENT_USERNAME")" \
-    V_KAFKA_CLIENT_PASSWORD="$(get_env_variable "VSPH_KAFKA_CLIENT_PASSWORD")" \
-    V_JWT_SECRET_KEY="$(get_env_variable "VSPH_JWT_SECRET_KEY")" \
-    V_JWT_ISSUER="$(get_env_variable "VSPH_JWT_ISSUER")" \
-    V_JWT_AUDIENCE="$(get_env_variable "VSPH_JWT_AUDIENCE")"
+  V_EUREKA_USERNAME="$(get_env_variable "VSPH_EUREKA_USERNAME")" \
+  V_EUREKA_PASSWORD="$(get_env_variable "VSPH_EUREKA_PASSWORD")" \
+  V_POSTGRES_USERNAME="$(get_env_variable "VSPH_POSTGRES_USERNAME")" \
+  V_POSTGRES_PASSWORD="$(get_env_variable "VSPH_POSTGRES_PASSWORD")" \
+  V_REDIS_PASSWORD="$(get_env_variable "VSPH_REDIS_PASSWORD")" \
+  V_S3_USERNAME="$(get_env_variable "VSPH_S3_USERNAME")" \
+  V_S3_PASSWORD="$(get_env_variable "VSPH_S3_PASSWORD")" \
+  V_KAFKA_BROKER_PASSWORD="$(get_env_variable "VSPH_KAFKA_BROKER_PASSWORD")" \
+  V_KAFKA_CLIENT_USERNAME="$(get_env_variable "VSPH_KAFKA_CLIENT_USERNAME")" \
+  V_KAFKA_CLIENT_PASSWORD="$(get_env_variable "VSPH_KAFKA_CLIENT_PASSWORD")" \
+  V_JWT_SECRET_KEY="$(get_env_variable "VSPH_JWT_SECRET_KEY")" \
+  V_JWT_ISSUER="$(get_env_variable "VSPH_JWT_ISSUER")" \
+  V_JWT_AUDIENCE="$(get_env_variable "VSPH_JWT_AUDIENCE")"
 
 vault kv put "$secret_name/vsph-config-server" \
-    V_SPRING_CONFIG_GIT_USERNAME="$(get_env_variable "VSPH_SPRING_CONFIG_GIT_USERNAME")" \
-    V_SPRING_CONFIG_GIT_TOKEN="$(get_env_variable "VSPH_SPRING_CONFIG_GIT_TOKEN")"
+  V_SPRING_CONFIG_GIT_USERNAME="$(get_env_variable "VSPH_SPRING_CONFIG_GIT_USERNAME")" \
+  V_SPRING_CONFIG_GIT_TOKEN="$(get_env_variable "VSPH_SPRING_CONFIG_GIT_TOKEN")"
 
-vault kv put "$secret_name/vsph-misc-service" \
-    V_CAPTCHA_SECRET_KEY="$(get_env_variable "VSPH_CAPTCHA_SECRET_KEY")" \
-    V_CAPTCHA_SITE_KEY="$(get_env_variable "VSPH_CAPTCHA_SITE_KEY")"
+vault kv put "$secret_name/vsph-m-misc-service" \
+  V_CAPTCHA_SECRET_KEY="$(get_env_variable "VSPH_CAPTCHA_SECRET_KEY")" \
+  V_CAPTCHA_SITE_KEY="$(get_env_variable "VSPH_CAPTCHA_SITE_KEY")"
 
-vault kv put "$secret_name/vsph-chat-service" \
-    V_CASSANDRA_USERNAME="$(get_env_variable "VSPH_CASSANDRA_USERNAME")" \
-    V_CASSANDRA_PASSWORD="$(get_env_variable "VSPH_CASSANDRA_PASSWORD")"
+vault kv put "$secret_name/vsph-m-chat-service" \
+  V_CASSANDRA_USERNAME="$(get_env_variable "VSPH_CASSANDRA_USERNAME")" \
+  V_CASSANDRA_PASSWORD="$(get_env_variable "VSPH_CASSANDRA_PASSWORD")"
+
+vault kv put "$secret_name/vsph-m-notification-service" \
+  V_MAIL_PARSER_API_HEADER="$(get_env_variable "ENV_MAIL_PARSER_API_HEADER")" \
+  V_MAIL_PARSER_API_KEY="$(get_env_variable "ENV_MAIL_PARSER_API_KEY")"
