@@ -11,8 +11,11 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import pl.visphere.lib.exception.GenericRestException;
+import pl.visphere.lib.i18n.AppLocale;
 import pl.visphere.lib.i18n.I18nService;
+import pl.visphere.notification.config.ExternalServiceConfig;
 import pl.visphere.notification.hbs.dto.FontTransporterDto;
+import pl.visphere.notification.mail.MailProperties;
 import pl.visphere.notification.mjml.MjmlApiService;
 
 import java.io.IOException;
@@ -21,6 +24,7 @@ import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,24 +38,32 @@ public class HbsProcessingService {
     private final ResourceLoader resourceLoader;
     private final MjmlApiService mjmlApiService;
     private final MustacheFactory mustacheFactory;
+    private final ExternalServiceConfig externalServiceConfig;
+    private final MailProperties mailProperties;
 
-    public String parseToRawHtml(HbsTemplate template, String title, Map<String, Object> variables) {
+    public String parseToRawHtml(HbsTemplate template, String title, Map<String, Object> variables, Locale locale) {
         final HbsLayout layout = template.getLayout();
         String outputHtml;
         try {
-            final String templateFragment = compileHbsTemplate(template, variables);
+            final Map<String, Object> commonVariables = getStringObjectMap(locale);
+
+            final Map<String, Object> templateVariables = new HashMap<>(commonVariables);
+            templateVariables.putAll(variables);
+
+            final String templateFragment = compileHbsTemplate(template, templateVariables);
 
             final FontTransporterDto fontTransporterDto = FontTransporterDto.builder()
                 .name(hbsProperties.getFontName())
                 .path(hbsProperties.getFontResourcePath())
                 .build();
 
-            final Map<String, Object> layoutVariables = new HashMap<>();
-            layoutVariables.put("currentLang", LocaleContextHolder.getLocale().getLanguage());
+            final Map<String, Object> layoutVariables = new HashMap<>(commonVariables);
             layoutVariables.put("title", title);
             layoutVariables.put("font", fontTransporterDto);
             layoutVariables.put("embedRenderingContent", templateFragment);
             layoutVariables.put("year", LocalDate.now().getYear());
+            layoutVariables.put("mobileLinks", hbsProperties.getMobile());
+            layoutVariables.put("socialLinks", hbsProperties.getSocial());
 
             final String compositeClearedTemplate = compileHbsTemplate(layout, layoutVariables)
                 .replaceAll("(?m)^[ \t]*\r?\n", "");
@@ -72,6 +84,26 @@ public class HbsProcessingService {
         }
         log.info("Successfully processed email template: '{}' with title: '{}'", template.getTemplateName(), title);
         return outputHtml;
+    }
+
+    private Map<String, Object> getStringObjectMap(Locale locale) {
+        String landingUrl = externalServiceConfig.getLandingUrl();
+        if (LocaleContextHolder.getLocale() != AppLocale.PL) {
+            landingUrl += "/" + locale.getLanguage();
+        }
+        final Map<String, Object> commonVariables = new HashMap<>();
+        commonVariables.put("currentLang", i18nService.getCurrentLocaleCode());
+        commonVariables.put("landingUrl", landingUrl);
+        commonVariables.put("clientUrl", externalServiceConfig.getClientUrl());
+        commonVariables.put("infraGatewayUrl", externalServiceConfig.getInfraGatewayUrl());
+        commonVariables.put("s3StaticUrl", externalServiceConfig.getS3StaticUrl());
+        commonVariables.put("s3Url", externalServiceConfig.getS3Url());
+        commonVariables.put("replyMail", mailProperties.getReplyTo());
+        return commonVariables;
+    }
+
+    public String parseToRawHtml(HbsTemplate template, String title, Map<String, Object> variables) {
+        return parseToRawHtml(template, title, variables, LocaleContextHolder.getLocale());
     }
 
     private String compileHbsTemplate(HbsFile file, Map<String, Object> variables) throws IOException {
