@@ -1,0 +1,107 @@
+<mjml lang="{{ currentLang }}">
+  <mj-head>
+    <mj-title>{{ title }}</mj-title>
+    <mj-preview>{{ title }}</mj-preview>
+    <mj-font name="{{ font.name }}" href="{{ font.path }}"/>
+    <mj-attributes>
+      <mj-all font-family="{{ font.name }}"/>
+      <mj-text font-weight="500" line-height="1.3"/>
+    </mj-attributes>
+  </mj-head>
+  <mj-body background-color="rgb(247,247,247)">
+    <!-- HEADER -->
+    <mj-section>
+      <mj-column>
+        <mj-image width="187px" src="{{ s3StaticUrl }}/static/logo/visphere-full.png"/>
+      </mj-column>
+    </mj-section>
+    <!-- BODY -->
+    <mj-wrapper background-color="white" border-radius="10px">
+      {{{ embedRenderingContent }}}
+    </mj-wrapper>
+    <!-- DOWNLOAD LINKS -->
+    <mj-wrapper padding-bottom="0">
+      <mj-section padding="0">
+        <mj-column>
+          <mj-text align="center" color="rgb(140,140,140)" font-weight="500">
+            [[vsph.i18n.mail.downloadApp]]:
+          </mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0">
+        <mj-column width="133px">
+          <mj-image
+            width="123px"
+            padding="5px 10px"
+            src="{{ s3StaticUrl }}/static/icon/mobile/google-play.png"
+            href="{{ mobileLinks.googlePlayLink }}"/>
+        </mj-column>
+        <mj-column width="118px">
+          <mj-image
+            width="108px"
+            padding="5px 10px"
+            src="{{ s3StaticUrl }}/static/icon/mobile/app-store.png"
+            href="{{ mobileLinks.appStoreLink }}"/>
+        </mj-column>
+        <mj-column width="132px">
+          <mj-image
+            width="122px"
+            padding="5px 10px"
+            src="{{ s3StaticUrl }}/static/icon/mobile/app-gallery.png"
+            href="{{ mobileLinks.appGalleryLink }}"/>
+        </mj-column>
+      </mj-section>
+      <mj-section padding="0">
+        <mj-column>
+          <mj-text align="center" color="rgb(140,140,140)" font-weight="500">
+            <a style="color: black" href="{{ landingUrl }}/download">[[vsph.i18n.mail.clickHere]]</a>
+            [[vsph.i18n.mail.downloadForOtherPlatform]].
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <!-- SOCIALS -->
+    <mj-wrapper padding-bottom="0">
+      <mj-section padding="0">
+        <mj-column>
+          <mj-social con-size="25px" inner-padding="0 8px" mode="horizontal" padding="0">
+            <mj-social-element
+              src="{{ s3StaticUrl }}/static/icon/social/fb.svg"
+              href="{{ socialLinks.facebookLink }}"/>
+            <mj-social-element
+              src="{{ s3StaticUrl }}/static/icon/social/yt.svg"
+              href="{{ socialLinks.youtubeLink }}"/>
+            <mj-social-element
+              src="{{ s3StaticUrl }}/static/icon/social/ig.svg"
+              href="{{ socialLinks.instagramLink }}"/>
+            <mj-social-element
+              src="{{ s3StaticUrl }}/static/icon/social/x.svg"
+              href="{{ socialLinks.xLink }}"/>
+            <mj-social-element
+              src="{{ s3StaticUrl }}/static/icon/social/tt.svg"
+              href="{{ socialLinks.tiktokLink }}"/>
+          </mj-social>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <!-- FOOTER -->
+    <mj-wrapper>
+      <mj-section padding="0">
+        <mj-column>
+          <mj-text padding-bottom="0" align="center" color="rgb(140,140,140)" font-weight="500">
+            [[vsph.i18n.mail.notShowCorrectly]]? <a style="color: black" href="#">[[vsph.i18n.mail.viewInBrowser]]</a>.
+          </mj-text>
+          <mj-text align="center" color="rgb(140,140,140)">
+            &copy; {{ year }} by <a href="{{ landingUrl }}" style="color: black">Visphere</a> and Vsph Technologies. All
+            rights reserved.
+          </mj-text>
+          <mj-text align="center" padding="0">
+            <a href="{{ landingUrl }}/privacy-policy" style="color: black">
+              [[vsph.i18n.mail.privacyPolicy]]
+            </a>
+          </mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+  </mj-body>
+</mjml>
