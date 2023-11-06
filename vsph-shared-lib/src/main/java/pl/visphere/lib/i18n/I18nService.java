@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.context.i18n.LocaleContextHolder;
 
+import java.util.Locale;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -39,5 +40,13 @@ public class I18nService {
         } catch (NoSuchMessageException ignored) {
             return placeholder;
         }
+    }
+
+    public String getCurrentLocaleCode() {
+        final Locale currentLocale = LocaleContextHolder.getLocale();
+        if (currentLocale != AppLocale.PL) {
+            return currentLocale.getLanguage() + "-" + currentLocale.getCountry();
+        }
+        return currentLocale.getLanguage();
     }
 }
