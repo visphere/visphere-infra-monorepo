@@ -16,7 +16,7 @@ import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.notification.config.ExternalServiceConfig;
 import pl.visphere.notification.hbs.dto.FontTransporterDto;
 import pl.visphere.notification.mail.MailProperties;
-import pl.visphere.notification.mjml.MjmlApiService;
+import pl.visphere.notification.mail.mjml.MjmlApiService;
 
 import java.io.IOException;
 import java.io.StringReader;

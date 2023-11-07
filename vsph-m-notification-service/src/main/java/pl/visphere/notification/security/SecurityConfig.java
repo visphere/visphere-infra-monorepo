@@ -35,6 +35,7 @@ class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         securityService().configureStatelessSecurity(httpSecurity, "api/v1/notification/**")
             .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/api/v1/notification/test/process").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
