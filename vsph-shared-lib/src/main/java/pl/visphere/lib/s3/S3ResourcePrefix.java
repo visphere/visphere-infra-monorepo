@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum S3ResourcePrefix {
-    PROFILE("profile");
+    PROFILE("profile"),
+    EMAIL("email"),
+    ;
 
     private final String prefix;
 }

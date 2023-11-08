@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum S3Bucket {
     SPHERES("spheres"),
-    USERS("users");
+    USERS("users"),
+    EMAILS("emails"),
+    ;
 
     private final String name;
 }
