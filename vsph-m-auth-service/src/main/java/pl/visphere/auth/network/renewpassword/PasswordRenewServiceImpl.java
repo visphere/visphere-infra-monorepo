@@ -45,18 +45,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
 
     @Override
     public BaseMessageResDto request(AttemptReqDto reqDto) {
-        final UserEntity user = userRepository
-            .findByUsernameOrEmailAddress(reqDto.getUsernameOrEmailAddress())
-            .orElseThrow(() -> new UserException.UserNotExistException(reqDto.getUsernameOrEmailAddress()));
-
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
-        final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.CHANGE_PASSWORD);
-        final SendTokenEmailReqDto emailReqDto = renewPasswordMapper
-            .mapToSendTokenEmailReq(user, otaResDto, profileImageDetails);
-
-        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_CHANGE_PASSWORD, emailReqDto);
+        final UserEntity user = sendRequestForChangePassword(reqDto.getUsernameOrEmailAddress());
 
         log.info("Successfully send request for change password for user: '{}'", user);
         return BaseMessageResDto.builder()
@@ -84,8 +73,9 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
 
     @Override
     public BaseMessageResDto resend(AttemptReqDto reqDto) {
-        // resend email message with created previously token
+        final UserEntity user = sendRequestForChangePassword(reqDto.getUsernameOrEmailAddress());
 
+        log.info("Successfully resend email message for request change password for user: '{}'", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.RESEND_TOKEN_VERIFICATION_RESPONSE_SUCCESS))
             .build();
@@ -117,5 +107,21 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.CHANGE_PASSWORD_RESPONSE_SUCCESS))
             .build();
+    }
+
+    private UserEntity sendRequestForChangePassword(String username) {
+        final UserEntity user = userRepository
+            .findByUsernameOrEmailAddress(username)
+            .orElseThrow(() -> new UserException.UserNotExistException(username));
+
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+
+        final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.CHANGE_PASSWORD);
+        final SendTokenEmailReqDto emailReqDto = renewPasswordMapper
+            .mapToSendTokenEmailReq(user, otaResDto, profileImageDetails);
+
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_CHANGE_PASSWORD, emailReqDto);
+        return user;
     }
 }

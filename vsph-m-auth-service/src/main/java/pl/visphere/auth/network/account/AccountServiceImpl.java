@@ -138,7 +138,15 @@ class AccountServiceImpl implements AccountService {
 
     @Override
     public BaseMessageResDto resend(ActivateAccountReqDto reqDto) {
-        // resend email message with provided token
+        final UserEntity user = userRepository
+            .findByUsernameOrEmailAddress(reqDto.getEmailAddress())
+            .orElseThrow(() -> new UserException.UserNotExistException(reqDto.getEmailAddress()));
+
+        final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.ACTIVATE_ACCOUNT);
+        final SendTokenEmailReqDto emailReqDto = accountMapper
+            .mapToSendTokenEmailReq(user, otaResDto, user.getId());
+
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, emailReqDto);
 
         log.info("Successfully resend activate account message");
         return BaseMessageResDto.builder()

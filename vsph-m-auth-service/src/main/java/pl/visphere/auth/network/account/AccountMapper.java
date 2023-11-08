@@ -29,6 +29,15 @@ class AccountMapper {
         return emailReqDto;
     }
 
+    SendTokenEmailReqDto mapToSendTokenEmailReq(UserEntity user, GenerateOtaResDto resDto, Long userId) {
+        final SendTokenEmailReqDto emailReqDto = modelMapper.map(user, SendTokenEmailReqDto.class);
+        emailReqDto.setUserId(userId);
+        emailReqDto.setFullName(user.getFirstName() + StringUtils.SPACE + user.getLastName());
+        emailReqDto.setOtaToken(resDto.token());
+        emailReqDto.setProfileImageUuid(StringUtils.EMPTY);
+        return emailReqDto;
+    }
+
     SendBaseEmailReqDto mapToSendBaseEmailReq(UserEntity user, ProfileImageDetailsResDto profileResDto) {
         final SendBaseEmailReqDto emailReqDto = modelMapper.map(user, SendBaseEmailReqDto.class);
         emailReqDto.setFullName(user.getFirstName() + StringUtils.SPACE + user.getLastName());
