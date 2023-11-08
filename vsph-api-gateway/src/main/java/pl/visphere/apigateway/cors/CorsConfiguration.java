@@ -8,10 +8,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 
 import java.util.List;
+
+import static org.springframework.http.HttpMethod.*;
 
 @RefreshScope
 @Configuration
@@ -22,11 +23,16 @@ class CorsConfiguration {
     @Bean
     CorsWebFilter corsWebFilter() {
         return new CorsPolicyBuilder(corsProperties.getAllowedOrigins())
-            .addPolicy("/api/v1/account/new/**", List.of(HttpMethod.POST, HttpMethod.PATCH))
-            .addPolicy("/api/v1/account/check/**", List.of(HttpMethod.GET, HttpMethod.PATCH))
-            .addPolicy("/api/v1/auth/identity/**", List.of(HttpMethod.POST, HttpMethod.PATCH, HttpMethod.DELETE))
-            .addPolicy("/api/v1/auth/password/**", List.of(HttpMethod.POST, HttpMethod.PATCH, HttpMethod.GET))
-            .addPolicy("/api/v1/misc/captcha/**", List.of(HttpMethod.POST))
+            .addPolicy("/api/v1/auth/account/**", List.of(POST, PATCH))
+            .addPolicy("/api/v1/auth/check/**", List.of(GET, PATCH))
+            .addPolicy("/api/v1/auth/identity/**", List.of(POST, PATCH, DELETE))
+            .addPolicy("/api/v1/auth/password/renew/**", List.of(POST, PATCH))
+            .addPolicy("/api/v1/misc/captcha/**", List.of(POST))
+            .addPolicy("/api/v1/multimedia/profile/color/**", List.of(GET, PATCH))
+            .addPolicy("/api/v1/multimedia/profile/image/**", List.of(POST, DELETE))
+            .addPolicy("/api/v1/notification/mail/mirror/**", List.of(POST))
+            .addPolicy("/api/v1/sphere/guild/**", List.of(POST, PATCH))
+            .addPolicy("/api/v1/sphere/link/**", List.of(GET, POST, PATCH, DELETE))
             .createFilter();
     }
 }
