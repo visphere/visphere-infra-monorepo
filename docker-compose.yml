@@ -303,7 +303,7 @@ services:
     networks:
       - visphere-infra-network
 
-  vsph-m-shpere-service:
+  vsph-m-sphere-service:
     extends:
       file: ./vsph-m-sphere-service/docker-compose.yml
       service: vsph-m-sphere-service-template
