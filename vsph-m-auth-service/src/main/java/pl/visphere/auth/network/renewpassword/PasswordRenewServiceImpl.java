@@ -94,7 +94,9 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
         }
         final UserEntity user = otaToken.getUser();
 
+        otaToken.setUsed(true);
         user.setPassword(passwordEncoder.encode(reqDto.getNewPassword()));
+
         final UserEntity savedUser = userRepository.save(user);
 
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
