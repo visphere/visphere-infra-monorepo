@@ -21,7 +21,6 @@ import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
-import pl.visphere.lib.kafka.AsyncQueueHandler;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;

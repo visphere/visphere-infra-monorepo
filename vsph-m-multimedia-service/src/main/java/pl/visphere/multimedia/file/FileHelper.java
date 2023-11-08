@@ -6,6 +6,7 @@ package pl.visphere.multimedia.file;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import pl.visphere.lib.file.MimeType;
 
 import java.util.Arrays;
 import java.util.Objects;

@@ -7,7 +7,7 @@ package pl.visphere.misc.kafka;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import pl.visphere.lib.kafka.SyncListenerHandler;
+import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 
 @Slf4j
 @Component

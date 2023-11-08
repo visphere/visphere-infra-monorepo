@@ -10,7 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import pl.visphere.lib.filter.JwtAuthenticationFilter;
 import pl.visphere.lib.jwt.JwtService;
-import pl.visphere.lib.kafka.SyncQueueHandler;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.StatelesslessUserDetailsService;
 
 public abstract class AbstractSecurityConfigBeans {

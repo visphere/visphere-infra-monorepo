@@ -9,9 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
-import pl.visphere.lib.kafka.SyncListenerHandler;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
+import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 import pl.visphere.multimedia.service.image.ImageService;
 
 @Slf4j

@@ -34,8 +34,8 @@ import pl.visphere.lib.jwt.JwtException;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
-import pl.visphere.lib.kafka.SyncQueueHandler;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
 import java.time.ZonedDateTime;

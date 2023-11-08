@@ -22,8 +22,8 @@ import pl.visphere.lib.jwt.JwtState;
 import pl.visphere.lib.jwt.JwtValidateState;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.ResponseObject;
-import pl.visphere.lib.kafka.SyncQueueHandler;
 import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.UserPrincipalAuthenticationToken;
 
 import java.io.IOException;

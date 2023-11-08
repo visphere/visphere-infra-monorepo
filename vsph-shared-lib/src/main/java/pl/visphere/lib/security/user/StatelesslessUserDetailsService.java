@@ -11,9 +11,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.kafka.QueueTopic;
-import pl.visphere.lib.kafka.SyncQueueHandler;
 import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
 import pl.visphere.lib.kafka.payload.auth.CheckUserResDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 
 @RequiredArgsConstructor
 public class StatelesslessUserDetailsService implements UserDetailsService {

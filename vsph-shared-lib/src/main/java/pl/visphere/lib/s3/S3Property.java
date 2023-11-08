@@ -15,7 +15,8 @@ enum S3Property implements GenericProperty {
     ACCESS_KEY("access-key"),
     SECRET_KEY("secret-key"),
     REGION("region"),
-    PATH_STYLE_ACCESS_ENABLED("path-style-access-enabled");
+    PATH_STYLE_ACCESS_ENABLED("path-style-access-enabled"),
+    ;
 
     private final String value;
 

@@ -7,6 +7,7 @@ package pl.visphere.lib.kafka;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import pl.visphere.lib.Property;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -23,7 +24,8 @@ public enum QueueTopic implements Property {
     GENERATE_DEFAULT_USER_PROFILE("generate-default-user-profile"),
     GENERATE_DEFAULT_GUILD_PROFILE("generate-default-guild-profile"),
     UPDATE_DEFAULT_GUILD_PROFILE("update-default-guild-profile"),
-    PROFILE_IMAGE_DETAILS("profile-image-details");
+    PROFILE_IMAGE_DETAILS("profile-image-details"),
+    ;
 
     private final String topicKey;
     private final boolean hasReply;

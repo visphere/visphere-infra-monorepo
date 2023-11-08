@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
 import org.springframework.http.HttpStatus;
 import pl.visphere.lib.exception.AbstractRestException;
-import pl.visphere.multimedia.file.MimeType;
+import pl.visphere.lib.file.MimeType;
 import pl.visphere.multimedia.i18n.LocaleSet;
 
 import java.util.Arrays;

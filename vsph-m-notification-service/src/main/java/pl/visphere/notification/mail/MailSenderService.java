@@ -36,13 +36,15 @@ public class MailSenderService {
                 helper.addTo(toEmail);
             }
             if (payloadDto.inlineResources() != null) {
-                for (final MailResourceDto inlineResources : payloadDto.inlineResources()) {
-                    helper.addInline(inlineResources.name(), inlineResources.file());
+                for (final MailResourceDto inlineResource : payloadDto.inlineResources()) {
+                    final ByteArrayResource resource = new ByteArrayResource(inlineResource.content());
+                    helper.addInline(inlineResource.name(), resource, inlineResource.mimeType().getMime());
                 }
             }
             if (payloadDto.attachments() != null) {
-                for (final MailResourceDto attachments : payloadDto.attachments()) {
-                    helper.addAttachment(attachments.name(), attachments.file());
+                for (final MailResourceDto attachment : payloadDto.attachments()) {
+                    final ByteArrayResource resource = new ByteArrayResource(attachment.content());
+                    helper.addAttachment(attachment.name(), resource, attachment.mimeType().getMime());
                 }
             }
             helper.setSubject(payloadDto.title());

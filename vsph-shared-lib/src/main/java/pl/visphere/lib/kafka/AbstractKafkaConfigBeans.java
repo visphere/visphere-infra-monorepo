@@ -9,6 +9,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
+import pl.visphere.lib.kafka.async.AsyncListenerHandler;
+import pl.visphere.lib.kafka.async.AsyncQueueHandler;
+import pl.visphere.lib.kafka.sync.SyncListenerHandler;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 
 public abstract class AbstractKafkaConfigBeans {
     @Bean
@@ -27,7 +31,7 @@ public abstract class AbstractKafkaConfigBeans {
     ) {
         return new AsyncQueueHandler(kafkaTemplate, environment);
     }
-    
+
     @Bean
     SyncListenerHandler syncListenerHandler(KafkaTemplate<String, Object> kafkaTemplate) {
         return new SyncListenerHandler(kafkaTemplate);

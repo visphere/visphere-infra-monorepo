@@ -11,7 +11,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import pl.visphere.auth.domain.blacklistjwt.BlackListJwtRepository;
 import pl.visphere.auth.service.user.UserService;
-import pl.visphere.lib.kafka.SyncListenerHandler;
+import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 
 @Slf4j
 @Component
