@@ -24,7 +24,7 @@ class CorsConfiguration {
         return new CorsPolicyBuilder(corsProperties.getAllowedOrigins())
             .addPolicy("/api/v1/account/new/**", List.of(HttpMethod.POST, HttpMethod.PATCH))
             .addPolicy("/api/v1/account/check/**", List.of(HttpMethod.GET, HttpMethod.PATCH))
-            .addPolicy("/api/v1/auth/access/**", List.of(HttpMethod.POST, HttpMethod.PATCH, HttpMethod.DELETE))
+            .addPolicy("/api/v1/auth/identity/**", List.of(HttpMethod.POST, HttpMethod.PATCH, HttpMethod.DELETE))
             .addPolicy("/api/v1/auth/password/**", List.of(HttpMethod.POST, HttpMethod.PATCH, HttpMethod.GET))
             .addPolicy("/api/v1/misc/captcha/**", List.of(HttpMethod.POST))
             .createFilter();
