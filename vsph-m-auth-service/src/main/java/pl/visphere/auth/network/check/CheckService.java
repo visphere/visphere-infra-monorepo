@@ -11,6 +11,6 @@ import pl.visphere.auth.network.check.dto.MyAccountResDto;
 import java.util.List;
 
 interface CheckService {
-    CheckAlreadyExistResDto checkIfAccountValueAlreadyExist(AccountValueParam by, String value);
+    CheckAlreadyExistResDto checkIfAccountPropAlreadyExist(AccountValueParam by, String value);
     List<MyAccountResDto> checkIfMyAccountsExists(List<MyAccountReqDto> reqDtos);
 }

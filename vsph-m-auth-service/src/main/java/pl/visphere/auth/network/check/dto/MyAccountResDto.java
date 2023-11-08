@@ -4,13 +4,14 @@
  */
 package pl.visphere.auth.network.check.dto;
 
-import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Builder
-public record MyAccountResDto(
-    String accountId,
-    String usernameOrEmailAddress,
-    String thumbnailUrl,
-    boolean isVerified
-) {
+@Data
+@NoArgsConstructor
+public class MyAccountResDto {
+    private String accountId;
+    private String usernameOrEmailAddress;
+    private String thumbnailUrl;
+    private boolean verified;
 }

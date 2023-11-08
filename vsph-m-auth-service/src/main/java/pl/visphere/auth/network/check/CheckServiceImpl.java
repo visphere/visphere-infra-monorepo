@@ -7,39 +7,79 @@ package pl.visphere.auth.network.check;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import pl.visphere.auth.domain.user.UserEntity;
+import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.network.check.dto.CheckAlreadyExistResDto;
 import pl.visphere.auth.network.check.dto.MyAccountReqDto;
 import pl.visphere.auth.network.check.dto.MyAccountResDto;
+import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CheckServiceImpl implements CheckService {
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
+    private final SyncQueueHandler syncQueueHandler;
+
     @Override
-    public CheckAlreadyExistResDto checkIfAccountValueAlreadyExist(AccountValueParam by, String value) {
+    public CheckAlreadyExistResDto checkIfAccountPropAlreadyExist(AccountValueParam by, String value) {
         boolean alreadyExist = false;
         if (StringUtils.isNotEmpty(value)) {
-            // check if passed username/email address is already declared in system
-            alreadyExist = true;
+            alreadyExist = switch (by) {
+                case EMAIL -> userRepository.existsByEmailAddress(value);
+                case USERNAME -> userRepository.existsByUsername(value);
+            };
         }
-        return new CheckAlreadyExistResDto(alreadyExist);
+        final CheckAlreadyExistResDto resDto = CheckAlreadyExistResDto.builder()
+            .alreadyExist(alreadyExist)
+            .build();
+
+        log.info("Successfully check account prop: '{}' with value: '{}' and response: '{}'", by, value, resDto);
+        return resDto;
     }
 
     @Override
     public List<MyAccountResDto> checkIfMyAccountsExists(List<MyAccountReqDto> reqDtos) {
-        // check if all passed accounts with isVerified still exists
+        final List<MyAccountResDto> resDtos = new ArrayList<>();
 
-        return reqDtos.stream()
-            .map(dto -> MyAccountResDto.builder()
-                .accountId(dto.getAccountId())
-                .usernameOrEmailAddress(dto.getUsernameOrEmailAddress())
-                .isVerified(dto.getIsVerified())
-                .thumbnailUrl(dto.getIsVerified() ? "https://raw.githubusercontent.com/Milosz08/schedule-management-server/master/_StaticPrivateContent/UserImages/zoqeCUQJ1QMqRBH4dDEB__julnow269.jpg" : StringUtils.EMPTY)
-                .build())
-            .collect(Collectors.toList());
+        final List<String> usernames = reqDtos.stream()
+            .map(MyAccountReqDto::getUsernameOrEmailAddress).toList();
+
+        final List<UserEntity> foundUsers = userRepository
+            .findAllByUsernameInOrEmailAddressIn(usernames, usernames);
+
+        for (final MyAccountReqDto reqDto : reqDtos) {
+            final MyAccountResDto resDto = modelMapper.map(reqDto, MyAccountResDto.class);
+            String thumbnailUrl = StringUtils.EMPTY;
+            if (reqDto.getVerified()) {
+                final String username = reqDto.getUsernameOrEmailAddress();
+                final Optional<UserEntity> foundUser = foundUsers.stream()
+                    .filter(c -> c.getEmailAddress().equals(username) || c.getUsername().equals(username))
+                    .findFirst();
+                if (foundUser.isEmpty()) {
+                    continue;
+                }
+                final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+                    .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, foundUser.get().getId(),
+                        ProfileImageDetailsResDto.class);
+                thumbnailUrl = profileImageDetails.profileImagePath();
+            }
+            resDto.setThumbnailUrl(thumbnailUrl);
+            resDtos.add(resDto);
+        }
+        final int pos = resDtos.size();
+        final int neg = reqDtos.size() - pos;
+
+        log.info("Successfully checked accounts with pos: '{}' and neg: '{}'. Summary: '{}'", pos, neg, resDtos);
+        return resDtos;
     }
 }

@@ -44,6 +44,8 @@ class SecurityConfig {
                 .requestMatchers("/api/v1/auth/password/renew/{token}/verify").permitAll()
                 .requestMatchers("/api/v1/auth/password/renew/resend").permitAll()
                 .requestMatchers("/api/v1/auth/password/renew/change/{token}").permitAll()
+                .requestMatchers("/api/v1/auth/check/prop/exist").permitAll()
+                .requestMatchers("/api/v1/auth/check/myaccounts/exists").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

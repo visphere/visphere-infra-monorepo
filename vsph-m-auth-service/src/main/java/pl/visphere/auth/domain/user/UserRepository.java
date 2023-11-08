@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,4 +20,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByUsernameOrEmailAddress(@Param("identity") String identity);
 
     boolean existsByUsernameOrEmailAddress(String username, String emailAddress);
+    boolean existsByUsername(String username);
+    boolean existsByEmailAddress(String emailAddress);
+    List<UserEntity> findAllByUsernameInOrEmailAddressIn(List<String> usernames, List<String> emailAddresses);
 }

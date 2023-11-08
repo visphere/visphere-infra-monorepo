@@ -27,14 +27,14 @@ public class MyAccountReqDto {
     private String usernameOrEmailAddress;
 
     @NotNull(message = "vsph.auth.jpa.isVerified.notNull")
-    private Boolean isVerified;
+    private Boolean verified;
 
     @Override
     public String toString() {
         return "{" +
             "accountId=" + accountId +
             ", usernameOrEmailAddress=" + usernameOrEmailAddress +
-            ", isVerified=" + isVerified +
+            ", verified=" + verified +
             '}';
     }
 }
