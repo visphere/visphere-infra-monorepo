@@ -5,14 +5,17 @@
 package pl.visphere.notification.hbs;
 
 import com.github.mustachejava.MustacheFactory;
+import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.i18n.AppLocale;
 import pl.visphere.lib.i18n.I18nService;
+import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.notification.config.ExternalServiceConfig;
 import pl.visphere.notification.hbs.dto.FontTransporterDto;
 import pl.visphere.notification.mail.MailProperties;
@@ -40,8 +43,11 @@ public class HbsProcessingService {
     private final MustacheFactory mustacheFactory;
     private final ExternalServiceConfig externalServiceConfig;
     private final MailProperties mailProperties;
+    private final JwtService jwtService;
 
-    public String parseToRawHtml(HbsTemplate template, String title, Map<String, Object> variables, Locale locale) {
+    public String parseToRawHtml(
+        HbsTemplate template, String title, Map<String, Object> variables, Locale locale, String messageUuid
+    ) {
         final HbsLayout layout = template.getLayout();
         String outputHtml;
         try {
@@ -57,6 +63,16 @@ public class HbsProcessingService {
                 .path(hbsProperties.getFontResourcePath())
                 .build();
 
+            final String mirrorJwt = jwtService
+                .generateNonExpiredToken(messageUuid, Jwts.claims())
+                .compact();
+
+            final String mirrorUri = UriComponentsBuilder
+                .fromUriString(externalServiceConfig.getLandingUrl() + "/mirror-email")
+                .queryParam("token", mirrorJwt)
+                .build()
+                .toUriString();
+
             final Map<String, Object> layoutVariables = new HashMap<>(commonVariables);
             layoutVariables.put("title", title);
             layoutVariables.put("font", fontTransporterDto);
@@ -64,6 +80,7 @@ public class HbsProcessingService {
             layoutVariables.put("year", LocalDate.now().getYear());
             layoutVariables.put("mobileLinks", hbsProperties.getMobile());
             layoutVariables.put("socialLinks", hbsProperties.getSocial());
+            layoutVariables.put("mirrorLink", mirrorUri);
 
             final String compositeClearedTemplate = compileHbsTemplate(layout, layoutVariables)
                 .replaceAll("(?m)^[ \t]*\r?\n", "");

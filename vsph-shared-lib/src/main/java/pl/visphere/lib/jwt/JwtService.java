@@ -53,15 +53,22 @@ public class JwtService {
             .build();
     }
 
+    public JwtBuilder generateNonExpiredToken(String subject, Claims claims) {
+        return generateBaseToken(subject, claims, null);
+    }
+
     private JwtBuilder generateBaseToken(String subject, Claims claims, Date expirationTime) {
-        return Jwts.builder()
+        final JwtBuilder jwtBuilder = Jwts.builder()
             .signWith(getSignedKey(), SignatureAlgorithm.HS256)
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setClaims(claims)
             .setSubject(subject)
             .setIssuer(JwtProperties.JWT_ISSUER.getValue(environment))
-            .setAudience(JwtProperties.JWT_AUDIENCE.getValue(environment))
-            .setExpiration(expirationTime);
+            .setAudience(JwtProperties.JWT_AUDIENCE.getValue(environment));
+        if (expirationTime != null) {
+            jwtBuilder.setExpiration(expirationTime);
+        }
+        return jwtBuilder;
     }
 
     public JwtValidateState validate(String token) {

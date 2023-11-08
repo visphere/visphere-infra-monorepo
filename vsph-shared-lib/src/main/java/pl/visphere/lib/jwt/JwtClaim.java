@@ -11,7 +11,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum JwtClaim {
     USER_EMAIL("user_email"),
-    USER_ID("user_id");
+    USER_ID("user_id"),
+    MESSAGE_UUID("message_uuid"),
+    ;
 
     private final String claim;
 }

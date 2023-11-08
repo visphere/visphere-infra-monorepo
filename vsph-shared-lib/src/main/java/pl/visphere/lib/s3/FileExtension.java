@@ -13,7 +13,9 @@ public enum FileExtension {
     PNG("png"),
     JPEG("jpeg"),
     GIF("gif"),
-    WEBP("webp");
+    WEBP("webp"),
+    HTML_GZ("html.gz"),
+    ;
 
     private final String ext;
 }

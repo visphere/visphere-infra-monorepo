@@ -10,6 +10,7 @@ import lombok.Builder;
 public record FilePayload(
     S3ResourcePrefix prefix,
     byte[] data,
-    FileExtension extension
+    FileExtension extension,
+    String uuid
 ) {
 }
