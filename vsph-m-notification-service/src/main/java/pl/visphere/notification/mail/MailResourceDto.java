@@ -5,12 +5,12 @@
 package pl.visphere.notification.mail;
 
 import lombok.Builder;
-
-import java.io.File;
+import pl.visphere.lib.file.MimeType;
 
 @Builder
 public record MailResourceDto(
     String name,
-    File file
+    byte[] content,
+    MimeType mimeType
 ) {
 }

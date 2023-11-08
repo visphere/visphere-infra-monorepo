@@ -22,8 +22,11 @@ import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.async.AsyncQueueHandler;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
 
 @Slf4j
@@ -35,6 +38,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     private final PasswordEncoder passwordEncoder;
     private final AsyncQueueHandler asyncQueueHandler;
     private final RenewPasswordMapper renewPasswordMapper;
+    private final SyncQueueHandler syncQueueHandler;
 
     private final UserRepository userRepository;
     private final OtaTokenRepository otaTokenRepository;
@@ -45,9 +49,12 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
             .findByUsernameOrEmailAddress(reqDto.getUsernameOrEmailAddress())
             .orElseThrow(() -> new UserException.UserNotExistException(reqDto.getUsernameOrEmailAddress()));
 
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+
         final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.CHANGE_PASSWORD);
         final SendTokenEmailReqDto emailReqDto = renewPasswordMapper
-            .mapToSendTokenEmailReq(user, otaResDto);
+            .mapToSendTokenEmailReq(user, otaResDto, profileImageDetails);
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_CHANGE_PASSWORD, emailReqDto);
 
@@ -61,8 +68,13 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     public BaseMessageResDto verify(String token) {
         final OtaToken type = OtaToken.CHANGE_PASSWORD;
         final OtaTokenEntity otaToken = otaTokenRepository
-            .findTokenByType(token, type)
+            .findByTokenAndTypeAndIsUsedFalse(token, type)
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
+
+        if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
+            log.error("Attempt to validate expired token: '{}'", otaToken);
+            throw new OtaTokenException.OtaTokenNotFoundException(token, type);
+        }
 
         log.info("Successfully validated ota token: '{}'", otaToken);
         return BaseMessageResDto.builder()
@@ -83,16 +95,23 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     public BaseMessageResDto change(String token, ChangeReqDto reqDto) {
         final OtaToken type = OtaToken.CHANGE_PASSWORD;
         final OtaTokenEntity otaToken = otaTokenRepository
-            .findTokenByType(token, type)
+            .findByTokenAndTypeAndIsUsedFalse(token, type)
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
 
+        if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
+            log.error("Attempt to change password with expired token: '{}'", otaToken);
+            throw new OtaTokenException.OtaTokenNotFoundException(token, type);
+        }
         final UserEntity user = otaToken.getUser();
 
         user.setPassword(passwordEncoder.encode(reqDto.getNewPassword()));
         final UserEntity savedUser = userRepository.save(user);
 
-        final SendBaseEmailReqDto emailReqDto = renewPasswordMapper.mapToSendBaseEmailReq(user);
-        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_NEW_ACCOUNT, emailReqDto);
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+
+        final SendBaseEmailReqDto emailReqDto = renewPasswordMapper.mapToSendBaseEmailReq(user, profileImageDetails);
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_PASSWORD_CHANGED, emailReqDto);
 
         log.info("Successfully change password for user: '{}'", savedUser);
         return BaseMessageResDto.builder()

@@ -14,9 +14,12 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.Bucket;
 import com.amazonaws.services.s3.model.ObjectListing;
+import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
+import pl.visphere.lib.exception.GenericRestException;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +38,7 @@ public class S3Client {
 
     public S3Client(Environment environment) {
         this.environment = environment;
-        this.cdnBaseUrl = S3Property.CDN_BASE_URL.getValue(environment);
+        this.cdnBaseUrl = CdnProperty.CDN_BASE_URL.getValue(environment);
     }
 
     public void initialize() {
@@ -75,9 +78,12 @@ public class S3Client {
     }
 
     public InsertedObjectRes putObject(S3Bucket bucket, String resourceDir, FilePayload payload) {
-        final String uuid = UUID.randomUUID().toString();
+        String uuid = UUID.randomUUID().toString();
+        if (payload.uuid() != null) {
+            uuid = payload.uuid();
+        }
         final String fileName = String.format("%s-%s.%s", payload.prefix().getPrefix(), uuid, payload.extension().getExt());
-        final String filePath = resourceDir + "/" + fileName;
+        final String filePath = resourceDir.equals(StringUtils.EMPTY) ? fileName : resourceDir + "/" + fileName;
         convertBytesToTempFile(payload, file -> client.putObject(bucket.getName(), filePath, file));
         return InsertedObjectRes.builder()
             .uuid(uuid)
@@ -87,6 +93,10 @@ public class S3Client {
 
     public InsertedObjectRes putObject(S3Bucket bucket, Long resourceDir, FilePayload payload) {
         return putObject(bucket, String.valueOf(resourceDir), payload);
+    }
+
+    public void putObject(S3Bucket bucket, FilePayload payload) {
+        putObject(bucket, StringUtils.EMPTY, payload);
     }
 
     public void clearObjects(S3Bucket bucket, String resourceDir, S3ResourcePrefix resourcePrefix) {
@@ -112,14 +122,14 @@ public class S3Client {
             log.info("Successfully created temp file: '{}' and fill with bytes data", tempFile.getName());
             consumer.accept(tempFile);
         } catch (AmazonServiceException ex) {
-            log.error("Unexpected error during AWS service call. Details: '{}'", ex.getMessage());
-            throw new RuntimeException();
+            log.error("Unexpected error during AWS service call. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException();
         } catch (SdkClientException ex) {
             log.error("Unable to call AWS service by client. Cause: '{}'", ex.getMessage());
-            throw new RuntimeException();
+            throw new GenericRestException();
         } catch (IOException ex) {
             log.error("Unable to write bytes data to temp file. Cause: '{}'", ex.getMessage());
-            throw new RuntimeException();
+            throw new GenericRestException();
         } finally {
             if (tempFile != null) {
                 tempFile.deleteOnExit();

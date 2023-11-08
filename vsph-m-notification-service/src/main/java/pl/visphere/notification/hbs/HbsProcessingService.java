@@ -102,8 +102,8 @@ public class HbsProcessingService {
         return commonVariables;
     }
 
-    public String parseToRawHtml(HbsTemplate template, String title, Map<String, Object> variables) {
-        return parseToRawHtml(template, title, variables, LocaleContextHolder.getLocale());
+    public String parseToRawHtml(HbsTemplate template, String title, Map<String, Object> variables, String messageUuid) {
+        return parseToRawHtml(template, title, variables, LocaleContextHolder.getLocale(), messageUuid);
     }
 
     private String compileHbsTemplate(HbsFile file, Map<String, Object> variables) throws IOException {
