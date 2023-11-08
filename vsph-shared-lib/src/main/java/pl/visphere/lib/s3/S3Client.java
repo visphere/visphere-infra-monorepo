@@ -114,6 +114,23 @@ public class S3Client {
         clearObjects(bucket, String.valueOf(resourceDir), resourcePrefix);
     }
 
+    public FileStreamInfo getObjectByFullKey(S3Bucket bucket, String resourceKey) {
+        final S3Object object = client.getObject(bucket.getName(), resourceKey);
+        byte[] objectBytes;
+        String mimeType;
+        try {
+            objectBytes = object.getObjectContent().readAllBytes();
+            mimeType = object.getObjectMetadata().getContentType();
+        } catch (IOException ex) {
+            log.error("Unexpected error during read file bytes. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException();
+        }
+        return FileStreamInfo.builder()
+            .data(objectBytes)
+            .mimeType(mimeType)
+            .build();
+    }
+
     private void convertBytesToTempFile(FilePayload payload, Consumer<File> consumer) {
         File tempFile = null;
         try {
