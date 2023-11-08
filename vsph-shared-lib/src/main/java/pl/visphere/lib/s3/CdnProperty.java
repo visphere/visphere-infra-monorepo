@@ -12,13 +12,13 @@ import pl.visphere.lib.Property;
 @Getter
 @RequiredArgsConstructor
 public enum CdnProperty implements Property {
-    CDN_BASE_URL("cdn-base-url"),
+    CDN_BASE_URL("base-url"),
     ;
-    
+
     private final String value;
 
     @Override
     public String getValue(Environment environment) {
-        return environment.getProperty("visphere.s3." + value);
+        return environment.getProperty("visphere.cdn." + value);
     }
 }
