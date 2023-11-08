@@ -36,4 +36,9 @@ public abstract class AbstractKafkaConfigBeans {
     SyncListenerHandler syncListenerHandler(KafkaTemplate<String, Object> kafkaTemplate) {
         return new SyncListenerHandler(kafkaTemplate);
     }
+    
+    @Bean
+    AsyncListenerHandler asyncListenerHandler() {
+        return new AsyncListenerHandler();
+    }
 }

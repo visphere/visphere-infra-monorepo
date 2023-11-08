@@ -5,8 +5,10 @@
 package pl.visphere.lib.kafka.sync;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.SerializationUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.header.internals.RecordHeader;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.KafkaHeaders;
@@ -14,10 +16,12 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHeaders;
 import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.exception.AbstractRestException;
+import pl.visphere.lib.kafka.KafkaNullableResponseWrapper;
 
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static pl.visphere.lib.kafka.sync.SyncQueueHandler.LOCALE_HEADER;
 
 @RequiredArgsConstructor
 public class SyncListenerHandler {
@@ -25,6 +29,11 @@ public class SyncListenerHandler {
 
     public <T, R> void parseAndSendResponse(Message<T> message, Function<T, R> callback) {
         final MessageHeaders headers = message.getHeaders();
+        final Object localeHeader = headers.get(LOCALE_HEADER);
+        if (localeHeader == null) {
+            return;
+        }
+        LocaleContextHolder.setLocale(SerializationUtils.deserialize((byte[]) localeHeader));
         final Object replyTopic = headers.get(KafkaHeaders.REPLY_TOPIC);
         if (replyTopic == null) {
             return;
@@ -56,12 +65,5 @@ public class SyncListenerHandler {
         final ProducerRecord<String, Object> record = new ProducerRecord<>(reply, null, key, responseWrapper);
         record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, messageId));
         kafkaTemplate.send(record);
-    }
-
-    public <T> void parseAndSendResponse(Message<T> message, Consumer<T> callback) {
-        parseAndSendResponse(message, data -> {
-            callback.accept(data);
-            return null;
-        });
     }
 }
