@@ -11,6 +11,6 @@ import pl.visphere.lib.BaseMessageResDto;
 
 interface AccountService {
     BaseMessageResDto createNew(CreateAccountReqDto reqDto);
-    ActivateAccountResDto activate(String token, ActivateAccountReqDto reqDto);
+    ActivateAccountResDto activate(String token);
     BaseMessageResDto resend(ActivateAccountReqDto reqDto);
 }

@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.i18n.AppLocale;
 import pl.visphere.lib.i18n.I18nService;
@@ -29,6 +28,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -67,11 +67,11 @@ public class HbsProcessingService {
                 .generateNonExpiredToken(messageUuid, Jwts.claims())
                 .compact();
 
-            final String mirrorUri = UriComponentsBuilder
-                .fromUriString(externalServiceConfig.getLandingUrl() + "/mirror-email")
-                .queryParam("token", mirrorJwt)
-                .build()
-                .toUriString();
+            final String mirrorUri = new StringJoiner("/")
+                .add(externalServiceConfig.getLandingUrl())
+                .add("mirror-email")
+                .add(mirrorJwt)
+                .toString();
 
             final Map<String, Object> layoutVariables = new HashMap<>(commonVariables);
             layoutVariables.put("title", title);

@@ -67,9 +67,6 @@ class IdentityServiceImpl implements IdentityService {
             .findById(principal.getId())
             .orElseThrow(() -> new UserException.UserNotExistException(principal.getId()));
 
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
         String token = StringUtils.EMPTY;
         String refreshToken = StringUtils.EMPTY;
         if (user.getActivated() && !user.getEnabledMfa()) {
@@ -83,7 +80,15 @@ class IdentityServiceImpl implements IdentityService {
             refreshToken = generateRefreshToken.token();
             refreshTokenRepository.save(refreshTokenEntity);
         }
-        final LoginResDto resDto = identityMapper.mapToLoginResDto(profileImageDetails, user, token, refreshToken);
+
+        String userProfileUrl = StringUtils.EMPTY;
+        if (user.getActivated()) {
+            final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(),
+                    ProfileImageDetailsResDto.class);
+            userProfileUrl = profileImageDetails.profileImagePath();
+        }
+        final LoginResDto resDto = identityMapper.mapToLoginResDto(userProfileUrl, user, token, refreshToken);
 
         log.info("Successfully login via username and password for user: '{}'", resDto);
         return resDto;
@@ -105,8 +110,8 @@ class IdentityServiceImpl implements IdentityService {
             .findByRefreshTokenAndUserId(refreshToken, user.getId())
             .orElseThrow(() -> new RefrehTokenException.RefreshTokenExpiredException(refreshToken));
 
-        final LoginResDto resDto = identityMapper
-            .mapToLoginResDto(profileImageDetails, user, accessToken, refreshTokenEntity.getRefreshToken());
+        final LoginResDto resDto = identityMapper.mapToLoginResDto(profileImageDetails.profileImagePath(),
+            user, accessToken, refreshTokenEntity.getRefreshToken());
 
         log.info("Successfully login via access token for user: '{}'", resDto);
         return resDto;

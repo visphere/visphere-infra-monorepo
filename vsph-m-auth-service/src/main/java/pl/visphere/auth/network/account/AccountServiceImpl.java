@@ -93,20 +93,16 @@ class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ActivateAccountResDto activate(String token, ActivateAccountReqDto reqDto) {
-        final UserEntity user = userRepository
-            .findByUsernameOrEmailAddress(reqDto.getEmailAddress())
-            .orElseThrow(() -> new UserException.UserNotExistException(reqDto.getEmailAddress()));
+    public ActivateAccountResDto activate(String token) {
+        final OtaToken type = OtaToken.ACTIVATE_ACCOUNT;
+        final OtaTokenEntity otaToken = otaTokenRepository
+            .findByTokenAndTypeAndIsUsedFalse(token, type)
+            .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
 
+        final UserEntity user = otaToken.getUser();
         if (user.getActivated()) {
             throw new UserException.UserAlreadyActivatedException(user);
         }
-
-        final OtaToken type = OtaToken.ACTIVATE_ACCOUNT;
-        final OtaTokenEntity otaToken = otaTokenRepository
-            .findByTokenAndTypeAndUser_IdAndIsUsedFalse(token, type, user.getId())
-            .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
-
         if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
             log.error("Attempt to activate account with expired token: '{}'", otaToken);
             throw new OtaTokenException.OtaTokenNotFoundException(token, type);

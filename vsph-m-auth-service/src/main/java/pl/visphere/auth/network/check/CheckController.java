@@ -14,17 +14,17 @@ import pl.visphere.auth.network.check.dto.MyAccountResDto;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/account/check")
+@RequestMapping("/api/v1/auth/check")
 @RequiredArgsConstructor
 class CheckController {
     private final CheckService checkService;
 
     @GetMapping("/prop/exist")
-    ResponseEntity<CheckAlreadyExistResDto> checkIfUsernameAlreadyExist(
+    ResponseEntity<CheckAlreadyExistResDto> checkIfAccountPropAlreadyExist(
         @RequestParam AccountValueParam by,
         @RequestParam String value
     ) {
-        return ResponseEntity.ok(checkService.checkIfAccountValueAlreadyExist(by, value));
+        return ResponseEntity.ok(checkService.checkIfAccountPropAlreadyExist(by, value));
     }
 
     @PatchMapping("/myaccounts/exists")

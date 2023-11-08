@@ -27,10 +27,9 @@ class AccountController {
 
     @PatchMapping("/activate/{token}")
     ResponseEntity<ActivateAccountResDto> activate(
-        @PathVariable String token,
-        @Valid @RequestBody ActivateAccountReqDto reqDto
+        @PathVariable String token
     ) {
-        return ResponseEntity.ok(accountService.activate(token, reqDto));
+        return ResponseEntity.ok(accountService.activate(token));
     }
 
     @PostMapping("/activate/resend")

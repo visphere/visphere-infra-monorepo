@@ -18,7 +18,7 @@ public class S3Helper {
             .add(CdnProperty.CDN_BASE_URL.getValue(environment))
             .add(S3Bucket.USERS.getName())
             .add(String.valueOf(id))
-            .add(S3ResourcePrefix.PROFILE.getPrefix() + "-" + uuid + "." + FileExtension.JPEG.getExt())
+            .add(S3ResourcePrefix.PROFILE.getPrefix() + "-" + uuid + "." + FileExtension.PNG.getExt())
             .toString();
     }
 }

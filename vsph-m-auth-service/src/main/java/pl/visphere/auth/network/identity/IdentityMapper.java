@@ -8,12 +8,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.network.identity.dto.LoginResDto;
-import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 
 @Component
 class IdentityMapper {
     LoginResDto mapToLoginResDto(
-        ProfileImageDetailsResDto profileImageDetails,
+        String profileImagePath,
         UserEntity user,
         String token,
         String refreshToken
@@ -22,7 +21,7 @@ class IdentityMapper {
             .fullName(user.getFirstName() + StringUtils.SPACE + user.getLastName())
             .username(user.getUsername())
             .emailAddress(user.getEmailAddress())
-            .profileUrl(profileImageDetails.profileImagePath())
+            .profileUrl(profileImagePath)
             .accessToken(token)
             .refreshToken(refreshToken)
             .isActivated(user.getActivated())

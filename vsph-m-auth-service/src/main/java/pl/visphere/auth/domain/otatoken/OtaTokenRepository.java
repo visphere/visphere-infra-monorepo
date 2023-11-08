@@ -13,6 +13,5 @@ import java.util.Optional;
 @Repository
 public interface OtaTokenRepository extends JpaRepository<OtaTokenEntity, Long> {
     boolean existsByToken(String token);
-    Optional<OtaTokenEntity> findByTokenAndTypeAndUser_IdAndIsUsedFalse(String token, OtaToken type, Long userId);
     Optional<OtaTokenEntity> findByTokenAndTypeAndIsUsedFalse(String token, OtaToken type);
 }
