@@ -15,6 +15,7 @@ import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.security.OtaToken;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
 @Slf4j
@@ -48,5 +49,10 @@ public class OtaTokenServiceImpl implements OtaTokenService {
 
         log.info("Successfully generated and saved ota token: '{}'", resDto);
         return resDto;
+    }
+
+    @Override
+    public boolean checkIfIsExpired(ZonedDateTime time) {
+        return time.isBefore(ZonedDateTime.now(ZoneId.of("UTC")));
     }
 }

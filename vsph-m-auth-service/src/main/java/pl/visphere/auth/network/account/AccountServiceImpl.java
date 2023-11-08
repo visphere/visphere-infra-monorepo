@@ -100,8 +100,13 @@ class AccountServiceImpl implements AccountService {
 
         final OtaToken type = OtaToken.ACTIVATE_ACCOUNT;
         final OtaTokenEntity otaToken = otaTokenRepository
-            .findTokenByTypeAndUserId(token, type, user.getId())
+            .findByTokenAndTypeAndUser_IdAndIsUsedFalse(token, type, user.getId())
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
+
+        if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
+            log.error("Attempt to activate account with expired token: '{}'", otaToken);
+            throw new OtaTokenException.OtaTokenNotFoundException(token, type);
+        }
 
         otaToken.setUsed(true);
         user.setActivated(true);

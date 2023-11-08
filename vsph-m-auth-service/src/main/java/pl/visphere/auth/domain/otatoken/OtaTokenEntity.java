@@ -47,7 +47,7 @@ public class OtaTokenEntity extends AbstractAuditableEntity implements Serializa
         this.token = token;
     }
 
-    ZonedDateTime getExpiredAt() {
+    public ZonedDateTime getExpiredAt() {
         return expiredAt;
     }
 
