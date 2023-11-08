@@ -111,9 +111,9 @@ class AccountServiceImpl implements AccountService {
             log.error("Attempt to activate account with expired token: '{}'", otaToken);
             throw new OtaTokenException.OtaTokenNotFoundException(token, type);
         }
-
         otaToken.setUsed(true);
         user.setActivated(true);
+
         final UserEntity activatedUser = userRepository.save(user);
 
         final DefaultUserProfileReqDto profileReqDto = DefaultUserProfileReqDto.builder()
