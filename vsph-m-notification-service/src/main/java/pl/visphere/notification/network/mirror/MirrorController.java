@@ -6,8 +6,9 @@ package pl.visphere.notification.network.mirror;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ import pl.visphere.notification.network.mirror.dto.MirrorMailReqDto;
 class MirrorController {
     private final MirrorService mirrorService;
 
-    @GetMapping("/raw")
+    @PostMapping(value = "/raw", produces = MediaType.TEXT_HTML_VALUE)
     ResponseEntity<String> extractMirrorMail(@Valid @RequestBody MirrorMailReqDto reqDto) {
         return ResponseEntity.ok(mirrorService.extractMirrorMail(reqDto));
     }
