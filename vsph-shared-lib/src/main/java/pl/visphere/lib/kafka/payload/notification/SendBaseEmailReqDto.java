@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendBaseEmailReqDto {
+public class SendBaseEmailReqDto implements SendEmailReqDto {
+    private Long userId;
     private String fullName;
     private String username;
     private String emailAddress;
+    private String profileImageUuid;
 }

@@ -10,7 +10,7 @@ import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 
 public interface ImageService {
-    void generateDefaultProfile(DefaultUserProfileReqDto reqDto);
+    ProfileImageDetailsResDto generateDefaultProfile(DefaultUserProfileReqDto reqDto);
     DefaultGuildProfileResDto generateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto);
     DefaultGuildProfileResDto updateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto);
     ProfileImageDetailsResDto getProfileImageDetails(Long userId);

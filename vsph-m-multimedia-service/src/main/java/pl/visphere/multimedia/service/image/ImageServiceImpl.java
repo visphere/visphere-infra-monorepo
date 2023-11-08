@@ -34,7 +34,7 @@ public class ImageServiceImpl implements ImageService {
     private final GuildProfileRepository guildProfileRepository;
 
     @Override
-    public void generateDefaultProfile(DefaultUserProfileReqDto reqDto) {
+    public ProfileImageDetailsResDto generateDefaultProfile(DefaultUserProfileReqDto reqDto) {
         final String randomColor = initialsDrawer.getRandomColor();
         final byte[] imageData = initialsDrawer.drawImage(reqDto.initials(), randomColor);
 
@@ -49,8 +49,16 @@ public class ImageServiceImpl implements ImageService {
             .userId(reqDto.userId())
             .build();
 
-        final AccountProfileEntity savedAccountProfile = accountProfileRepository.save(accountProfile);
-        log.info("Successfully generated default profile image: '{}'", savedAccountProfile);
+        accountProfileRepository.save(accountProfile);
+
+        final ProfileImageDetailsResDto resDto = ProfileImageDetailsResDto.builder()
+            .profileImageUuid(res.uuid())
+            .profileImagePath(res.fullPath())
+            .profileColor(randomColor)
+            .build();
+
+        log.info("Successfully generated default profile image: '{}'", resDto);
+        return resDto;
     }
 
     @Override

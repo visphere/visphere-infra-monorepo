@@ -9,17 +9,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.ZonedDateTime;
-
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class SendTokenEmailReqDto {
+public class SendTokenEmailReqDto implements SendEmailReqDto {
+    private Long userId;
     private String fullName;
     private String username;
     private String emailAddress;
     private String secondEmailAddress;
     private String otaToken;
-    private ZonedDateTime expiredAt;
+    private String profileImageUuid;
 }

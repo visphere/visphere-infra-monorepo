@@ -31,8 +31,10 @@ import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AppGrantedAuthority;
 
@@ -78,7 +80,9 @@ class AccountServiceImpl implements AccountService {
         final UserEntity savedUser = userRepository.save(user);
         final GenerateOtaResDto otaResDto = otaTokenService.generate(savedUser, OtaToken.ACTIVATE_ACCOUNT);
 
-        final SendTokenEmailReqDto emailReqDto = accountMapper.mapToSendTokenEmailReq(reqDto, otaResDto);
+        final SendTokenEmailReqDto emailReqDto = accountMapper
+            .mapToSendTokenEmailReq(reqDto, otaResDto, savedUser.getId());
+
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, emailReqDto);
 
         log.info("Successfully created user account: '{}'", savedUser);
@@ -118,9 +122,11 @@ class AccountServiceImpl implements AccountService {
             .username(user.getUsername())
             .build();
 
-        syncQueueHandler.sendEmptyWithBlockThread(QueueTopic.GENERATE_DEFAULT_USER_PROFILE, profileReqDto);
+        final ProfileImageDetailsResDto profileResDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GENERATE_DEFAULT_USER_PROFILE, profileReqDto,
+                ProfileImageDetailsResDto.class);
 
-        final SendBaseEmailReqDto emailReqDto = accountMapper.mapToSendBaseEmailReq(activatedUser);
+        final SendBaseEmailReqDto emailReqDto = accountMapper.mapToSendBaseEmailReq(activatedUser, profileResDto);
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_NEW_ACCOUNT, emailReqDto);
 
         log.info("Successfully activated account for user: '{}'", activatedUser);
