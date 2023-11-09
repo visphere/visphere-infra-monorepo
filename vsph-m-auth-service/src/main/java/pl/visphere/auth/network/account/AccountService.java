@@ -5,12 +5,11 @@
 package pl.visphere.auth.network.account;
 
 import pl.visphere.auth.network.account.dto.ActivateAccountReqDto;
-import pl.visphere.auth.network.account.dto.ActivateAccountResDto;
 import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
 import pl.visphere.lib.BaseMessageResDto;
 
 interface AccountService {
     BaseMessageResDto createNew(CreateAccountReqDto reqDto);
-    ActivateAccountResDto activate(String token);
+    BaseMessageResDto activate(String token);
     BaseMessageResDto resend(ActivateAccountReqDto reqDto);
 }

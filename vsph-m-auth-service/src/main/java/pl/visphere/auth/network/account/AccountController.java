@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.visphere.auth.network.account.dto.ActivateAccountReqDto;
-import pl.visphere.auth.network.account.dto.ActivateAccountResDto;
 import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
 import pl.visphere.lib.BaseMessageResDto;
 
@@ -26,9 +25,7 @@ class AccountController {
     }
 
     @PatchMapping("/activate/{token}")
-    ResponseEntity<ActivateAccountResDto> activate(
-        @PathVariable String token
-    ) {
+    ResponseEntity<BaseMessageResDto> activate(@PathVariable String token) {
         return ResponseEntity.ok(accountService.activate(token));
     }
 

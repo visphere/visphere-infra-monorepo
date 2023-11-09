@@ -22,7 +22,6 @@ import pl.visphere.auth.exception.RoleException;
 import pl.visphere.auth.exception.UserException;
 import pl.visphere.auth.i18n.LocaleSet;
 import pl.visphere.auth.network.account.dto.ActivateAccountReqDto;
-import pl.visphere.auth.network.account.dto.ActivateAccountResDto;
 import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
 import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
@@ -93,7 +92,7 @@ class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public ActivateAccountResDto activate(String token) {
+    public BaseMessageResDto activate(String token) {
         final OtaToken type = OtaToken.ACTIVATE_ACCOUNT;
         final OtaTokenEntity otaToken = otaTokenRepository
             .findByTokenAndTypeAndIsUsedFalse(token, type)
@@ -126,9 +125,8 @@ class AccountServiceImpl implements AccountService {
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_NEW_ACCOUNT, emailReqDto);
 
         log.info("Successfully activated account for user: '{}'", activatedUser);
-        return ActivateAccountResDto.builder()
+        return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.ACTIVATE_ACCOUNT_RESPONSE_SUCCESS))
-            .mfaEnabled(user.getEnabledMfa())
             .build();
     }
 
