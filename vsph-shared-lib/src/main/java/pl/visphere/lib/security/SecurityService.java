@@ -7,11 +7,16 @@ package pl.visphere.lib.security;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
+import pl.visphere.lib.filter.JwtAuthenticationFilter;
 import pl.visphere.lib.filter.MiddlewareExceptionFilter;
 import pl.visphere.lib.i18n.I18nService;
+import pl.visphere.lib.jwt.JwtService;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.resolver.AccessDeniedResolver;
 import pl.visphere.lib.resolver.AuthResolver;
 
@@ -19,15 +24,24 @@ public class SecurityService {
     private final MiddlewareExceptionFilter middlewareExceptionFilter;
     private final AuthResolver authResolver;
     private final AccessDeniedResolver accessDeniedResolver;
+    private final String[] unsecuredMatchers;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     public SecurityService(
         HandlerExceptionResolver handlerExceptionResolver,
         I18nService i18nService,
-        LocaleResolver localeResolver
+        LocaleResolver localeResolver,
+        JwtService jwtService,
+        UserDetailsService userDetailsService,
+        SyncQueueHandler syncQueueHandler,
+        String[] unsecuredMatchers
     ) {
         this.middlewareExceptionFilter = new MiddlewareExceptionFilter(handlerExceptionResolver, localeResolver);
         this.authResolver = new AuthResolver(i18nService, localeResolver);
         this.accessDeniedResolver = new AccessDeniedResolver(i18nService, localeResolver);
+        this.unsecuredMatchers = unsecuredMatchers;
+        this.jwtAuthenticationFilter = new JwtAuthenticationFilter(jwtService, userDetailsService,
+            syncQueueHandler, unsecuredMatchers);
     }
 
     public HttpSecurity configureStatelessSecurity(HttpSecurity httpSecurity, String matcher) throws Exception {
@@ -41,6 +55,11 @@ public class SecurityService {
                 .authenticationEntryPoint(authResolver)
                 .accessDeniedHandler(accessDeniedResolver)
             )
-            .securityMatcher(matcher);
+            .securityMatcher(matcher)
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(unsecuredMatchers).permitAll()
+                .anyRequest().authenticated()
+            )
+            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
     }
 }

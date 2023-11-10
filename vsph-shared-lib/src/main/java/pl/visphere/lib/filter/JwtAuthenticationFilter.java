@@ -14,6 +14,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import pl.visphere.lib.jwt.JwtException;
@@ -27,12 +28,14 @@ import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.UserPrincipalAuthenticationToken;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final SyncQueueHandler syncQueueHandler;
+    private final String[] unsecuredMatchers;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain chain)
@@ -65,5 +68,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final var authToken = new UserPrincipalAuthenticationToken(req, userDetails);
         SecurityContextHolder.getContext().setAuthentication(authToken);
         chain.doFilter(req, res);
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest req) {
+        final AntPathMatcher matcher = new AntPathMatcher();
+        return Arrays.stream(unsecuredMatchers)
+            .anyMatch(path -> matcher.match(path, req.getServletPath()));
     }
 }
