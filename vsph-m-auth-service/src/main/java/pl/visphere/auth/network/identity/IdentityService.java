@@ -5,8 +5,8 @@
 package pl.visphere.auth.network.identity;
 
 import jakarta.servlet.http.HttpServletRequest;
+import pl.visphere.auth.network.LoginResDto;
 import pl.visphere.auth.network.identity.dto.LoginPasswordReqDto;
-import pl.visphere.auth.network.identity.dto.LoginResDto;
 import pl.visphere.auth.network.identity.dto.RefreshReqDto;
 import pl.visphere.auth.network.identity.dto.RefreshResDto;
 import pl.visphere.lib.BaseMessageResDto;

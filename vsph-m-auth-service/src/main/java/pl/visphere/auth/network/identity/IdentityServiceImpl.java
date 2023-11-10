@@ -23,8 +23,8 @@ import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.exception.RefrehTokenException;
 import pl.visphere.auth.exception.UserException;
 import pl.visphere.auth.i18n.LocaleSet;
+import pl.visphere.auth.network.LoginResDto;
 import pl.visphere.auth.network.identity.dto.LoginPasswordReqDto;
-import pl.visphere.auth.network.identity.dto.LoginResDto;
 import pl.visphere.auth.network.identity.dto.RefreshReqDto;
 import pl.visphere.auth.network.identity.dto.RefreshResDto;
 import pl.visphere.lib.BaseMessageResDto;
@@ -48,7 +48,6 @@ class IdentityServiceImpl implements IdentityService {
     private final JwtService jwtService;
     private final SyncQueueHandler syncQueueHandler;
     private final AuthenticationManager authenticationManager;
-    private final IdentityMapper identityMapper;
 
     private final UserRepository userRepository;
     private final BlackListJwtRepository blackListJwtRepository;
@@ -69,7 +68,7 @@ class IdentityServiceImpl implements IdentityService {
 
         String token = StringUtils.EMPTY;
         String refreshToken = StringUtils.EMPTY;
-        if (user.getActivated() && !user.getEnabledMfa()) {
+        if (user.getIsActivated() && !user.getEnabledMfa()) {
             token = generateToken(user);
             final TokenData generateRefreshToken = jwtService.generateRefreshToken();
             final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
@@ -82,13 +81,13 @@ class IdentityServiceImpl implements IdentityService {
         }
 
         String userProfileUrl = StringUtils.EMPTY;
-        if (user.getActivated()) {
+        if (user.getIsActivated()) {
             final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(),
                     ProfileImageDetailsResDto.class);
             userProfileUrl = profileImageDetails.profileImagePath();
         }
-        final LoginResDto resDto = identityMapper.mapToLoginResDto(userProfileUrl, user, token, refreshToken);
+        final LoginResDto resDto = new LoginResDto(userProfileUrl, user, token, refreshToken);
 
         log.info("Successfully login via username and password for user: '{}'", resDto);
         return resDto;
@@ -110,8 +109,8 @@ class IdentityServiceImpl implements IdentityService {
             .findByRefreshTokenAndUserId(refreshToken, user.getId())
             .orElseThrow(() -> new RefrehTokenException.RefreshTokenExpiredException(refreshToken));
 
-        final LoginResDto resDto = identityMapper.mapToLoginResDto(profileImageDetails.profileImagePath(),
-            user, accessToken, refreshTokenEntity.getRefreshToken());
+        final LoginResDto resDto = new LoginResDto(profileImageDetails.profileImagePath(), user, accessToken,
+            refreshTokenEntity.getRefreshToken());
 
         log.info("Successfully login via access token for user: '{}'", resDto);
         return resDto;
