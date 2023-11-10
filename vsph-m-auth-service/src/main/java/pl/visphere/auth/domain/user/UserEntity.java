@@ -43,6 +43,11 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
     private Boolean enabledMfa;
 
     @Column(insertable = false)
+    private Boolean mfaIsSetup;
+
+    private String mfaSecret;
+
+    @Column(insertable = false)
     private Boolean isActivated;
 
     @ManyToMany
@@ -116,12 +121,28 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.enabledMfa = enabledMfa;
     }
 
-    public Boolean getActivated() {
+    public Boolean getIsActivated() {
         return isActivated;
     }
 
-    public void setActivated(Boolean activated) {
-        isActivated = activated;
+    public void setIsActivated(Boolean isActivated) {
+        this.isActivated = isActivated;
+    }
+
+    public Boolean getMfaIsSetup() {
+        return mfaIsSetup;
+    }
+
+    public void setMfaIsSetup(Boolean mfaSetup) {
+        mfaIsSetup = mfaSetup;
+    }
+
+    public String getMfaSecret() {
+        return mfaSecret;
+    }
+
+    public void setMfaSecret(String mfaSecret) {
+        this.mfaSecret = mfaSecret;
     }
 
     public Set<RoleEntity> getRoles() {
@@ -147,6 +168,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
             ", lastName=" + lastName +
             ", birthDate=" + birthDate +
             ", enabledMfa=" + enabledMfa +
+            ", mfaIsSetup=" + mfaIsSetup +
             ", isActivated=" + isActivated +
             '}';
     }
