@@ -21,6 +21,7 @@ public enum QueueTopic implements Property {
     EMAIL_NEW_ACCOUNT("email-new-account", false),
     EMAIL_CHANGE_PASSWORD("email-change-password", false),
     EMAIL_PASSWORD_CHANGED("email-password-changed", false),
+    EMAIL_MFA_CODE("email-mfa-code", false),
     GENERATE_DEFAULT_USER_PROFILE("generate-default-user-profile"),
     GENERATE_DEFAULT_GUILD_PROFILE("generate-default-guild-profile"),
     UPDATE_DEFAULT_GUILD_PROFILE("update-default-guild-profile"),

@@ -12,4 +12,5 @@ public interface MailService {
     void newAccount(SendBaseEmailReqDto reqDto);
     void changePassword(SendTokenEmailReqDto reqDto);
     void passwordChanged(SendBaseEmailReqDto reqDto);
+    void mfaCode(SendTokenEmailReqDto reqDto);
 }

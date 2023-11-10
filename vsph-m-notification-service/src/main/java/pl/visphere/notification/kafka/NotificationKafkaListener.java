@@ -40,4 +40,9 @@ class NotificationKafkaListener {
     void sendForPasswordChanged(Message<SendBaseEmailReqDto> reqDto) {
         asyncListenerHandler.parseAndInvoke(reqDto, mailService::passwordChanged);
     }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.email-mfa-code}")
+    void sendForMfaEmailCode(Message<SendTokenEmailReqDto> reqDto) {
+        asyncListenerHandler.parseAndInvoke(reqDto, mailService::mfaCode);
+    }
 }

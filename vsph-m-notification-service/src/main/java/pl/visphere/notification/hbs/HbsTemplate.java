@@ -14,6 +14,7 @@ public enum HbsTemplate implements HbsFile {
     NEW_ACCOUNT("new-account"),
     CHANGE_PASSWORD("change-password"),
     PASSWORD_CHANGED("password-changed"),
+    MFA_CODE("mfa-code"),
     ;
 
     private final String templateName;

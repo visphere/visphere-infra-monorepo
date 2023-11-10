@@ -13,6 +13,7 @@ import pl.visphere.lib.i18n.LocaleExtendableSet;
 public enum LocaleSet implements LocaleExtendableSet {
     MAIL_ACTIVATE_ACCOUNT_TITLE("vsph.i18n.mail.activateAccount.title"),
     MAIL_CHANGE_PASSWORD_TITLE("vsph.i18n.mail.changePassword.title"),
+    MAIL_MFA_CODE_TITLE("vsph.i18n.mail.mfaCode.title"),
     MAIL_PASSWORD_CHANGED_TITLE("vsph.i18n.mail.passwordChanged.title"),
     MAIL_NEW_ACCOUNT_TITLE("vsph.i18n.mail.newAccount.title"),
     ;

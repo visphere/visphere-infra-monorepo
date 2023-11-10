@@ -104,10 +104,24 @@ public class MailServiceImpl implements MailService {
         final String htmlContent = hbsProcessingService
             .parseToRawHtml(HbsTemplate.PASSWORD_CHANGED, title, senderVariables, messageUuid);
 
-        persistMirrorInS3(htmlContent, messageUuid);
+        sendEmail(reqDto, title, htmlContent, messageUuid);
+    }
 
-        mailSenderService.sendEmail(instantiatePayload(reqDto, title, htmlContent));
-        log.info("Sending email for: '{}' ended. Call finished successfully.", reqDto);
+    @Override
+    public void mfaCode(SendTokenEmailReqDto reqDto) {
+        final String messageUuid = UUID.randomUUID().toString();
+
+        final Map<String, Object> senderVariables = new HashMap<>();
+        senderVariables.put("username", reqDto.getFullName());
+        senderVariables.put("token", reqDto.getOtaToken());
+        senderVariables.put("tokenLife", otaTokenProperties.getMfaEmailMinutes());
+        senderVariables.put("profileBase64", getUserProfileImageAsBase64(reqDto));
+
+        final String title = createTitle(LocaleSet.MAIL_MFA_CODE_TITLE, reqDto.getFullName());
+        final String htmlContent = hbsProcessingService
+            .parseToRawHtml(HbsTemplate.MFA_CODE, title, senderVariables, messageUuid);
+
+        sendEmail(reqDto, title, htmlContent, messageUuid);
     }
 
     private String generateClientRouteLink(String destination) {
