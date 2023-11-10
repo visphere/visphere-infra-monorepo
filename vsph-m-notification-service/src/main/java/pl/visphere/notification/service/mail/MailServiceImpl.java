@@ -42,10 +42,12 @@ public class MailServiceImpl implements MailService {
     @Override
     public void activateAccount(SendTokenEmailReqDto reqDto) {
         final String messageUuid = UUID.randomUUID().toString();
+        final String token = reqDto.getOtaToken();
 
         final Map<String, Object> senderVariables = new HashMap<>();
         senderVariables.put("username", reqDto.getFullName());
         senderVariables.put("token", reqDto.getOtaToken());
+        senderVariables.put("clientRedirectUrl", generateClientRouteLink("/auth/activate-account/" + token));
         senderVariables.put("tokenLife", otaTokenProperties.getActivateAccountHours());
 
         final String title = createTitle(LocaleSet.MAIL_ACTIVATE_ACCOUNT_TITLE, reqDto.getFullName());
@@ -78,11 +80,13 @@ public class MailServiceImpl implements MailService {
     @Override
     public void changePassword(SendTokenEmailReqDto reqDto) {
         final String messageUuid = UUID.randomUUID().toString();
+        final String token = reqDto.getOtaToken();
 
         final Map<String, Object> senderVariables = new HashMap<>();
         senderVariables.put("username", reqDto.getFullName());
         senderVariables.put("token", reqDto.getOtaToken());
         senderVariables.put("tokenLife", otaTokenProperties.getChangePasswordMinutes());
+        senderVariables.put("clientRedirectUrl", generateClientRouteLink("/auth/change-password/" + token));
         senderVariables.put("profileBase64", getUserProfileImageAsBase64(reqDto));
 
         final String title = createTitle(LocaleSet.MAIL_CHANGE_PASSWORD_TITLE, reqDto.getFullName());
