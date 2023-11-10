@@ -15,6 +15,7 @@ import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.exception.OtaTokenException;
 import pl.visphere.auth.exception.UserException;
 import pl.visphere.auth.i18n.LocaleSet;
+import pl.visphere.auth.network.OtaTokenEmailMapper;
 import pl.visphere.auth.network.renewpassword.dto.AttemptReqDto;
 import pl.visphere.auth.network.renewpassword.dto.ChangeReqDto;
 import pl.visphere.auth.service.otatoken.OtaTokenService;
@@ -37,7 +38,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     private final OtaTokenService otaTokenService;
     private final PasswordEncoder passwordEncoder;
     private final AsyncQueueHandler asyncQueueHandler;
-    private final RenewPasswordMapper renewPasswordMapper;
+    private final OtaTokenEmailMapper otaTokenEmailMapper;
     private final SyncQueueHandler syncQueueHandler;
 
     private final UserRepository userRepository;
@@ -102,7 +103,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
 
-        final SendBaseEmailReqDto emailReqDto = renewPasswordMapper.mapToSendBaseEmailReq(user, profileImageDetails);
+        final SendBaseEmailReqDto emailReqDto = otaTokenEmailMapper.mapToSendBaseEmailReq(user, profileImageDetails);
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_PASSWORD_CHANGED, emailReqDto);
 
         log.info("Successfully change password for user: '{}'", savedUser);
@@ -119,8 +120,8 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
 
-        final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.CHANGE_PASSWORD);
-        final SendTokenEmailReqDto emailReqDto = renewPasswordMapper
+        final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.MFA_EMAIL);
+        final SendTokenEmailReqDto emailReqDto = otaTokenEmailMapper
             .mapToSendTokenEmailReq(user, otaResDto, profileImageDetails);
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_CHANGE_PASSWORD, emailReqDto);

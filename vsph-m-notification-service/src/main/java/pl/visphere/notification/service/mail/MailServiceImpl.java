@@ -53,9 +53,7 @@ public class MailServiceImpl implements MailService {
             .parseToRawHtml(HbsTemplate.ACTIVATE_ACCOUNT, title, senderVariables, messageUuid);
 
         persistMirrorInS3(htmlContent, messageUuid);
-
-        mailSenderService.sendEmail(instantiatePayload(reqDto, title, htmlContent));
-        log.info("Sending email for: '{}' ended. Call finished successfully.", reqDto);
+        sendEmail(reqDto, title, htmlContent, messageUuid);
     }
 
     @Override
@@ -74,9 +72,7 @@ public class MailServiceImpl implements MailService {
             .parseToRawHtml(HbsTemplate.NEW_ACCOUNT, title, senderVariables, messageUuid);
 
         persistMirrorInS3(htmlContent, messageUuid);
-
-        mailSenderService.sendEmail(instantiatePayload(reqDto, title, htmlContent));
-        log.info("Sending email for: '{}' ended. Call finished successfully.", reqDto);
+        sendEmail(reqDto, title, htmlContent, messageUuid);
     }
 
     @Override
@@ -93,10 +89,7 @@ public class MailServiceImpl implements MailService {
         final String htmlContent = hbsProcessingService
             .parseToRawHtml(HbsTemplate.CHANGE_PASSWORD, title, senderVariables, messageUuid);
 
-        persistMirrorInS3(htmlContent, messageUuid);
-
-        mailSenderService.sendEmail(instantiatePayload(reqDto, title, htmlContent));
-        log.info("Sending email for: '{}' ended. Call finished successfully.", reqDto);
+        sendEmail(reqDto, title, htmlContent, messageUuid);
     }
 
     @Override
@@ -135,14 +128,6 @@ public class MailServiceImpl implements MailService {
         s3Client.putObject(S3Bucket.EMAILS, filePayload);
     }
 
-    private MailPayloadDto instantiatePayload(SendEmailReqDto reqDto, String title, String htmlContent) {
-        return MailPayloadDto.builder()
-            .title(title)
-            .htmlContent(htmlContent)
-            .sendTo(Set.of(reqDto.getEmailAddress()))
-            .build();
-    }
-
     private String getUserProfileImageAsBase64(SendEmailReqDto reqDto) {
         final String fileName = String.format("%s/%s-%s.%s", reqDto.getUserId(), S3ResourcePrefix.PROFILE.getPrefix(),
             reqDto.getProfileImageUuid(), FileExtension.PNG);
@@ -152,5 +137,16 @@ public class MailServiceImpl implements MailService {
 
     private String createTitle(LocaleSet title, String fullName) {
         return String.format("%s | (%s) %s", mailProperties.getAppName(), fullName, i18nService.getMessage(title));
+    }
+
+    private void sendEmail(SendEmailReqDto reqDto, String title, String htmlContent, String messageUuid) {
+        persistMirrorInS3(htmlContent, messageUuid);
+        final MailPayloadDto payloadDto = MailPayloadDto.builder()
+            .title(title)
+            .htmlContent(htmlContent)
+            .sendTo(Set.of(reqDto.getEmailAddress()))
+            .build();
+        mailSenderService.sendEmail(payloadDto);
+        log.info("Sending email for: '{}' ended. Call finished successfully.", reqDto);
     }
 }

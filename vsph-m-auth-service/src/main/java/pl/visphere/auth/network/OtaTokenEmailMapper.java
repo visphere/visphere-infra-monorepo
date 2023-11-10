@@ -2,7 +2,7 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.auth.network.renewpassword;
+package pl.visphere.auth.network;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -16,10 +16,10 @@ import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 
 @Component
 @RequiredArgsConstructor
-class RenewPasswordMapper {
+public class OtaTokenEmailMapper {
     private final ModelMapper modelMapper;
 
-    SendTokenEmailReqDto mapToSendTokenEmailReq(
+    public SendTokenEmailReqDto mapToSendTokenEmailReq(
         UserEntity user,
         GenerateOtaResDto otaResDto,
         ProfileImageDetailsResDto profileImageDetails
@@ -32,7 +32,7 @@ class RenewPasswordMapper {
         return reqDto;
     }
 
-    SendBaseEmailReqDto mapToSendBaseEmailReq(UserEntity user, ProfileImageDetailsResDto profileImageDetails) {
+    public SendBaseEmailReqDto mapToSendBaseEmailReq(UserEntity user, ProfileImageDetailsResDto profileImageDetails) {
         final SendBaseEmailReqDto reqDto = modelMapper.map(user, SendBaseEmailReqDto.class);
         reqDto.setUserId(user.getId());
         reqDto.setFullName(createFullName(user));

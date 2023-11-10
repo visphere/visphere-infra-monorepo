@@ -51,6 +51,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
     private Boolean isActivated;
 
     @ManyToMany
+    @Builder.Default
     @JoinTable(name = "users_roles",
         joinColumns = { @JoinColumn(name = "user_id") },
         inverseJoinColumns = { @JoinColumn(name = "role_id") }
@@ -162,7 +163,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         return "{" +
             "username=" + username +
             ", emailAddress=" + emailAddress +
-            ", password=" + password +
             ", secondEmailAddress=" + secondEmailAddress +
             ", firstName=" + firstName +
             ", lastName=" + lastName +
