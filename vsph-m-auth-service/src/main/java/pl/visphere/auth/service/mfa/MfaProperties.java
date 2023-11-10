@@ -2,21 +2,18 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.notification.service.mail;
+package pl.visphere.auth.service.mfa;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.context.annotation.Configuration;
 
-@Setter
-@Getter
+@Data
 @RefreshScope
 @Configuration
-@ConfigurationProperties(prefix = "visphere.ota.life")
-class OtaTokenProperties {
-    private Integer activateAccountHours;
-    private Integer changePasswordMinutes;
-    private Integer mfaEmailMinutes;
+@ConfigurationProperties(prefix = "visphere.mfa")
+public class MfaProperties {
+    private String label;
+    private String issuer;
 }

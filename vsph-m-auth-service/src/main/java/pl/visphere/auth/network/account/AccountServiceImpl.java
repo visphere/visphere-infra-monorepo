@@ -23,6 +23,7 @@ import pl.visphere.auth.exception.UserException;
 import pl.visphere.auth.i18n.LocaleSet;
 import pl.visphere.auth.network.account.dto.ActivateAccountReqDto;
 import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
+import pl.visphere.auth.service.mfa.MfaProxyService;
 import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
@@ -51,6 +52,7 @@ class AccountServiceImpl implements AccountService {
     private final AsyncQueueHandler asyncQueueHandler;
     private final PasswordEncoder passwordEncoder;
     private final OtaTokenService otaTokenService;
+    private final MfaProxyService mfaProxyService;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -99,7 +101,7 @@ class AccountServiceImpl implements AccountService {
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
 
         final UserEntity user = otaToken.getUser();
-        if (user.getActivated()) {
+        if (user.getIsActivated()) {
             throw new UserException.UserAlreadyActivatedException(user);
         }
         if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
@@ -107,8 +109,10 @@ class AccountServiceImpl implements AccountService {
             throw new OtaTokenException.OtaTokenNotFoundException(token, type);
         }
         otaToken.setUsed(true);
-        user.setActivated(true);
-
+        user.setIsActivated(true);
+        if (user.getEnabledMfa()) {
+            user.setMfaSecret(mfaProxyService.generateSecret());
+        }
         final UserEntity activatedUser = userRepository.save(user);
 
         final DefaultUserProfileReqDto profileReqDto = DefaultUserProfileReqDto.builder()

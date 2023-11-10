@@ -27,6 +27,7 @@ class CorsConfiguration {
             .addPolicy("/api/v1/auth/check/**", List.of(GET, PATCH))
             .addPolicy("/api/v1/auth/identity/**", List.of(POST, PATCH, DELETE))
             .addPolicy("/api/v1/auth/password/renew/**", List.of(POST, PATCH))
+            .addPolicy("/api/v1/auth/mfa/**", List.of(POST, PATCH))
             .addPolicy("/api/v1/misc/captcha/**", List.of(POST))
             .addPolicy("/api/v1/multimedia/profile/color/**", List.of(GET, PATCH))
             .addPolicy("/api/v1/multimedia/profile/image/**", List.of(POST, DELETE))

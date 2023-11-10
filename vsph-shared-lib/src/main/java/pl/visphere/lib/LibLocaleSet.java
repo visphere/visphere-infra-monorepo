@@ -18,6 +18,7 @@ public enum LibLocaleSet implements LocaleExtendableSet {
     SECURITY_AUTHENTICATION_EXCEPTION_MESSAGE("vsph.lib.exc.authenticationException"),
     ROLE_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.roleNotFound"),
     USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userByIdNotFound"),
+    ACTIVATED_USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.activatedUserByIdNotFound"),
     USER_BY_USERNAME_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.userByUsernameNotFound"),
     USER_ALREADY_EXIST_EXCEPTION_MESSAGE("vsph.lib.exc.userAlreadyExist"),
     USER_ALREADY_ACTIVATED_EXCEPTION_MESSAGE("vsph.lib.exc.userAlreadyActivated"),

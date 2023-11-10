@@ -15,6 +15,7 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findById(Long id);
+    Optional<UserEntity> findByIdAndIsActivatedIsTrue(Long id);
 
     @Query(value = "from UserEntity u join fetch u.roles where u.username = :identity or u.emailAddress = :identity")
     Optional<UserEntity> findByUsernameOrEmailAddress(@Param("identity") String identity);

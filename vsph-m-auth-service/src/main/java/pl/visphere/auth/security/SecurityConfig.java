@@ -46,6 +46,11 @@ class SecurityConfig {
                 .requestMatchers("/api/v1/auth/password/renew/change/{token}").permitAll()
                 .requestMatchers("/api/v1/auth/check/prop/exist").permitAll()
                 .requestMatchers("/api/v1/auth/check/myaccounts/exists").permitAll()
+                .requestMatchers("/api/v1/auth/mfa/authenticator/data").permitAll()
+                .requestMatchers("/api/v1/auth/mfa/authenticator/set/{code}").permitAll()
+                .requestMatchers("/api/v1/auth/mfa/authenticator/verify/{code}").permitAll()
+                .requestMatchers("/api/v1/auth/mfa/alternative/email").permitAll()
+                .requestMatchers("/api/v1/auth/mfa/alternative/email/{token}/validate").permitAll()
                 .anyRequest().authenticated()
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

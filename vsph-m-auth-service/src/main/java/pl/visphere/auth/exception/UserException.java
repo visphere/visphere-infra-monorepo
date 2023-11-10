@@ -27,6 +27,14 @@ public class UserException {
     }
 
     @Slf4j
+    public static class UserNotExistOrNotActivatedException extends AbstractRestException {
+        public UserNotExistOrNotActivatedException(Long userId) {
+            super(HttpStatus.NOT_FOUND, LibLocaleSet.ACTIVATED_USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE, Map.of("userId", userId));
+            log.error("Searching activated user by id: '{}' not found in database", userId);
+        }
+    }
+
+    @Slf4j
     public static class UserAlreadyExistException extends AbstractRestException {
         public UserAlreadyExistException(String username, String emailAddress) {
             super(HttpStatus.BAD_REQUEST, LibLocaleSet.USER_ALREADY_EXIST_EXCEPTION_MESSAGE);

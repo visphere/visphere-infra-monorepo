@@ -50,6 +50,7 @@
     <apache.commons.codec.version>1.16.0</apache.commons.codec.version>
     <apache.commons.io.version>2.15.0</apache.commons.io.version>
     <mustache.version>0.9.10</mustache.version>
+    <mfa-totp.version>1.7.1</mfa-totp.version>
     <!-- End of libs versions section -->
   </properties>
 
@@ -178,6 +179,12 @@
         <artifactId>compiler</artifactId>
         <version>${mustache.version}</version>
       </dependency>
+      <dependency>
+        <groupId>dev.samstevens.totp</groupId>
+        <artifactId>totp</artifactId>
+        <version>${mfa-totp.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
 </project>
