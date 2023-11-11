@@ -44,8 +44,10 @@ public class SecurityService {
             syncQueueHandler, unsecuredMatchers);
     }
 
-    public HttpSecurity configureStatelessSecurity(HttpSecurity httpSecurity, String matcher) throws Exception {
-        return httpSecurity
+    public HttpSecurity configureStatelessSecurity(
+        HttpSecurity httpSecurity, String matcher, SecurityExtender callback
+    ) throws Exception {
+        final HttpSecurity security = httpSecurity
             .sessionManagement(options -> options.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .addFilterBefore(middlewareExceptionFilter, LogoutFilter.class)
             .formLogin(AbstractHttpConfigurer::disable)
@@ -59,7 +61,13 @@ public class SecurityService {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(unsecuredMatchers).permitAll()
                 .anyRequest().authenticated()
-            )
-            .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+            );
+        final HttpSecurity callbackSecurity = callback.extend(security);
+        callbackSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        return callbackSecurity;
+    }
+
+    public HttpSecurity configureStatelessSecurity(HttpSecurity httpSecurity, String matcher) throws Exception {
+        return configureStatelessSecurity(httpSecurity, matcher, security -> security);
     }
 }
