@@ -51,7 +51,6 @@ public abstract class OAuth2UserInfo {
             return switch (supplier) {
                 case GOOGLE -> new GoogleOAuth2UserInfo(attributes);
                 case FACEBOOK -> new FacebookOAuth2UserInfo(attributes);
-                case LOCAL -> null;
             };
         }
     }

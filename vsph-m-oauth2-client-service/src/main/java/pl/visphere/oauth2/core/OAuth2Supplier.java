@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 public enum OAuth2Supplier {
     GOOGLE("google"),
     FACEBOOK("facebook"),
-    LOCAL("local"),
     ;
 
     private final String supplierName;
