@@ -29,8 +29,8 @@ public record LoginResDto(
             token,
             refreshToken,
             user.getIsActivated(),
-            user.getEnabledMfa(),
-            user.getMfaIsSetup()
+            user.getMfaUser() != null,
+            user.getMfaUser() != null ? user.getMfaUser().getMfaIsSetup() : false
         );
     }
 }

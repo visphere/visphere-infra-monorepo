@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.visphere.auth.domain.mfausers.MfaUserEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
 import pl.visphere.auth.domain.role.RoleEntity;
@@ -79,6 +80,10 @@ class AccountServiceImpl implements AccountService {
 
         // TODO: save global notification settings in notifications microservice table
 
+        if (reqDto.getEnabledMfa()) {
+            user.persistMfaUser(new MfaUserEntity());
+            log.info("Successfully addded MFA user details user: '{}'", user);
+        }
         final UserEntity savedUser = userRepository.save(user);
         final GenerateOtaResDto otaResDto = otaTokenService.generate(savedUser, OtaToken.ACTIVATE_ACCOUNT);
 
@@ -111,8 +116,10 @@ class AccountServiceImpl implements AccountService {
         }
         otaToken.setUsed(true);
         user.setIsActivated(true);
-        if (user.getEnabledMfa()) {
-            user.setMfaSecret(mfaProxyService.generateSecret());
+
+        if (user.getMfaUser() != null) {
+            user.getMfaUser().setMfaSecret(mfaProxyService.generateSecret());
+            log.info("Successfully saved MFA secret key for user: '{}'", user);
         }
         final UserEntity activatedUser = userRepository.save(user);
 

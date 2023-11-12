@@ -68,7 +68,7 @@ class IdentityServiceImpl implements IdentityService {
 
         String token = StringUtils.EMPTY;
         String refreshToken = StringUtils.EMPTY;
-        if (user.getIsActivated() && !user.getEnabledMfa()) {
+        if (user.getIsActivated() && user.getMfaUser() == null) {
             token = generateToken(user);
             final TokenData generateRefreshToken = jwtService.generateRefreshToken();
             final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()

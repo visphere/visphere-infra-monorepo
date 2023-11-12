@@ -8,6 +8,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import pl.visphere.auth.domain.mfausers.MfaUserEntity;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.lib.AbstractAuditableEntity;
 
@@ -40,13 +41,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
 
     private LocalDate birthDate;
 
-    private Boolean enabledMfa;
-
-    @Column(insertable = false)
-    private Boolean mfaIsSetup;
-
-    private String mfaSecret;
-
     @Column(insertable = false)
     private Boolean isActivated;
 
@@ -59,6 +53,9 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         inverseJoinColumns = { @JoinColumn(name = "role_id") }
     )
     private Set<RoleEntity> roles = new HashSet<>();
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private MfaUserEntity mfaUser;
 
     public String getUsername() {
         return username;
@@ -116,14 +113,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.birthDate = birthDate;
     }
 
-    public Boolean getEnabledMfa() {
-        return enabledMfa;
-    }
-
-    public void setEnabledMfa(Boolean enabledMfa) {
-        this.enabledMfa = enabledMfa;
-    }
-
     public Boolean getIsActivated() {
         return isActivated;
     }
@@ -152,6 +141,19 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.roles.add(roleEntity);
     }
 
+    public MfaUserEntity getMfaUser() {
+        return mfaUser;
+    }
+
+    void setMfaUser(MfaUserEntity mfaUser) {
+        this.mfaUser = mfaUser;
+    }
+
+    public void persistMfaUser(MfaUserEntity mfaUser) {
+        this.mfaUser = mfaUser;
+        mfaUser.setUser(this);
+    }
+
     @Override
     public String toString() {
         return "{" +
@@ -161,8 +163,6 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
             ", firstName=" + firstName +
             ", lastName=" + lastName +
             ", birthDate=" + birthDate +
-            ", enabledMfa=" + enabledMfa +
-            ", mfaIsSetup=" + mfaIsSetup +
             ", isActivated=" + isActivated +
             ", externalCredProvider=" + externalCredProvider +
             '}';

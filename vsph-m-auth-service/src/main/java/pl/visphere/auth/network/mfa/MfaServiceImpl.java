@@ -11,6 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.visphere.auth.domain.mfausers.MfaUserEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
@@ -59,10 +60,11 @@ class MfaServiceImpl implements MfaService {
     @Override
     public MfaAuthenticatorDataResDto authenticatorData(MfaCredentialsReqDto reqDto) {
         final UserEntity user = authenticateUser(reqDto);
-        if (user.getMfaIsSetup()) {
+        final MfaUserEntity mfaUser = user.getMfaUser();
+        if (mfaUser.getMfaIsSetup()) {
             throw new MfaException.MfaAlreadyIsSetupException(user.getUsername());
         }
-        final String mfaSecret = user.getMfaSecret();
+        final String mfaSecret = mfaUser.getMfaSecret();
         log.info("Successfully return MFA authenticator app details for user: '{}'", user);
         return MfaAuthenticatorDataResDto.builder()
             .imageUri(mfaProxyService.generateQrCodeUri(mfaSecret))
@@ -74,10 +76,11 @@ class MfaServiceImpl implements MfaService {
     @Transactional
     public LoginResDto authenticatorSetOrVerify(String code, MfaCredentialsReqDto reqDto, boolean isFirstTime) {
         final UserEntity user = authenticateUser(reqDto);
+        final MfaUserEntity mfaUser = user.getMfaUser();
         if (isFirstTime) {
-            user.setMfaIsSetup(true);
+            mfaUser.setMfaIsSetup(true);
         }
-        if (mfaProxyService.isOtpNotValid(user.getMfaSecret(), code)) {
+        if (mfaProxyService.isOtpNotValid(mfaUser.getMfaSecret(), code)) {
             throw new MfaException.MfaInvalidCodeException(code, user.getUsername());
         }
         final LoginResDto resDto = createLoginResponse(user);
@@ -135,7 +138,7 @@ class MfaServiceImpl implements MfaService {
         final UserEntity user = userRepository
             .findByIdAndIsActivatedIsTrue(principal.getId())
             .orElseThrow(() -> new UserException.UserNotExistOrNotActivatedException(principal.getId()));
-        if (!user.getEnabledMfa()) {
+        if (user.getMfaUser() == null) {
             throw new MfaException.MfaNotEnabledException(user.getUsername());
         }
         return user;

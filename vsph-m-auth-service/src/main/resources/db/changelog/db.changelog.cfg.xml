@@ -17,6 +17,8 @@
   <include file="migrations/2023-10-29_0000000_create-ota-tokens-table.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-10-31_0000000_move-from-accounts.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-11-09_0000000_add-mfa-fields.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-11-12_0000000_extract-mfa-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-11-12_0000001_add-oauth2-flag.xml" relativeToChangelogFile="true"/>
 
   <!-- data loaders, common for dev and docker -->
   <include file="loaders/0000000_load-default-roles.xml" relativeToChangelogFile="true"/>
