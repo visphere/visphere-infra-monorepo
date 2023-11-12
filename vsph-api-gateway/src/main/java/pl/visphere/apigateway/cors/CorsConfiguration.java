@@ -32,6 +32,7 @@ class CorsConfiguration {
             .addPolicy("/api/v1/multimedia/profile/color/**", List.of(GET, PATCH))
             .addPolicy("/api/v1/multimedia/profile/image/**", List.of(POST, DELETE))
             .addPolicy("/api/v1/notification/mail/mirror/**", List.of(POST))
+            .addPolicy("/oauth2/**")
             .addPolicy("/api/v1/sphere/guild/**", List.of(POST, PATCH))
             .addPolicy("/api/v1/sphere/link/**", List.of(GET, POST, PATCH, DELETE))
             .createFilter();

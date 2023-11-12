@@ -10,6 +10,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,10 @@ class CorsPolicyBuilder {
         corsConfigurationList.put(path, corsConfig);
         log.info("Registered CORS policy for '{}', methods: '{}'", path, methods);
         return this;
+    }
+
+    CorsPolicyBuilder addPolicy(String path) {
+        return addPolicy(path, Arrays.asList(HttpMethod.values()));
     }
 
     CorsWebFilter createFilter() {

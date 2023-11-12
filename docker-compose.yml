@@ -303,6 +303,17 @@ services:
     networks:
       - visphere-infra-network
 
+  vsph-m-oauth2-client-service:
+    extends:
+      file: ./vsph-m-oauth2-client-service/docker-compose.yml
+      service: vsph-m-oauth2-client-service-template
+    depends_on:
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
+    networks:
+      - visphere-infra-network
+
   vsph-m-sphere-service:
     extends:
       file: ./vsph-m-sphere-service/docker-compose.yml

@@ -60,3 +60,9 @@ vault kv put "$secret_name/vsph-m-chat-service" \
 vault kv put "$secret_name/vsph-m-notification-service" \
   V_MAIL_PARSER_API_HEADER="$(get_env_variable "ENV_MAIL_PARSER_API_HEADER")" \
   V_MAIL_PARSER_API_KEY="$(get_env_variable "ENV_MAIL_PARSER_API_KEY")"
+
+vault kv put "$secret_name/vsph-m-oauth2-client-service" \
+  V_OAUTH2_GOOGLE_CLIENT_ID="$(get_env_variable "VSPH_OAUTH2_GOOGLE_CLIENT_ID")" \
+  V_OAUTH2_GOOGLE_CLIENT_SECRET="$(get_env_variable "VSPH_OAUTH2_GOOGLE_CLIENT_SECRET")" \
+  V_OAUTH2_FACEBOOK_CLIENT_ID="$(get_env_variable "VSPH_OAUTH2_FACEBOOK_CLIENT_ID")" \
+  V_OAUTH2_FACEBOOK_CLIENT_SECRET="$(get_env_variable "VSPH_OAUTH2_FACEBOOK_CLIENT_SECRET")"

@@ -30,6 +30,7 @@
     <module>vsph-m-notification-service</module>
     <module>vsph-m-multimedia-service</module>
     <module>vsph-m-sphere-service</module>
+    <module>vsph-m-oauth2-client-service</module>
   </modules>
 
   <properties>
@@ -184,7 +185,6 @@
         <artifactId>totp</artifactId>
         <version>${mfa-totp.version}</version>
       </dependency>
-
     </dependencies>
   </dependencyManagement>
 </project>

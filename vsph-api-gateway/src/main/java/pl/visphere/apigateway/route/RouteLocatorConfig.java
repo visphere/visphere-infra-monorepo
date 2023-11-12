@@ -22,6 +22,7 @@ class RouteLocatorConfig {
             .route(route -> createOpenApiRoute(route, "vsph-m-misc-service"))
             .route(route -> createOpenApiRoute(route, "vsph-m-multimedia-service"))
             .route(route -> createOpenApiRoute(route, "vsph-m-notification-service"))
+            .route(route -> createOpenApiRoute(route, "vsph-m-oauth2-client-service"))
             .route(route -> createOpenApiRoute(route, "vsph-m-sphere-service"))
             .build();
     }
