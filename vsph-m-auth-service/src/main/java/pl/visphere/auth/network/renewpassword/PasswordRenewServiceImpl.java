@@ -114,7 +114,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
 
     private UserEntity sendRequestForChangePassword(String username) {
         final UserEntity user = userRepository
-            .findByUsernameOrEmailAddress(username)
+            .findByLocalUsernameOrEmailAddress(username)
             .orElseThrow(() -> new UserException.UserNotExistException(username));
 
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler

@@ -50,6 +50,8 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
     @Column(insertable = false)
     private Boolean isActivated;
 
+    private Boolean externalCredProvider;
+
     @ManyToMany
     @Builder.Default
     @JoinTable(name = "users_roles",
@@ -130,20 +132,12 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.isActivated = isActivated;
     }
 
-    public Boolean getMfaIsSetup() {
-        return mfaIsSetup;
+    Boolean getExternalCredProvider() {
+        return externalCredProvider;
     }
 
-    public void setMfaIsSetup(Boolean mfaSetup) {
-        mfaIsSetup = mfaSetup;
-    }
-
-    public String getMfaSecret() {
-        return mfaSecret;
-    }
-
-    public void setMfaSecret(String mfaSecret) {
-        this.mfaSecret = mfaSecret;
+    public void setExternalCredProvider(Boolean externalCredProvider) {
+        this.externalCredProvider = externalCredProvider;
     }
 
     public Set<RoleEntity> getRoles() {
@@ -170,6 +164,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
             ", enabledMfa=" + enabledMfa +
             ", mfaIsSetup=" + mfaIsSetup +
             ", isActivated=" + isActivated +
+            ", externalCredProvider=" + externalCredProvider +
             '}';
     }
 }

@@ -30,7 +30,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public CheckUserResDto checkUser(String usernameOrEmailAddress) {
         final UserEntity user = userRepository
-            .findByUsernameOrEmailAddress(usernameOrEmailAddress)
+            .findByLocalUsernameOrEmailAddress(usernameOrEmailAddress)
             .orElseThrow(() -> new UserException.UserNotExistException(usernameOrEmailAddress));
 
         final Set<AppGrantedAuthority> roles = user.getRoles()

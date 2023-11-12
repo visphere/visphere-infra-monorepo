@@ -75,6 +75,7 @@ class AccountServiceImpl implements AccountService {
         user.setPassword(passwordEncoder.encode(reqDto.getPassword()));
         user.setBirthDate(LocalDate.parse(reqDto.getBirthDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         user.addRole(role);
+        user.setExternalCredProvider(false);
 
         // TODO: save global notification settings in notifications microservice table
 
@@ -137,7 +138,7 @@ class AccountServiceImpl implements AccountService {
     @Override
     public BaseMessageResDto resend(ActivateAccountReqDto reqDto) {
         final UserEntity user = userRepository
-            .findByUsernameOrEmailAddress(reqDto.getEmailAddress())
+            .findByLocalUsernameOrEmailAddress(reqDto.getEmailAddress())
             .orElseThrow(() -> new UserException.UserNotExistException(reqDto.getEmailAddress()));
 
         final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.ACTIVATE_ACCOUNT);

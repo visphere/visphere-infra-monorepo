@@ -17,8 +17,11 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findById(Long id);
     Optional<UserEntity> findByIdAndIsActivatedIsTrue(Long id);
 
-    @Query(value = "from UserEntity u join fetch u.roles where u.username = :identity or u.emailAddress = :identity")
-    Optional<UserEntity> findByUsernameOrEmailAddress(@Param("identity") String identity);
+    @Query(value = """
+            from UserEntity u join fetch u.roles
+            where u.username = :identity or u.emailAddress = :identity and u.externalCredProvider = false
+        """)
+    Optional<UserEntity> findByLocalUsernameOrEmailAddress(@Param("identity") String identity);
 
     boolean existsByUsernameOrEmailAddress(String username, String emailAddress);
     boolean existsByUsername(String username);
