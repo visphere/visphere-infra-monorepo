@@ -153,7 +153,7 @@ class MfaServiceImpl implements MfaService {
             .expiringAt(jwtService.convertToZonedDateTime(refresh.expiredAt()))
             .user(user)
             .build();
-        
+
         refreshTokenRepository.save(refreshToken);
         return new LoginResDto(profileImageDetails.profileImagePath(), user, access.token(), refresh.token());
     }
