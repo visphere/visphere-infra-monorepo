@@ -21,12 +21,15 @@ public class AuthUserDetails implements UserDetails {
     private final long id;
     private final String username;
     private final String password;
+    @Getter
+    private final String emailAddress;
     private final Set<AppGrantedAuthority> authorities;
 
     public AuthUserDetails(CheckUserResDto resDto) {
         this.id = resDto.getId();
         this.username = resDto.getUsername();
         this.password = resDto.getPassword();
+        this.emailAddress = resDto.getEmailAddress();
         this.authorities = resDto.getAuthorities();
     }
 
