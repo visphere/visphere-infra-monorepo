@@ -5,3 +5,4 @@
 CREATE DATABASE vsph_auth;
 CREATE DATABASE vsph_notification;
 CREATE DATABASE vsph_multimedia;
+CREATE DATABASE vsph_oauth2_client;
