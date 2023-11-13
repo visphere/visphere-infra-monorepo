@@ -59,7 +59,7 @@ public class OAuth2SuccessResolver extends SimpleUrlAuthenticationSuccessHandler
 
         final String supplierName = user.getSupplier().getSupplierName();
         final TokenData tokenData = jwtService
-            .generateAccessToken(userDetails.getId(), userDetails.getUsername(), userDetails.getEmailAddress());
+            .generateOAuth2TemporaryToken(user.getOpenId(), userDetails.getId(), user.getSupplier().toString());
 
         OAuth2Cookie responseCookie = AFTER_SIGNUP_REDIR_URL;
         if (user.isAlreadySignup()) {
@@ -67,16 +67,16 @@ public class OAuth2SuccessResolver extends SimpleUrlAuthenticationSuccessHandler
         }
         final String redirectUrl = cookiesService.getCookieValueOrDefault(req, responseCookie, getDefaultTargetUrl());
 
-        final List<String> redirectUris = oAuth2Properties.getRedirectUris();
+        final List<String> authorizedBaseUris = oAuth2Properties.getAuthorizedClientRedirectUris();
         final URI redirectClientUri = URI.create(redirectUrl);
 
-        final boolean isAuthorizedViaRequest = redirectUris.stream().noneMatch(uri -> {
+        final boolean isNotAuthorizedUri = authorizedBaseUris.stream().noneMatch(uri -> {
             final URI authorizedUri = URI.create(uri);
             return authorizedUri.getHost().equalsIgnoreCase(redirectClientUri.getHost())
                 && authorizedUri.getPort() == redirectClientUri.getPort();
         });
-        if (!isAuthorizedViaRequest) {
-            log.error("Attempt to authenticate via OAuth2 by not supported URI/s: '{}'", redirectUris);
+        if (isNotAuthorizedUri) {
+            log.error("Attempt to authenticate via OAuth2 by not authorized URI/s: '{}'", redirectClientUri);
             throw new GenericRestException();
         }
 
@@ -86,6 +86,6 @@ public class OAuth2SuccessResolver extends SimpleUrlAuthenticationSuccessHandler
             .queryParam("supplier", supplierName);
 
         log.info("Successfully login user: '{}' via OAuth2 supplier: '{}'", userDetails, supplierName);
-        return uriComponentsBuilder.toString();
+        return uriComponentsBuilder.toUriString();
     }
 }

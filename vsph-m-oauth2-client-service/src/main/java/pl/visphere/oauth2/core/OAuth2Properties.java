@@ -18,6 +18,6 @@ import java.util.List;
 public class OAuth2Properties {
     private List<String> suppliers;
     private Integer expirationMinutes;
-    private List<String> redirectUris;
+    private List<String> authorizedClientRedirectUris;
     private String springSecurityRedirectUri;
 }

@@ -16,12 +16,14 @@ public class UserException {
     @Slf4j
     public static class UserNotExistException extends AbstractRestException {
         public UserNotExistException(Long userId) {
-            super(HttpStatus.NOT_FOUND, LibLocaleSet.USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE, Map.of("userId", userId));
+            super(HttpStatus.NOT_FOUND, LibLocaleSet.USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE);
             log.error("Searching user by id: '{}' not found in database", userId);
         }
 
         public UserNotExistException(String username) {
-            super(HttpStatus.NOT_FOUND, LibLocaleSet.USER_BY_USERNAME_NOT_FOUND_EXCEPTION_MESSAGE, Map.of("username", username));
+            super(HttpStatus.NOT_FOUND, LibLocaleSet.USER_BY_USERNAME_NOT_FOUND_EXCEPTION_MESSAGE, Map.of(
+                "username", username
+            ));
             log.error("Searching user by username: '{}' not found in database", username);
         }
     }
@@ -29,7 +31,7 @@ public class UserException {
     @Slf4j
     public static class UserNotExistOrNotActivatedException extends AbstractRestException {
         public UserNotExistOrNotActivatedException(Long userId) {
-            super(HttpStatus.NOT_FOUND, LibLocaleSet.ACTIVATED_USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE, Map.of("userId", userId));
+            super(HttpStatus.NOT_FOUND, LibLocaleSet.ACTIVATED_USER_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE);
             log.error("Searching activated user by id: '{}' not found in database", userId);
         }
     }

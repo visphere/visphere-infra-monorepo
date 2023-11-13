@@ -73,6 +73,8 @@ class AccountServiceImpl implements AccountService {
         if (reqDto.getSecondEmailAddress().equals(StringUtils.EMPTY)) {
             user.setSecondEmailAddress(null);
         }
+        user.setFirstName(StringUtils.capitalize(reqDto.getFirstName()));
+        user.setLastName(StringUtils.capitalize(reqDto.getLastName()));
         user.setPassword(passwordEncoder.encode(reqDto.getPassword()));
         user.setBirthDate(LocalDate.parse(reqDto.getBirthDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         user.addRole(role);

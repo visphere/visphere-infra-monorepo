@@ -30,15 +30,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public CheckUserResDto checkUser(String usernameOrEmailAddress) {
         final UserEntity user = userRepository
-            .findByLocalUsernameOrEmailAddress(usernameOrEmailAddress)
+            .findByUsernameOrEmailAddress(usernameOrEmailAddress)
             .orElseThrow(() -> new UserException.UserNotExistException(usernameOrEmailAddress));
 
-        final Set<AppGrantedAuthority> roles = user.getRoles()
+        final Set<AppGrantedAuthority> authorities = user.getRoles()
             .stream().map(RoleEntity::getRole)
             .collect(Collectors.toSet());
 
         final CheckUserResDto resDto = modelMapper.map(user, CheckUserResDto.class);
-        resDto.setAuthorities(roles);
+        resDto.setAuthorities(authorities);
 
         log.info("Successfully find user with details: '{}'", resDto);
         return resDto;

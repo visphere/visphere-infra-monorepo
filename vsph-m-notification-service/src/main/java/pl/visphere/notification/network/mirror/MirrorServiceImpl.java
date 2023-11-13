@@ -9,6 +9,7 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.file.GzipCompressor;
@@ -33,7 +34,7 @@ class MirrorServiceImpl implements MirrorService {
     public String extractMirrorMail(MirrorMailReqDto reqDto) {
         final JwtValidateState validateState = jwtService.validate(reqDto.getToken());
         if (validateState.state() != JwtState.VALID) {
-            throw new JwtException.JwtGeneralException(validateState.state().getPlaceholder());
+            throw new JwtException.JwtGeneralException(validateState.state().getPlaceholder(), HttpStatus.FORBIDDEN);
         }
         final Claims claims = validateState.claims();
         final String messageUuid = claims.getSubject();

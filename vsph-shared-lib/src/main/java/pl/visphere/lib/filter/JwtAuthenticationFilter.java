@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -47,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         final JwtValidateState validateState = jwtService.validate(token);
         if (validateState.state() != JwtState.VALID) {
-            throw new JwtException.JwtGeneralException(validateState.state().getPlaceholder());
+            throw new JwtException.JwtGeneralException(validateState.state().getPlaceholder(), HttpStatus.UNAUTHORIZED);
         }
         final Claims claims = validateState.claims();
         final String userLogin = claims.getSubject();

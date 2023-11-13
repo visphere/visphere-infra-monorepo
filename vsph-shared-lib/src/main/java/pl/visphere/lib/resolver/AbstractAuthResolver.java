@@ -30,7 +30,7 @@ abstract class AbstractAuthResolver {
         final Locale locale = localeResolver.resolveLocale(req);
         LocaleContextHolder.setLocale(locale);
 
-        final HttpStatus status = HttpStatus.UNAUTHORIZED;
+        final HttpStatus status = HttpStatus.FORBIDDEN;
         final MessageExceptionResDto resDto = new MessageExceptionResDto(status, req,
             i18nService.getMessage(LibLocaleSet.SECURITY_AUTHENTICATION_EXCEPTION_MESSAGE));
         final String payload = objectMapper.writeValueAsString(resDto);

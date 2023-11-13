@@ -13,12 +13,12 @@ import pl.visphere.lib.i18n.LocaleExtendableSet;
 public class JwtException {
     @Slf4j
     public static class JwtGeneralException extends AbstractRestException {
-        public JwtGeneralException(LocaleExtendableSet placeholder) {
-            super(HttpStatus.UNAUTHORIZED, placeholder);
+        public JwtGeneralException(LocaleExtendableSet placeholder, HttpStatus status) {
+            super(status, placeholder);
         }
 
         public JwtGeneralException() {
-            super(HttpStatus.UNAUTHORIZED, LibLocaleSet.JWT_INVALID_EXCEPTION_MESSAGE);
+            super(HttpStatus.FORBIDDEN, LibLocaleSet.JWT_INVALID_EXCEPTION_MESSAGE);
         }
     }
 }
