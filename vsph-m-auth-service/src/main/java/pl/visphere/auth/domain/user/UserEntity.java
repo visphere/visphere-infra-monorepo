@@ -121,7 +121,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.isActivated = isActivated;
     }
 
-    Boolean getExternalCredProvider() {
+    public Boolean getExternalCredProvider() {
         return externalCredProvider;
     }
 
