@@ -51,6 +51,7 @@ class SecurityConfig {
 
     private final String[] unsecuredMatchers = {
         "/oauth2/**",
+        "/api/v1/oauth2/user/**",
     };
 
     @Bean
