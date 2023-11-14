@@ -11,6 +11,8 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import pl.visphere.auth.domain.blacklistjwt.BlackListJwtRepository;
 import pl.visphere.auth.service.user.UserService;
+import pl.visphere.lib.kafka.payload.auth.PersistOAuth2UserReqDto;
+import pl.visphere.lib.kafka.payload.auth.UpdateOAuth2UserDetailsReqDto;
 import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 
 @Slf4j
@@ -35,5 +37,25 @@ class AuthKafkaListener {
     @KafkaListener(topics = "${visphere.kafka.topic.user-details}")
     void userDetailsListener(Message<Long> userId) {
         syncListenerHandler.parseAndSendResponse(userId, userService::getUserDetails);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.persist-new-user}")
+    void persistNewUserListener(Message<PersistOAuth2UserReqDto> reqDto) {
+        syncListenerHandler.parseAndSendResponse(reqDto, userService::persistNewUser);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.get-oauth2-user-details}")
+    void getOAuth2UserDetailsListener(Message<Long> userId) {
+        syncListenerHandler.parseAndSendResponse(userId, userService::getOAuth2UserDetails);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.update-oauth2-user-details}")
+    void updateOAuth2UserDetailsListener(Message<UpdateOAuth2UserDetailsReqDto> reqDto) {
+        syncListenerHandler.parseAndSendResponse(reqDto, userService::updateOAuth2UserDetails);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.login-oauth2-user}")
+    void loginOAuth2User(Message<Long> userId) {
+        syncListenerHandler.parseAndSendResponse(userId, userService::loginOAuth2User);
     }
 }

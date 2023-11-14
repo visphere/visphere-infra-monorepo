@@ -16,6 +16,12 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findById(Long id);
     Optional<UserEntity> findByIdAndIsActivatedIsTrue(Long id);
+    Optional<UserEntity> findByIdAndExternalCredProviderIsTrue(Long id);
+    List<UserEntity> findAllByUsernameInOrEmailAddressIn(List<String> usernames, List<String> emailAddresses);
+    boolean existsByUsernameOrEmailAddress(String username, String emailAddress);
+    boolean existsByUsername(String username);
+    boolean existsByUsernameAndIdIsNot(String username, Long id);
+    boolean existsByEmailAddress(String emailAddress);
 
     @Query(value = """
             from UserEntity u join fetch u.roles
@@ -23,8 +29,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
         """)
     Optional<UserEntity> findByLocalUsernameOrEmailAddress(@Param("identity") String identity);
 
-    boolean existsByUsernameOrEmailAddress(String username, String emailAddress);
-    boolean existsByUsername(String username);
-    boolean existsByEmailAddress(String emailAddress);
-    List<UserEntity> findAllByUsernameInOrEmailAddressIn(List<String> usernames, List<String> emailAddresses);
+    @Query(value = "from UserEntity u join fetch u.roles where u.username = :identity or u.emailAddress = :identity")
+    Optional<UserEntity> findByUsernameOrEmailAddress(@Param("identity") String identity);
+
+    @Query(value = "from UserEntity u join fetch u.roles where u.id = :id")
+    Optional<UserEntity> findByIdFetchRoles(@Param("id") Long id);
 }

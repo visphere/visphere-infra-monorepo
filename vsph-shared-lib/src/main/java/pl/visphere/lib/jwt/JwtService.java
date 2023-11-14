@@ -71,6 +71,20 @@ public class JwtService {
         return jwtBuilder;
     }
 
+    public TokenData generateOAuth2TemporaryToken(String openId, Long userId, String supplier) {
+        final Date expirationTime = DateUtils
+            .addMinutes(new Date(), JwtProperties.JWT_ACCESS_LIFE_MINUTES.getValue(environment, Integer.class));
+        final Claims claims = Jwts.claims();
+        claims.put(JwtClaim.OAUTH2_SUPPLIER.getClaim(), supplier);
+        claims.put(JwtClaim.USER_ID.getClaim(), userId);
+        final String token = generateBaseToken(openId, claims, expirationTime)
+            .compact();
+        return TokenData.builder()
+            .token(token)
+            .expiredAt(expirationTime)
+            .build();
+    }
+
     public JwtValidateState validate(String token) {
         Claims claims = null;
         JwtState state = JwtState.VALID;
@@ -106,6 +120,10 @@ public class JwtService {
 
     public <T> T getClaim(Claims claims, JwtClaim claim, Class<T> claimClazz) {
         return claims.get(claim.getClaim(), claimClazz);
+    }
+
+    public String getClaim(Claims claims, JwtClaim claim) {
+        return claims.get(claim.getClaim(), String.class);
     }
 
     public String extractFromReq(HttpServletRequest req) {

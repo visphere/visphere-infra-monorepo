@@ -35,6 +35,7 @@ import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
@@ -102,14 +103,26 @@ class IdentityServiceImpl implements IdentityService {
             .findById(userDetails.getId())
             .orElseThrow(() -> new UserException.UserNotExistException(userDetails.getId()));
 
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+        boolean hasCustomImage = true;
+        String profileImagePath = StringUtils.EMPTY;
 
+        if (user.getExternalCredProvider()) {
+            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
+
+            hasCustomImage = !detailsResDto.profileImageSuppliedByProvider();
+            profileImagePath = detailsResDto.profileImageUrl();
+        }
+        if (hasCustomImage) {
+            final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler.sendNotNullWithBlockThread(
+                QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+            profileImagePath = profileImageDetails.profileImagePath();
+        }
         final RefreshTokenEntity refreshTokenEntity = refreshTokenRepository
             .findByRefreshTokenAndUserId(refreshToken, user.getId())
             .orElseThrow(() -> new RefrehTokenException.RefreshTokenExpiredException(refreshToken));
 
-        final LoginResDto resDto = new LoginResDto(profileImageDetails.profileImagePath(), user, accessToken,
+        final LoginResDto resDto = new LoginResDto(profileImagePath, user, accessToken,
             refreshTokenEntity.getRefreshToken());
 
         log.info("Successfully login via access token for user: '{}'", resDto);

@@ -4,18 +4,15 @@
  */
 package pl.visphere.lib.kafka.payload.auth;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserDetailsResDto {
+public class UpdateOAuth2UserDetailsReqDto {
+    private Long userId;
+    private String username;
     private String firstName;
     private String lastName;
-    private String username;
-    private boolean isActivated;
+    private String birthDate;
 }

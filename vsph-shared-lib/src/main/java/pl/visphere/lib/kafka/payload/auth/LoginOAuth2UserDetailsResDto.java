@@ -11,11 +11,12 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserDetailsResDto {
-    private String firstName;
-    private String lastName;
+@AllArgsConstructor
+public class LoginOAuth2UserDetailsResDto {
     private String username;
-    private boolean isActivated;
+    private String emailAddress;
+    private String fullName;
+    private String accessToken;
+    private String refreshToken;
 }

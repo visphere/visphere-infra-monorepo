@@ -42,6 +42,11 @@ public class UserException {
             super(HttpStatus.BAD_REQUEST, LibLocaleSet.USER_ALREADY_EXIST_EXCEPTION_MESSAGE);
             log.error("Attempt to create user with same username: '{}' or email address: '{}'", username, emailAddress);
         }
+
+        public UserAlreadyExistException(String emailAddress) {
+            super(HttpStatus.BAD_REQUEST, LibLocaleSet.USER_ALREADY_EXIST_EXCEPTION_MESSAGE);
+            log.error("Attempt to create user with same email address: '{}'", emailAddress);
+        }
     }
 
     @Slf4j
