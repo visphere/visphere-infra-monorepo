@@ -18,6 +18,7 @@ import pl.visphere.oauth2.cookie.CookiePayload;
 import pl.visphere.oauth2.cookie.CookiesService;
 import pl.visphere.oauth2.core.OAuth2Properties;
 
+import java.util.Locale;
 import java.util.StringJoiner;
 
 @Slf4j
@@ -47,6 +48,10 @@ public class OAuth2Repository implements AuthorizationRequestRepository<OAuth2Au
         }
         final String serializedData = cookiesService.serializeValue(authReq);
         cookiesService.addCookie(res, createPayload(OAuth2Cookie.SESSION_PERSISTOR, serializedData));
+
+        final String selectedLang = req.getParameter(OAuth2Cookie.LANG.getCookieName());
+        final String locale = cookiesService.serializeValue(new Locale(selectedLang));
+        cookiesService.addCookie(res, createPayload(OAuth2Cookie.LANG, locale));
 
         addReturnActionCookie(req, res, OAuth2Cookie.AFTER_LOGIN_REDIR_URL);
         addReturnActionCookie(req, res, OAuth2Cookie.AFTER_SIGNUP_REDIR_URL);

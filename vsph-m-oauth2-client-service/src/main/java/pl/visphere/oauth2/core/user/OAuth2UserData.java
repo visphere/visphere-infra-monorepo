@@ -27,6 +27,8 @@ public class OAuth2UserData implements OAuth2User, OidcUser {
     private final boolean isAlreadySignup;
     private final Map<String, Object> attributes;
     private final UserLoaderData userLoaderData;
+    @Getter
+    private final String openId;
 
     @Override
     public Map<String, Object> getClaims() {
