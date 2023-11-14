@@ -54,12 +54,14 @@ public class GuildServiceImpl implements GuildService {
             .sendNotNullWithBlockThread(QueueTopic.GENERATE_DEFAULT_GUILD_PROFILE, guildProfileReqDto,
                 DefaultGuildProfileResDto.class);
 
+        final String message = i18nService.getMessage(LocaleSet.SPHERE_GUILD_CREATED_RESPONSE_SUCCESS, Map.of(
+            "sphereName", reqDto.getName()
+        ));
+
         log.info("Successfully created new guild sphere: '{}'", savedGuild);
         return CreateGuildResDto.builder()
             .id(savedGuild.getId())
-            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_CREATED_RESPONSE_SUCCESS, Map.of(
-                "sphereName", reqDto.getName()
-            )))
+            .message(message)
             .profileUrl(resDto.imageFullPath())
             .build();
     }

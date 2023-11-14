@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
 import pl.visphere.auth.domain.user.UserEntity;
@@ -83,6 +84,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto change(String token, ChangeReqDto reqDto) {
         final OtaToken type = OtaToken.CHANGE_PASSWORD;
         final OtaTokenEntity otaToken = otaTokenRepository
@@ -98,15 +100,13 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
         otaToken.setUsed(true);
         user.setPassword(passwordEncoder.encode(reqDto.getNewPassword()));
 
-        final UserEntity savedUser = userRepository.save(user);
-
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
 
         final SendBaseEmailReqDto emailReqDto = otaTokenEmailMapper.mapToSendBaseEmailReq(user, profileImageDetails);
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_PASSWORD_CHANGED, emailReqDto);
 
-        log.info("Successfully change password for user: '{}'", savedUser);
+        log.info("Successfully change password for user: '{}'", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.CHANGE_PASSWORD_RESPONSE_SUCCESS))
             .build();

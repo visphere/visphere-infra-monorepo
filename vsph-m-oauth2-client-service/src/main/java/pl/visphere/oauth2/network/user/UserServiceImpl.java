@@ -7,6 +7,7 @@ package pl.visphere.oauth2.network.user;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.visphere.lib.i18n.I18nService;
@@ -75,7 +76,7 @@ class UserServiceImpl implements UserService {
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
         resDto.setProfileUrl(oAuth2User.getProfileImageUrl());
 
-        // TODO: send welcome email message, generate default user image and save in S3 provider
+        // TODO: send welcome email message
 
         log.info("Successfully updated and init logged OAuth2 user with data: '{}'", resDto);
         return resDto;
@@ -89,9 +90,18 @@ class UserServiceImpl implements UserService {
             QueueTopic.LOGIN_OAUTH2_USER, oAuth2User.getUserId(), LoginOAuth2UserDetailsResDto.class);
 
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
-        resDto.setProfileUrl(oAuth2User.getProfileImageUrl());
 
-        // TODO: check, if profile is set to provider, otherwise get generated profile from S3
+        String imageUrl = StringUtils.EMPTY;
+        if (oAuth2User.getProviderImageSelected()) {
+            // image provided by OAuth2 provider, skipping
+            imageUrl = oAuth2User.getProfileImageUrl();
+        } else {
+            // image provided by Visphere, get from S3
+        }
+
+        // TODO: check, if profile is getting from provider, otherwise get generated profile from S3
+
+        resDto.setProfileUrl(imageUrl);
 
         log.info("Successfully login OAuth2 user with data: '{}'", resDto);
         return resDto;
