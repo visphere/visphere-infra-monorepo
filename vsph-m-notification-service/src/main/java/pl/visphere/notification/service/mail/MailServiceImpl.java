@@ -63,8 +63,8 @@ public class MailServiceImpl implements MailService {
         final String messageUuid = UUID.randomUUID().toString();
 
         final Map<String, Object> senderVariables = new HashMap<>();
-        senderVariables.put("username", "Jan Kowalski");
-        senderVariables.put("nickname", "johnsand123");
+        senderVariables.put("username", reqDto.getFullName());
+        senderVariables.put("nickname", reqDto.getUsername());
         senderVariables.put("profileEditLink", generateClientRouteLink("/profile/edit"));
         senderVariables.put("createGuildLink", generateClientRouteLink("/sphere/new"));
         senderVariables.put("profileBase64", getUserProfileImageAsBase64(reqDto));
