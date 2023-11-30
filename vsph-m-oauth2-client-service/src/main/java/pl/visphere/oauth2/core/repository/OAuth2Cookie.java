@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public enum OAuth2Cookie implements ConfigurableCookie {
     SESSION_PERSISTOR("vsphOAuth2Req"),
-    BASE_REDIR_URL("b"),
+    BASE_REDIR_URL("be"),
     AFTER_LOGIN_REDIR_URL("le"),
     AFTER_SIGNUP_REDIR_URL("se"),
     LANG("l"),
