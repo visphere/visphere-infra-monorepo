@@ -20,7 +20,6 @@ import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.exception.OtaTokenException;
 import pl.visphere.auth.exception.RoleException;
-import pl.visphere.auth.exception.UserException;
 import pl.visphere.auth.i18n.LocaleSet;
 import pl.visphere.auth.network.account.dto.ActivateAccountReqDto;
 import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
@@ -28,6 +27,7 @@ import pl.visphere.auth.service.mfa.MfaProxyService;
 import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
@@ -110,7 +110,7 @@ class AccountServiceImpl implements AccountService {
 
         final UserEntity user = otaToken.getUser();
         if (user.getIsActivated()) {
-            throw new UserException.UserAlreadyActivatedException(user);
+            throw new UserException.UserAlreadyActivatedException(user.getUsername());
         }
         if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
             log.error("Attempt to activate account with expired token: '{}'", otaToken);

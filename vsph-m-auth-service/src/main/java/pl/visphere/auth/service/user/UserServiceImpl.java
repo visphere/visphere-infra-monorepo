@@ -18,7 +18,7 @@ import pl.visphere.auth.domain.role.RoleRepository;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.exception.RoleException;
-import pl.visphere.auth.exception.UserException;
+import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.payload.auth.*;
@@ -136,7 +136,7 @@ public class UserServiceImpl implements UserService {
             .orElseThrow(() -> new UserException.UserNotExistException(reqDto.getUserId()));
 
         if (user.getIsActivated()) {
-            throw new UserException.UserAlreadyActivatedException(user);
+            throw new UserException.UserAlreadyActivatedException(user.getUsername());
         }
         if (userRepository.existsByUsernameAndIdIsNot(reqDto.getUsername(), reqDto.getUserId())) {
             throw new UserException.UserAlreadyExistException(reqDto.getUsername());

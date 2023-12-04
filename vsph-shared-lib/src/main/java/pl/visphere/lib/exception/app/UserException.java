@@ -2,11 +2,10 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.auth.exception;
+package pl.visphere.lib.exception.app;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.exception.AbstractRestException;
 
@@ -51,9 +50,9 @@ public class UserException {
 
     @Slf4j
     public static class UserAlreadyActivatedException extends AbstractRestException {
-        public UserAlreadyActivatedException(UserEntity user) {
+        public UserAlreadyActivatedException(String username) {
             super(HttpStatus.BAD_REQUEST, LibLocaleSet.USER_ALREADY_ACTIVATED_EXCEPTION_MESSAGE);
-            log.error("Attempt to already activated user: '{}'", user);
+            log.error("Attempt to already activated user: '{}'", username);
         }
     }
 }
