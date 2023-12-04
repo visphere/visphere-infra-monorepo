@@ -18,7 +18,8 @@ public enum LocaleSet implements LocaleExtendableSet {
     FILE_EXTENSION_NOT_SUPPORTED_EXCEPTION_MESSAGE("vsph.multimedia.exc.fileExtensionIsNotSupported"),
     MAX_UPLOADED_FILE_SIZE_EXCEEDED_EXCEPTION_MESSAGE("vsph.multimedia.exc.maxUploadedFileSizeExceeded"),
     FILE_IS_CORRUPTED_EXCEPTION_MESSAGE("vsph.multimedia.exc.fileIsCorrupted"),
-    COLOR_UPDATE_NOT_AVAILABLE_EXCEPTION_MESSAGE("vsph.multimedia.exc.colorUpdateNotAvailable");
+    COLOR_UPDATE_NOT_AVAILABLE_EXCEPTION_MESSAGE("vsph.multimedia.exc.colorUpdateNotAvailable"),
+    ;
 
     private final String holder;
 }
