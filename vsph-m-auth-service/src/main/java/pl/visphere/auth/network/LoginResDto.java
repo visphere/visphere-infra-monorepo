@@ -16,11 +16,15 @@ public record LoginResDto(
     String profileUrl,
     String accessToken,
     String refreshToken,
+    String theme,
+    String lang,
     boolean isActivated,
     boolean isMfaEnabled,
     boolean isMfaSetup
 ) {
-    public LoginResDto(String profileImagePath, UserEntity user, String token, String refreshToken) {
+    public LoginResDto(
+        String profileImagePath, UserEntity user, String token, String refreshToken, String theme, String lang
+    ) {
         this(
             user.getFirstName() + StringUtils.SPACE + user.getLastName(),
             user.getUsername(),
@@ -28,6 +32,8 @@ public record LoginResDto(
             profileImagePath,
             token,
             refreshToken,
+            theme,
+            lang,
             user.getIsActivated(),
             user.getMfaUser() != null,
             user.getMfaUser() != null ? user.getMfaUser().getMfaIsSetup() : false

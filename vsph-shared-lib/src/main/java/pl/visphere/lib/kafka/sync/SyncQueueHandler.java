@@ -103,6 +103,10 @@ public class SyncQueueHandler {
             .orElseThrow(RuntimeException::new);
     }
 
+    public void sendNullableWithBlockThread(QueueTopic topic, Object data) {
+        sendWithBlockThread(topic, data, Object.class);
+    }
+
     private ReplyingKafkaTemplate<String, Object, Object> fabricateTemplate(Environment environment) {
         final String groupId = environment.getProperty("visphere.kafka.group-id", "default-group");
         final String[] replyTopics = QueueTopic.getAllReplyTopics(environment);

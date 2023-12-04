@@ -16,6 +16,7 @@ import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.auth.LoginOAuth2UserDetailsResDto;
 import pl.visphere.lib.kafka.payload.auth.UpdateOAuth2UserDetailsReqDto;
 import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
+import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.oauth2.core.OAuth2Supplier;
 import pl.visphere.oauth2.domain.oauth2user.OAuth2UserEntity;
@@ -73,6 +74,9 @@ class UserServiceImpl implements UserService {
         final LoginOAuth2UserDetailsResDto loginResDto = syncQueueHandler.sendNotNullWithBlockThread(
             QueueTopic.UPDATE_OAUTH2_USER_DETAILS, userDetailsReqDto, LoginOAuth2UserDetailsResDto.class);
 
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.INSTANTIATE_USER_RELATED_SETTINGS,
+            oAuth2User.getUserId());
+
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
         resDto.setProfileUrl(oAuth2User.getProfileImageUrl());
 
@@ -89,6 +93,10 @@ class UserServiceImpl implements UserService {
         final LoginOAuth2UserDetailsResDto loginResDto = syncQueueHandler.sendNotNullWithBlockThread(
             QueueTopic.LOGIN_OAUTH2_USER, oAuth2User.getUserId(), LoginOAuth2UserDetailsResDto.class);
 
+        final UserSettingsResDto settingsResDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, oAuth2User.getUserId(),
+                UserSettingsResDto.class);
+
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
 
         String imageUrl = StringUtils.EMPTY;
@@ -101,6 +109,8 @@ class UserServiceImpl implements UserService {
 
         // TODO: check, if profile is getting from provider, otherwise get generated profile from S3
 
+        resDto.setLang(settingsResDto.lang());
+        resDto.setTheme(settingsResDto.theme());
         resDto.setProfileUrl(imageUrl);
 
         log.info("Successfully login OAuth2 user with data: '{}'", resDto);

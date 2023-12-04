@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) 2023 by Visphere & Vsph Technologies
+  ~ Originally developed by Miłosz Gilga <https://miloszgilga.pl>
+  -->
+<databaseChangeLog
+  xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+  <!-- datatables migrations, common for dev and docker -->
+  <include file="migrations/2023-12-03_0000000_create-user-settings-table.xml" relativeToChangelogFile="true"/>
+
+</databaseChangeLog>

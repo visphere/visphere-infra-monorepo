@@ -36,6 +36,7 @@ import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
+import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
@@ -82,13 +83,23 @@ class IdentityServiceImpl implements IdentityService {
         }
 
         String userProfileUrl = StringUtils.EMPTY;
+        String theme = null;
+        String lang = null;
+
         if (user.getIsActivated()) {
             final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(),
                     ProfileImageDetailsResDto.class);
             userProfileUrl = profileImageDetails.profileImagePath();
+
+            final UserSettingsResDto settingsResDto = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
+                    UserSettingsResDto.class);
+            theme = settingsResDto.theme();
+            lang = settingsResDto.lang();
         }
-        final LoginResDto resDto = new LoginResDto(userProfileUrl, user, token, refreshToken);
+
+        final LoginResDto resDto = new LoginResDto(userProfileUrl, user, token, refreshToken, theme, lang);
 
         log.info("Successfully login via username and password for user: '{}'", resDto);
         return resDto;
@@ -122,8 +133,12 @@ class IdentityServiceImpl implements IdentityService {
             .findByRefreshTokenAndUserId(refreshToken, user.getId())
             .orElseThrow(() -> new RefrehTokenException.RefreshTokenExpiredException(refreshToken));
 
+        final UserSettingsResDto settingsResDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
+                UserSettingsResDto.class);
+
         final LoginResDto resDto = new LoginResDto(profileImagePath, user, accessToken,
-            refreshTokenEntity.getRefreshToken());
+            refreshTokenEntity.getRefreshToken(), settingsResDto.theme(), settingsResDto.lang());
 
         log.info("Successfully login via access token for user: '{}'", resDto);
         return resDto;

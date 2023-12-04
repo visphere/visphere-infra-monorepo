@@ -31,6 +31,8 @@ public enum QueueTopic implements Property {
     GENERATE_DEFAULT_GUILD_PROFILE("generate-default-guild-profile"),
     UPDATE_DEFAULT_GUILD_PROFILE("update-default-guild-profile"),
     PROFILE_IMAGE_DETAILS("profile-image-details"),
+    GET_USER_PERSISTED_RELATED_SETTINGS("get-user-persisted-related-settings"),
+    INSTANTIATE_USER_RELATED_SETTINGS("instantiate-user-related-settings"),
     ;
 
     private final String topicKey;

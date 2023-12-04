@@ -125,6 +125,9 @@ class AccountServiceImpl implements AccountService {
         }
         final UserEntity activatedUser = userRepository.save(user);
 
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.INSTANTIATE_USER_RELATED_SETTINGS,
+            activatedUser.getId());
+
         final DefaultUserProfileReqDto profileReqDto = DefaultUserProfileReqDto.builder()
             .initials(new char[]{ user.getFirstName().charAt(0), user.getLastName().charAt(0) })
             .userId(user.getId())

@@ -19,6 +19,7 @@ import pl.visphere.lib.exception.AbstractRestException;
 import pl.visphere.lib.kafka.KafkaNullableResponseWrapper;
 
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static pl.visphere.lib.kafka.sync.SyncQueueHandler.LOCALE_HEADER;
@@ -65,5 +66,12 @@ public class SyncListenerHandler {
         final ProducerRecord<String, Object> record = new ProducerRecord<>(reply, null, key, responseWrapper);
         record.headers().add(new RecordHeader(KafkaHeaders.CORRELATION_ID, messageId));
         kafkaTemplate.send(record);
+    }
+
+    public <T> void parseAndSendResponse(Message<T> message, Consumer<T> callback) {
+        parseAndSendResponse(message, payload -> {
+            callback.accept(payload);
+            return null;
+        });
     }
 }

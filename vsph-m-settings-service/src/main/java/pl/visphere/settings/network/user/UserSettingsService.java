@@ -1,0 +1,14 @@
+/*
+ * Copyright (c) 2023 by Visphere & Vsph Technologies
+ * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
+ */
+package pl.visphere.settings.network.user;
+
+import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.security.user.AuthUserDetails;
+import pl.visphere.settings.network.user.dto.RelatedValueReqDto;
+
+interface UserSettingsService {
+    BaseMessageResDto relateLangWithUser(RelatedValueReqDto reqDto, AuthUserDetails user);
+    BaseMessageResDto relateThemeWithUser(RelatedValueReqDto reqDto, AuthUserDetails user);
+}

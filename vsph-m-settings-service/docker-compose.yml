@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  vsph-m-settings-service-template:
+    container_name: vsph-m-settings-service
+    ports:
+      - '8080'
+    image: milosz08/vsph-m-settings-service:latest
+    pull_policy: always
+    environment:
+      - 'SPRING_PROFILES_ACTIVE=docker'
+      - 'VSPH_VAULT_ROOT_TOKEN=${VSPH_VAULT_ROOT_TOKEN}'
+      - 'VSPH_SPRING_CONFIG_USERNAME=${VSPH_SPRING_CONFIG_USERNAME}'
+      - 'VSPH_SPRING_CONFIG_PASSWORD=${VSPH_SPRING_CONFIG_PASSWORD}'
+      - 'VSPH_KAFKA_CERTS_CONTAINER=/kafka/cert'
+      - 'VSPH_LANDING_URL=http://localhost:${VSPH_DOCKER_LANDING_PORT}'
+      - 'VSPH_CLIENT_URL=http://localhost:${VSPH_DOCKER_CLIENT_PORT}'
+      - 'VSPH_API_GATEWAY_URL=http://localhost:${VSPH_DOCKER_API_GATEWAY_PORT}'
+      - 'VSPH_STATIC_S3_URL=http://localhost:${VSPH_STATIC_S3_API_PORT}'
+      - 'VSPH_S3_URL=http://localhost:${VSPH_DEV_S3_API_PORT}'
+    volumes:
+      - ../.volumes/kafka/secrets/local/kafka.keystore.jks:/kafka/cert/kafka.keystore.jks
+      - ../.volumes/kafka/secrets/local/kafka.truststore.jks:/kafka/cert/kafka.truststore.jks

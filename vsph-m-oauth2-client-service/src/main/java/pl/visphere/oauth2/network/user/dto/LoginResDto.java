@@ -14,6 +14,8 @@ public class LoginResDto {
     private String username;
     private String emailAddress;
     private String profileUrl;
+    private String theme;
+    private String lang;
     private String accessToken;
     private String refreshToken;
 }

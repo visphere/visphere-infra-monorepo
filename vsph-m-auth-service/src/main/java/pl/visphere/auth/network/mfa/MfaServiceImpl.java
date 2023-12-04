@@ -36,6 +36,7 @@ import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
+import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AuthUserDetails;
@@ -157,7 +158,12 @@ class MfaServiceImpl implements MfaService {
             .user(user)
             .build();
 
+        final UserSettingsResDto settingsResDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
+                UserSettingsResDto.class);
+
         refreshTokenRepository.save(refreshToken);
-        return new LoginResDto(profileImageDetails.profileImagePath(), user, access.token(), refresh.token());
+        return new LoginResDto(profileImageDetails.profileImagePath(), user, access.token(), refresh.token(),
+            settingsResDto.theme(), settingsResDto.lang());
     }
 }
