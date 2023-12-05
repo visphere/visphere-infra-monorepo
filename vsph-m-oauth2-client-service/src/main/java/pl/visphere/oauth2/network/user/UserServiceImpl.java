@@ -79,6 +79,7 @@ class UserServiceImpl implements UserService {
 
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
         resDto.setProfileUrl(oAuth2User.getProfileImageUrl());
+        resDto.setSettings(new UserSettingsResDto());
 
         // TODO: send welcome email message
 
@@ -109,8 +110,7 @@ class UserServiceImpl implements UserService {
 
         // TODO: check, if profile is getting from provider, otherwise get generated profile from S3
 
-        resDto.setLang(settingsResDto.lang());
-        resDto.setTheme(settingsResDto.theme());
+        resDto.setSettings(settingsResDto);
         resDto.setProfileUrl(imageUrl);
 
         log.info("Successfully login OAuth2 user with data: '{}'", resDto);

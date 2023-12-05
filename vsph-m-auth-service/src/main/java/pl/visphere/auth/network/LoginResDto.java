@@ -7,6 +7,7 @@ package pl.visphere.auth.network;
 import lombok.Builder;
 import org.apache.commons.lang3.StringUtils;
 import pl.visphere.auth.domain.user.UserEntity;
+import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 
 @Builder
 public record LoginResDto(
@@ -16,14 +17,13 @@ public record LoginResDto(
     String profileUrl,
     String accessToken,
     String refreshToken,
-    String theme,
-    String lang,
     boolean isActivated,
     boolean isMfaEnabled,
-    boolean isMfaSetup
+    boolean isMfaSetup,
+    UserSettingsResDto settings
 ) {
     public LoginResDto(
-        String profileImagePath, UserEntity user, String token, String refreshToken, String theme, String lang
+        String profileImagePath, UserEntity user, String token, String refreshToken, UserSettingsResDto resDto
     ) {
         this(
             user.getFirstName() + StringUtils.SPACE + user.getLastName(),
@@ -32,11 +32,10 @@ public record LoginResDto(
             profileImagePath,
             token,
             refreshToken,
-            theme,
-            lang,
             user.getIsActivated(),
             user.getMfaUser() != null,
-            user.getMfaUser() != null ? user.getMfaUser().getMfaIsSetup() : false
+            user.getMfaUser() != null ? user.getMfaUser().getMfaIsSetup() : false,
+            resDto
         );
     }
 }

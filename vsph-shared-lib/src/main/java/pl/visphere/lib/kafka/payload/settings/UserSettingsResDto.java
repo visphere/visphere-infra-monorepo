@@ -4,11 +4,17 @@
  */
 package pl.visphere.lib.kafka.payload.settings;
 
-import lombok.Builder;
+import lombok.Data;
 
-@Builder
-public record UserSettingsResDto(
-    String theme,
-    String lang
-) {
+@Data
+public class UserSettingsResDto {
+    private String theme;
+    private String lang;
+    private boolean pushNotifsEnabled;
+    private boolean pushNotifsSoundEnabled;
+
+    public UserSettingsResDto() {
+        pushNotifsEnabled = true;
+        pushNotifsSoundEnabled = true;
+    }
 }

@@ -6,6 +6,7 @@ package pl.visphere.oauth2.network.user.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 
 @Data
 @NoArgsConstructor
@@ -14,8 +15,7 @@ public class LoginResDto {
     private String username;
     private String emailAddress;
     private String profileUrl;
-    private String theme;
-    private String lang;
     private String accessToken;
     private String refreshToken;
+    private UserSettingsResDto settings;
 }

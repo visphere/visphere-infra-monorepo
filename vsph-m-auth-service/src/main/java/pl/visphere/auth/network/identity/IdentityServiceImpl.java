@@ -83,23 +83,18 @@ class IdentityServiceImpl implements IdentityService {
         }
 
         String userProfileUrl = StringUtils.EMPTY;
-        String theme = null;
-        String lang = null;
+        UserSettingsResDto settingsResDto = new UserSettingsResDto();
 
         if (user.getIsActivated()) {
             final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(),
                     ProfileImageDetailsResDto.class);
             userProfileUrl = profileImageDetails.profileImagePath();
-
-            final UserSettingsResDto settingsResDto = syncQueueHandler
+            settingsResDto = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
                     UserSettingsResDto.class);
-            theme = settingsResDto.theme();
-            lang = settingsResDto.lang();
         }
-
-        final LoginResDto resDto = new LoginResDto(userProfileUrl, user, token, refreshToken, theme, lang);
+        final LoginResDto resDto = new LoginResDto(userProfileUrl, user, token, refreshToken, settingsResDto);
 
         log.info("Successfully login via username and password for user: '{}'", resDto);
         return resDto;
@@ -138,7 +133,7 @@ class IdentityServiceImpl implements IdentityService {
                 UserSettingsResDto.class);
 
         final LoginResDto resDto = new LoginResDto(profileImagePath, user, accessToken,
-            refreshTokenEntity.getRefreshToken(), settingsResDto.theme(), settingsResDto.lang());
+            refreshTokenEntity.getRefreshToken(), settingsResDto);
 
         log.info("Successfully login via access token for user: '{}'", resDto);
         return resDto;

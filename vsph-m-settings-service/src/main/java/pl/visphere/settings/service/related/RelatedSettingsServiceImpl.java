@@ -29,11 +29,7 @@ class RelatedSettingsServiceImpl implements RelatedSettingsService {
                 () -> userRelationRepository.findByUserId(userId))
             .orElseThrow(() -> new UserException.UserNotExistException(userId));
 
-        final UserSettingsResDto resDto = UserSettingsResDto.builder()
-            .lang(userRelation.getLang())
-            .theme(userRelation.getTheme())
-            .build();
-
+        final UserSettingsResDto resDto = modelMapper.map(userRelation, UserSettingsResDto.class);
         log.info("Successfully found user relation settings: '{}'", resDto);
         return resDto;
     }
