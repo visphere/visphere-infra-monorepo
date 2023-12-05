@@ -11,6 +11,7 @@ import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.lib.security.user.LoggedUser;
 import pl.visphere.settings.network.user.dto.RelatedValueReqDto;
+import pl.visphere.settings.network.user.dto.UserRelatedSettingsResDto;
 
 @RestController
 @RequestMapping("/api/v1/settings/user")
@@ -18,6 +19,11 @@ import pl.visphere.settings.network.user.dto.RelatedValueReqDto;
 class UserSettingsController {
     private final UserSettingsService userSettingsService;
 
+    @GetMapping("/settings")
+    ResponseEntity<UserRelatedSettingsResDto> getUserSettings(@LoggedUser AuthUserDetails user) {
+        return ResponseEntity.ok(userSettingsService.getUserSettings(user));
+    }
+    
     @PatchMapping("/relate/lang")
     ResponseEntity<BaseMessageResDto> relateLangWithUser(
         @RequestBody RelatedValueReqDto reqDto,

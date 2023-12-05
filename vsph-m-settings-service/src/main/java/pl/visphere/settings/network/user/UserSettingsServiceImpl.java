@@ -6,6 +6,7 @@ package pl.visphere.settings.network.user;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.cache.CacheService;
@@ -17,6 +18,7 @@ import pl.visphere.settings.domain.userrelation.UserRelationModel;
 import pl.visphere.settings.domain.userrelation.UserRelationRepository;
 import pl.visphere.settings.i18n.LocaleSet;
 import pl.visphere.settings.network.user.dto.RelatedValueReqDto;
+import pl.visphere.settings.network.user.dto.UserRelatedSettingsResDto;
 
 @Slf4j
 @Service
@@ -24,8 +26,23 @@ import pl.visphere.settings.network.user.dto.RelatedValueReqDto;
 class UserSettingsServiceImpl implements UserSettingsService {
     private final I18nService i18nService;
     private final CacheService cacheService;
+    private final ModelMapper modelMapper;
 
     private final UserRelationRepository userRelationRepository;
+
+    @Override
+    public UserRelatedSettingsResDto getUserSettings(AuthUserDetails user) {
+        final Long userId = user.getId();
+        final UserRelationModel userRelation = cacheService
+            .getSafetyFromCache(CacheName.USER_RELATION_MODEL_USER_ID, userId, UserRelationModel.class,
+                () -> userRelationRepository.findByUserId(userId))
+            .orElseThrow(() -> new UserException.UserNotExistException(userId));
+
+        final UserRelatedSettingsResDto resDto = modelMapper.map(userRelation, UserRelatedSettingsResDto.class);
+
+        log.info("Successfully fetched user settings: '{}'", resDto);
+        return resDto;
+    }
 
     @Override
     public BaseMessageResDto relateLangWithUser(RelatedValueReqDto reqDto, AuthUserDetails user) {

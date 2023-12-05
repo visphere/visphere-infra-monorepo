@@ -34,7 +34,7 @@ class CorsConfiguration {
             .addPolicy("/api/v1/notification/mail/mirror/**", List.of(POST))
             .addPolicy("/oauth2/**")
             .addPolicy("/api/v1/oauth2/user/**", List.of(GET, PATCH, POST))
-            .addPolicy("/api/v1/settings/user/**", List.of(PATCH))
+            .addPolicy("/api/v1/settings/user/**", List.of(GET, PATCH))
             .addPolicy("/api/v1/sphere/guild/**", List.of(POST, PATCH))
             .addPolicy("/api/v1/sphere/link/**", List.of(GET, POST, PATCH, DELETE))
             .createFilter();
