@@ -11,4 +11,6 @@ import pl.visphere.settings.network.user.dto.RelatedValueReqDto;
 interface UserSettingsService {
     BaseMessageResDto relateLangWithUser(RelatedValueReqDto reqDto, AuthUserDetails user);
     BaseMessageResDto relateThemeWithUser(RelatedValueReqDto reqDto, AuthUserDetails user);
+    BaseMessageResDto updatePushNotificationsSettings(boolean isEnabled, AuthUserDetails user);
+    BaseMessageResDto updatePushNotificationsSoundSettings(boolean isEnabled, AuthUserDetails user);
 }

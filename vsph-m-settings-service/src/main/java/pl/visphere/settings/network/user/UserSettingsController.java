@@ -6,10 +6,7 @@ package pl.visphere.settings.network.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.lib.security.user.LoggedUser;
@@ -35,5 +32,21 @@ class UserSettingsController {
         @LoggedUser AuthUserDetails user
     ) {
         return ResponseEntity.ok(userSettingsService.relateThemeWithUser(reqDto, user));
+    }
+
+    @PatchMapping("/push/notifications")
+    ResponseEntity<BaseMessageResDto> pushNotificationsState(
+        @RequestParam boolean enabled,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(userSettingsService.updatePushNotificationsSettings(enabled, user));
+    }
+
+    @PatchMapping("/push/notifications/sound")
+    ResponseEntity<BaseMessageResDto> pushNotificationsSoundState(
+        @RequestParam boolean enabled,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(userSettingsService.updatePushNotificationsSoundSettings(enabled, user));
     }
 }

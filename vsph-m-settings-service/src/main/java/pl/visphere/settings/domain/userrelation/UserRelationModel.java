@@ -27,6 +27,10 @@ public class UserRelationModel extends AbstractAuditableEntity implements Serial
 
     private String theme;
 
+    private Boolean pushNotifsEnabled;
+
+    private Boolean pushNotifsSoundEnabled;
+
     private Long userId;
 
     public String getLang() {
@@ -45,11 +49,27 @@ public class UserRelationModel extends AbstractAuditableEntity implements Serial
         this.theme = theme;
     }
 
-    Long getUserId() {
+    public Boolean getPushNotifsEnabled() {
+        return pushNotifsEnabled;
+    }
+
+    public void setPushNotifsEnabled(Boolean pushNotifsEnabled) {
+        this.pushNotifsEnabled = pushNotifsEnabled;
+    }
+
+    public Boolean getPushNotifsSoundEnabled() {
+        return pushNotifsSoundEnabled;
+    }
+
+    public void setPushNotifsSoundEnabled(Boolean pushNotifsSoundEnabled) {
+        this.pushNotifsSoundEnabled = pushNotifsSoundEnabled;
+    }
+
+    public Long getUserId() {
         return userId;
     }
 
-    void setUserId(Long userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

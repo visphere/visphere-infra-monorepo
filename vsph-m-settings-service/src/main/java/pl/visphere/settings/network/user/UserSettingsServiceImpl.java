@@ -61,6 +61,38 @@ class UserSettingsServiceImpl implements UserSettingsService {
             .build();
     }
 
+    @Override
+    public BaseMessageResDto updatePushNotificationsSettings(boolean isEnabled, AuthUserDetails user) {
+        final UserRelationModel relation = getUserRelationModel(user);
+
+        relation.setPushNotifsEnabled(isEnabled);
+        if (!isEnabled) {
+            relation.setPushNotifsSoundEnabled(false);
+        }
+        saveAndUpdateCache(user, relation);
+
+        log.info("Successfully updated push notifications settings for user: '{}'", relation);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.PUSH_NOTIFICATIONS_RESPONSE_SUCCESS))
+            .build();
+    }
+
+    @Override
+    public BaseMessageResDto updatePushNotificationsSoundSettings(boolean isEnabled, AuthUserDetails user) {
+        final UserRelationModel relation = getUserRelationModel(user);
+
+        if (isEnabled) {
+            relation.setPushNotifsEnabled(true);
+        }
+        relation.setPushNotifsSoundEnabled(isEnabled);
+        saveAndUpdateCache(user, relation);
+
+        log.info("Successfully updated push notifications sound settings for user: '{}'", relation);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.PUSH_NOTIFICATIONS_SOUND_RESPONSE_SUCCESS))
+            .build();
+    }
+
     private UserRelationModel getUserRelationModel(AuthUserDetails user) {
         return userRelationRepository
             .findByUserId(user.getId())

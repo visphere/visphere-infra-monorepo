@@ -6,6 +6,7 @@ package pl.visphere.settings.service.related;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.exception.app.UserException;
@@ -19,6 +20,7 @@ import pl.visphere.settings.domain.userrelation.UserRelationRepository;
 @RequiredArgsConstructor
 class RelatedSettingsServiceImpl implements RelatedSettingsService {
     private final CacheService cacheService;
+    private final ModelMapper modelMapper;
 
     private final UserRelationRepository userRelationRepository;
 
