@@ -15,6 +15,7 @@ public record LoginResDto(
     String username,
     String emailAddress,
     String profileUrl,
+    String profileColor,
     String accessToken,
     String refreshToken,
     boolean isActivated,
@@ -23,13 +24,15 @@ public record LoginResDto(
     UserSettingsResDto settings
 ) {
     public LoginResDto(
-        String profileImagePath, UserEntity user, String token, String refreshToken, UserSettingsResDto resDto
+        String profileImagePath, String profileColor, UserEntity user, String token, String refreshToken,
+        UserSettingsResDto resDto
     ) {
         this(
             user.getFirstName() + StringUtils.SPACE + user.getLastName(),
             user.getUsername(),
             user.getEmailAddress(),
             profileImagePath,
+            profileColor,
             token,
             refreshToken,
             user.getIsActivated(),

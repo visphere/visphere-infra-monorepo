@@ -7,7 +7,6 @@ package pl.visphere.oauth2.network.user;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.visphere.lib.i18n.I18nService;
@@ -16,6 +15,8 @@ import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.auth.LoginOAuth2UserDetailsResDto;
 import pl.visphere.lib.kafka.payload.auth.UpdateOAuth2UserDetailsReqDto;
 import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
+import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.oauth2.core.OAuth2Supplier;
@@ -74,11 +75,22 @@ class UserServiceImpl implements UserService {
         final LoginOAuth2UserDetailsResDto loginResDto = syncQueueHandler.sendNotNullWithBlockThread(
             QueueTopic.UPDATE_OAUTH2_USER_DETAILS, userDetailsReqDto, LoginOAuth2UserDetailsResDto.class);
 
+        final DefaultUserProfileReqDto profileReqDto = DefaultUserProfileReqDto.builder()
+            .initials(new char[]{ reqDto.getFirstName().charAt(0), reqDto.getLastName().charAt(0) })
+            .userId(oAuth2User.getUserId())
+            .username(reqDto.getUsername())
+            .build();
+
+        final ProfileImageDetailsResDto profileResDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GENERATE_DEFAULT_USER_PROFILE, profileReqDto,
+                ProfileImageDetailsResDto.class);
+
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.INSTANTIATE_USER_RELATED_SETTINGS,
             oAuth2User.getUserId());
 
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
         resDto.setProfileUrl(oAuth2User.getProfileImageUrl());
+        resDto.setProfileColor(profileResDto.profileColor());
         resDto.setSettings(new UserSettingsResDto());
 
         // TODO: send welcome email message
@@ -94,24 +106,22 @@ class UserServiceImpl implements UserService {
         final LoginOAuth2UserDetailsResDto loginResDto = syncQueueHandler.sendNotNullWithBlockThread(
             QueueTopic.LOGIN_OAUTH2_USER, oAuth2User.getUserId(), LoginOAuth2UserDetailsResDto.class);
 
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, oAuth2User.getUserId(),
+                ProfileImageDetailsResDto.class);
+
         final UserSettingsResDto settingsResDto = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, oAuth2User.getUserId(),
                 UserSettingsResDto.class);
 
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
-
-        String imageUrl = StringUtils.EMPTY;
-        if (oAuth2User.getProviderImageSelected()) {
-            // image provided by OAuth2 provider, skipping
-            imageUrl = oAuth2User.getProfileImageUrl();
-        } else {
-            // image provided by Visphere, get from S3
-        }
-
-        // TODO: check, if profile is getting from provider, otherwise get generated profile from S3
+        final String imageUrl = oAuth2User.getProviderImageSelected()
+            ? oAuth2User.getProfileImageUrl()
+            : profileImageDetails.profileImagePath();
 
         resDto.setSettings(settingsResDto);
         resDto.setProfileUrl(imageUrl);
+        resDto.setProfileColor(profileImageDetails.profileColor());
 
         log.info("Successfully login OAuth2 user with data: '{}'", resDto);
         return resDto;

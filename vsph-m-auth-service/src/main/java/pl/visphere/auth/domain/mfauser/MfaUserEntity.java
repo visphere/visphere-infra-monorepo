@@ -14,6 +14,9 @@ import pl.visphere.lib.AbstractAuditableEntity;
 import java.io.Serial;
 import java.io.Serializable;
 
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
+
 @Entity
 @Table(name = "mfa_users")
 @Builder

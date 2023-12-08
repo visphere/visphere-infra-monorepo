@@ -15,6 +15,7 @@ public class LoginResDto {
     private String username;
     private String emailAddress;
     private String profileUrl;
+    private String profileColor;
     private String accessToken;
     private String refreshToken;
     private UserSettingsResDto settings;

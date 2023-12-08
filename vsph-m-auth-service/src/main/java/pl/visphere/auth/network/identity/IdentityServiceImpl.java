@@ -83,6 +83,7 @@ class IdentityServiceImpl implements IdentityService {
         }
 
         String userProfileUrl = StringUtils.EMPTY;
+        String userProfileColor = StringUtils.EMPTY;
         UserSettingsResDto settingsResDto = new UserSettingsResDto();
 
         if (user.getIsActivated()) {
@@ -90,11 +91,13 @@ class IdentityServiceImpl implements IdentityService {
                 .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(),
                     ProfileImageDetailsResDto.class);
             userProfileUrl = profileImageDetails.profileImagePath();
+            userProfileColor = profileImageDetails.profileColor();
             settingsResDto = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
                     UserSettingsResDto.class);
         }
-        final LoginResDto resDto = new LoginResDto(userProfileUrl, user, token, refreshToken, settingsResDto);
+        final LoginResDto resDto = new LoginResDto(userProfileUrl, userProfileColor, user, token, refreshToken,
+            settingsResDto);
 
         log.info("Successfully login via username and password for user: '{}'", resDto);
         return resDto;
@@ -119,9 +122,10 @@ class IdentityServiceImpl implements IdentityService {
             hasCustomImage = !detailsResDto.profileImageSuppliedByProvider();
             profileImagePath = detailsResDto.profileImageUrl();
         }
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler.sendNotNullWithBlockThread(
+            QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+
         if (hasCustomImage) {
-            final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler.sendNotNullWithBlockThread(
-                QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
             profileImagePath = profileImageDetails.profileImagePath();
         }
         final RefreshTokenEntity refreshTokenEntity = refreshTokenRepository
@@ -132,8 +136,8 @@ class IdentityServiceImpl implements IdentityService {
             .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
                 UserSettingsResDto.class);
 
-        final LoginResDto resDto = new LoginResDto(profileImagePath, user, accessToken,
-            refreshTokenEntity.getRefreshToken(), settingsResDto);
+        final LoginResDto resDto = new LoginResDto(profileImagePath, profileImageDetails.profileColor(),
+            user, accessToken, refreshTokenEntity.getRefreshToken(), settingsResDto);
 
         log.info("Successfully login via access token for user: '{}'", resDto);
         return resDto;

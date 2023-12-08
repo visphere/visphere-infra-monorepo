@@ -163,7 +163,7 @@ class MfaServiceImpl implements MfaService {
                 UserSettingsResDto.class);
 
         refreshTokenRepository.save(refreshToken);
-        return new LoginResDto(profileImageDetails.profileImagePath(), user, access.token(), refresh.token(),
-            settingsResDto);
+        return new LoginResDto(profileImageDetails.profileImagePath(), profileImageDetails.profileColor(), user,
+            access.token(), refresh.token(), settingsResDto);
     }
 }
