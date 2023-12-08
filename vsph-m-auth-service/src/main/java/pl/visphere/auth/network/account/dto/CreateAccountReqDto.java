@@ -46,6 +46,7 @@ public class CreateAccountReqDto implements PasswordValidatorModel {
     private String lastName;
 
     @NotNull(message = "vsph.auth.jpa.secondEmailAddress.notNull")
+    @Size(max = 100, message = "vsph.auth.jpa.secondEmailAddress.size")
     @Email(message = "vsph.auth.jpa.secondEmailAddress.email")
     private String secondEmailAddress;
 

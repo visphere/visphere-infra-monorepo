@@ -75,6 +75,7 @@ services:
   vsph-redis-db:
     container_name: vsph-redis-db
     image: bitnami/redis:6.2.14
+    user: root
     ports:
       - '${VSPH_DEV_REDIS_PORT}:6379'
     volumes:

@@ -2,7 +2,7 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.auth.domain.mfausers;
+package pl.visphere.auth.domain.mfauser;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class MfaUserEntity extends AbstractAuditableEntity implements Serializab
 
     private String mfaSecret;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = { MERGE, PERSIST })
     @JoinColumn(name = "user_id")
     private UserEntity user;
 

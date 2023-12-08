@@ -4,6 +4,7 @@
  */
 package pl.visphere.settings.network.user;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,10 +24,10 @@ class UserSettingsController {
     ResponseEntity<UserRelatedSettingsResDto> getUserSettings(@LoggedUser AuthUserDetails user) {
         return ResponseEntity.ok(userSettingsService.getUserSettings(user));
     }
-    
+
     @PatchMapping("/relate/lang")
     ResponseEntity<BaseMessageResDto> relateLangWithUser(
-        @RequestBody RelatedValueReqDto reqDto,
+        @Valid @RequestBody RelatedValueReqDto reqDto,
         @LoggedUser AuthUserDetails user
     ) {
         return ResponseEntity.ok(userSettingsService.relateLangWithUser(reqDto, user));
@@ -34,7 +35,7 @@ class UserSettingsController {
 
     @PatchMapping("/relate/theme")
     ResponseEntity<BaseMessageResDto> relateThemeWithUser(
-        @RequestBody RelatedValueReqDto reqDto,
+        @Valid @RequestBody RelatedValueReqDto reqDto,
         @LoggedUser AuthUserDetails user
     ) {
         return ResponseEntity.ok(userSettingsService.relateThemeWithUser(reqDto, user));

@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import pl.visphere.auth.domain.mfausers.MfaUserEntity;
+import pl.visphere.auth.domain.mfauser.MfaUserEntity;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.lib.AbstractAuditableEntity;
 
@@ -105,7 +105,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.lastName = lastName;
     }
 
-    LocalDate getBirthDate() {
+    public LocalDate getBirthDate() {
         return birthDate;
     }
 
@@ -145,7 +145,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         return mfaUser;
     }
 
-    void setMfaUser(MfaUserEntity mfaUser) {
+    public void setMfaUser(MfaUserEntity mfaUser) {
         this.mfaUser = mfaUser;
     }
 

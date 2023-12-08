@@ -38,7 +38,7 @@ public abstract class AbstractAuditableEntity implements Serializable {
         this.id = id;
     }
 
-    Instant getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 

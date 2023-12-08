@@ -4,6 +4,7 @@
  */
 package pl.visphere.settings.domain.userrelation;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -27,8 +28,10 @@ public class UserRelationModel extends AbstractAuditableEntity implements Serial
 
     private String theme;
 
+    @Column(insertable = false)
     private Boolean pushNotifsEnabled;
 
+    @Column(insertable = false)
     private Boolean pushNotifsSoundEnabled;
 
     private Long userId;
@@ -78,6 +81,8 @@ public class UserRelationModel extends AbstractAuditableEntity implements Serial
         return "{" +
             "lang=" + lang +
             ", theme=" + theme +
+            ", pushNotifsEnabled=" + pushNotifsEnabled +
+            ", pushNotifsSoundEnabled=" + pushNotifsSoundEnabled +
             ", userId=" + userId +
             '}';
     }

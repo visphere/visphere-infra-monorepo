@@ -2,7 +2,7 @@
 <project version="4">
   <component name="accountSettings">
     <option name="activeProfile" value="profile:milosz" />
-    <option name="activeRegion" value="us-east-1" />
+    <option name="activeRegion" value="eu-central-1" />
     <option name="recentlyUsedProfiles">
       <list>
         <option value="profile:milosz" />
@@ -10,6 +10,7 @@
     </option>
     <option name="recentlyUsedRegions">
       <list>
+        <option value="eu-central-1" />
         <option value="us-east-1" />
       </list>
     </option>
