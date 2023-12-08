@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import pl.visphere.auth.network.check.dto.CheckAlreadyExistResDto;
 import pl.visphere.auth.network.check.dto.MyAccountReqDto;
 import pl.visphere.auth.network.check.dto.MyAccountResDto;
+import pl.visphere.lib.security.user.AuthUserDetails;
+import pl.visphere.lib.security.user.LoggedUser;
 
 import java.util.List;
 
@@ -25,6 +27,15 @@ class CheckController {
         @RequestParam String value
     ) {
         return ResponseEntity.ok(checkService.checkIfAccountPropAlreadyExist(by, value));
+    }
+
+    @GetMapping("/logged/prop/exist")
+    ResponseEntity<CheckAlreadyExistResDto> checkIfLoggedAccountPropAlreadyExist(
+        @RequestParam AccountValueParam by,
+        @RequestParam String value,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(checkService.checkIfLoggedAccountPropAlreadyExist(by, value, user));
     }
 
     @PatchMapping("/myaccounts/exists")

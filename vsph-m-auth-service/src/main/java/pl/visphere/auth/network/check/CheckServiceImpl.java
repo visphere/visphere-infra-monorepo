@@ -17,6 +17,7 @@ import pl.visphere.auth.network.check.dto.MyAccountResDto;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
+import pl.visphere.lib.security.user.AuthUserDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,12 +40,21 @@ public class CheckServiceImpl implements CheckService {
                 case USERNAME -> userRepository.existsByUsername(value);
             };
         }
-        final CheckAlreadyExistResDto resDto = CheckAlreadyExistResDto.builder()
-            .alreadyExist(alreadyExist)
-            .build();
+        return createCheckParamDto(alreadyExist, by, value);
+    }
 
-        log.info("Successfully check account prop: '{}' with value: '{}' and response: '{}'", by, value, resDto);
-        return resDto;
+    @Override
+    public CheckAlreadyExistResDto checkIfLoggedAccountPropAlreadyExist(
+        AccountValueParam by, String value, AuthUserDetails user
+    ) {
+        boolean alreadyExist = false;
+        if (StringUtils.isNotEmpty(value)) {
+            alreadyExist = switch (by) {
+                case EMAIL -> userRepository.existsByEmailAddressAndIdIsNot(value, user.getId());
+                case USERNAME -> userRepository.existsByUsernameAndIdIsNot(value, user.getId());
+            };
+        }
+        return createCheckParamDto(alreadyExist, by, value);
     }
 
     @Override
@@ -81,5 +91,13 @@ public class CheckServiceImpl implements CheckService {
 
         log.info("Successfully checked accounts with pos: '{}' and neg: '{}'. Summary: '{}'", pos, neg, resDtos);
         return resDtos;
+    }
+
+    private CheckAlreadyExistResDto createCheckParamDto(boolean alreadyExist, AccountValueParam by, String value) {
+        final CheckAlreadyExistResDto resDto = CheckAlreadyExistResDto.builder()
+            .alreadyExist(alreadyExist)
+            .build();
+        log.info("Successfully check account prop: '{}' with value: '{}' and response: '{}'", by, value, resDto);
+        return resDto;
     }
 }
