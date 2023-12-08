@@ -11,7 +11,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.visphere.auth.domain.mfausers.MfaUserEntity;
+import pl.visphere.auth.cache.CacheName;
+import pl.visphere.auth.domain.mfauser.MfaUserEntity;
+import pl.visphere.auth.domain.mfauser.MfaUserRepository;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
@@ -28,6 +30,7 @@ import pl.visphere.auth.service.mfa.MfaProxyService;
 import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.jwt.JwtService;
@@ -35,6 +38,7 @@ import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.notification.SendStateEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
@@ -53,10 +57,13 @@ class MfaServiceImpl implements MfaService {
     private final OtaTokenService otaTokenService;
     private final AsyncQueueHandler asyncQueueHandler;
     private final OtaTokenEmailMapper otaTokenEmailMapper;
+    private final CacheService cacheService;
+    private final MfaMapper mfaMapper;
 
     private final UserRepository userRepository;
     private final OtaTokenRepository otaTokenRepository;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final MfaUserRepository mfaUserRepository;
 
     @Override
     public MfaAuthenticatorDataResDto authenticatorData(MfaCredentialsReqDto reqDto) {
@@ -129,6 +136,46 @@ class MfaServiceImpl implements MfaService {
 
         log.info("Successfully authenticate with MFA via alternative email code for user: '{}'", resDto);
         return resDto;
+    }
+
+    @Override
+    @Transactional
+    public BaseMessageResDto toggleMfaAccountState(boolean isEnabled, AuthUserDetails user) {
+        final UserEntity userEntity = userRepository
+            .findByLocalUsernameOrEmailAddress(user.getUsername())
+            .orElseThrow(() -> new UserException.UserNotExistException(user.getUsername()));
+
+        final MfaUserEntity mfaUser = userEntity.getMfaUser();
+        if (isEnabled) {
+            if (mfaUser != null) {
+                throw new MfaException.MfaCurrentlyEnabledException(user.getUsername());
+            }
+            final MfaUserEntity mfaUserEntity = MfaUserEntity.builder()
+                .mfaSecret(mfaProxyService.generateSecret())
+                .build();
+            userEntity.persistMfaUser(mfaUserEntity);
+        } else {
+            if (mfaUser == null) {
+                throw new MfaException.MfaCurrentlyDisabledException(user.getUsername());
+            }
+            mfaUserRepository.deleteById(mfaUser.getId());
+            userEntity.setMfaUser(null);
+        }
+        final UserEntity saved = userRepository.save(userEntity);
+        cacheService.updateCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId(), saved);
+
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+
+        final SendStateEmailReqDto emailReqDto = mfaMapper.mapToSendStateEmailReq(userEntity,
+            profileImageDetails, isEnabled);
+
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_UPDATED_MFA_STATE, emailReqDto);
+
+        log.info("MFA settings updated for user: '{}' with value: '{}'", userEntity, isEnabled);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.MFA_UPDATE_SETTINGS_RESPONSE_SUCCESS))
+            .build();
     }
 
     private UserEntity authenticateUser(MfaCredentialsReqDto reqDto) {

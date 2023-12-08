@@ -8,10 +8,12 @@ import pl.visphere.auth.network.LoginResDto;
 import pl.visphere.auth.network.mfa.dto.MfaAuthenticatorDataResDto;
 import pl.visphere.auth.network.mfa.dto.MfaCredentialsReqDto;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.security.user.AuthUserDetails;
 
 interface MfaService {
     MfaAuthenticatorDataResDto authenticatorData(MfaCredentialsReqDto reqDto);
     LoginResDto authenticatorSetOrVerify(String code, MfaCredentialsReqDto reqDto, boolean isFirstTime);
     BaseMessageResDto altSendEmail(MfaCredentialsReqDto reqDto);
     LoginResDto altVerifyEmailToken(String token, MfaCredentialsReqDto reqDto);
+    BaseMessageResDto toggleMfaAccountState(boolean isEnabled, AuthUserDetails user);
 }

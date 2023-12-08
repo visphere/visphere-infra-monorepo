@@ -12,6 +12,8 @@ import pl.visphere.auth.network.LoginResDto;
 import pl.visphere.auth.network.mfa.dto.MfaAuthenticatorDataResDto;
 import pl.visphere.auth.network.mfa.dto.MfaCredentialsReqDto;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.security.user.AuthUserDetails;
+import pl.visphere.lib.security.user.LoggedUser;
 
 @RestController
 @RequestMapping("/api/v1/auth/mfa")
@@ -44,5 +46,13 @@ class MfaController {
         @Valid @RequestBody MfaCredentialsReqDto reqDto
     ) {
         return ResponseEntity.ok(mfaService.altVerifyEmailToken(token, reqDto));
+    }
+
+    @PatchMapping("/settings/toggle")
+    ResponseEntity<BaseMessageResDto> toggleMfaAccountState(
+        @RequestParam boolean enabled,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(mfaService.toggleMfaAccountState(enabled, user));
     }
 }

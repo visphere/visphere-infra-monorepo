@@ -27,6 +27,22 @@ public class MfaException {
     }
 
     @Slf4j
+    public static class MfaCurrentlyEnabledException extends AbstractRestException {
+        public MfaCurrentlyEnabledException(String username) {
+            super(HttpStatus.BAD_REQUEST, LocaleSet.MFA_CURRENTLY_ENABLED_EXCEPTION_MESSAGE);
+            log.error("Attempt to enable MFA features for already enabled on account: '{}'", username);
+        }
+    }
+
+    @Slf4j
+    public static class MfaCurrentlyDisabledException extends AbstractRestException {
+        public MfaCurrentlyDisabledException(String username) {
+            super(HttpStatus.BAD_REQUEST, LocaleSet.MFA_CURRENTLY_DISABLED_EXCEPTION_MESSAGE);
+            log.error("Attempt to disable MFA features for already disabled on account: '{}'", username);
+        }
+    }
+
+    @Slf4j
     public static class MfaInvalidCodeException extends AbstractRestException {
         public MfaInvalidCodeException(String code, String username) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.MFA_INVALID_CODE_EXCEPTION_MESSAGE);
