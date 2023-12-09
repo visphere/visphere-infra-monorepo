@@ -24,6 +24,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     MFA_CURRENTLY_ENABLED_EXCEPTION_MESSAGE("vsph.auth.exc.mfaCurrentlyEnabled"),
     MFA_CURRENTLY_DISABLED_EXCEPTION_MESSAGE("vsph.auth.exc.mfaCurrentlyDisabled"),
     MFA_INVALID_CODE_EXCEPTION_MESSAGE("vsph.auth.exc.mfaInvalidCode"),
+    INVALID_OLD_PASSWORD_EXCEPTION_MESSAGE("vsph.auth.exc.invalidOldPassword"),
     CREATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.createAccount.res.success"),
     ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.activateAccount.res.success"),
     RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.resendActivateAccount.res.success"),
@@ -35,6 +36,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     RESEND_REQUEST_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.resendRequestSecondEmailAddress.res.success"),
     UPDATE_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.updateSecondEmailAddress.res.success"),
     REMOVE_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.removeSecondEmailAddress.res.success"),
+    MFA_UPDATE_SETTINGS_RESPONSE_SUCCESS("vsph.i18n.mfaUpdateSettings.res.success"),
     UDPATE_ACCOUNT_DETAILS_RESPONSE_SUCCESS("vsph.i18n.updatedAccountDetails.res.success"),
     ;
 

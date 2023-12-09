@@ -13,11 +13,13 @@ import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
+import pl.visphere.auth.exception.AccountException;
 import pl.visphere.auth.exception.OtaTokenException;
 import pl.visphere.auth.i18n.LocaleSet;
 import pl.visphere.auth.network.OtaTokenEmailMapper;
 import pl.visphere.auth.network.renewpassword.dto.AttemptReqDto;
 import pl.visphere.auth.network.renewpassword.dto.ChangeReqDto;
+import pl.visphere.auth.network.renewpassword.dto.ChangeViaAccountReqDto;
 import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
@@ -30,6 +32,7 @@ import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
+import pl.visphere.lib.security.user.AuthUserDetails;
 
 @Slf4j
 @Service
@@ -100,16 +103,39 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
         otaToken.setUsed(true);
         user.setPassword(passwordEncoder.encode(reqDto.getNewPassword()));
 
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
-        final SendBaseEmailReqDto emailReqDto = otaTokenEmailMapper.mapToSendBaseEmailReq(user, profileImageDetails);
-        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_PASSWORD_CHANGED, emailReqDto);
+        sendEmailAfterUpdatedPassword(user);
 
         log.info("Successfully change password for user: '{}'", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.CHANGE_PASSWORD_RESPONSE_SUCCESS))
             .build();
+    }
+
+    @Override
+    public BaseMessageResDto changeViaAccount(ChangeViaAccountReqDto reqDto, AuthUserDetails user) {
+        final UserEntity userEntity = userRepository
+            .findByLocalUsernameOrEmailAddress(user.getUsername())
+            .orElseThrow(() -> new UserException.UserNotExistException(user.getUsername()));
+
+        if (!passwordEncoder.matches(reqDto.getOldPassword(), userEntity.getPassword())) {
+            throw new AccountException.IncorrectOldPasswordException(user.getUsername());
+        }
+        userEntity.setPassword(reqDto.getNewPassword());
+
+        sendEmailAfterUpdatedPassword(userEntity);
+
+        log.info("Successfully updated password via logged account for user: '{}'", userEntity);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.CHANGE_PASSWORD_RESPONSE_SUCCESS))
+            .build();
+    }
+
+    private void sendEmailAfterUpdatedPassword(UserEntity user) {
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+
+        final SendBaseEmailReqDto emailReqDto = otaTokenEmailMapper.mapToSendBaseEmailReq(user, profileImageDetails);
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_PASSWORD_CHANGED, emailReqDto);
     }
 
     private UserEntity sendRequestForChangePassword(String username) {

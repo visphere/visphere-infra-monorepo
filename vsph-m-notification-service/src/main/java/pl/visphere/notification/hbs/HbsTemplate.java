@@ -15,6 +15,7 @@ public enum HbsTemplate implements HbsFile {
     CHANGE_PASSWORD("change-password"),
     PASSWORD_CHANGED("password-changed"),
     MFA_CODE("mfa-code"),
+    UPDATED_MFA_STATE("updated-mfa-state"),
     REQ_UPDATE_EMAIL("req-update-email"),
     REQ_UPDATE_SECOND_EMAIL("req-update-second-email"),
     UPDATED_EMAIL("updated-email"),
