@@ -40,8 +40,7 @@ public class MjmlApiService {
 
             parsedHtml = parsedTemplate.getBody();
         } catch (RestClientException ex) {
-            log.error("Unable to call email template parser service. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to call email template parser service. Cause: '{}'", ex.getMessage());
         }
         log.info("Successfully processed email template by external MJML service.");
         return parsedHtml;

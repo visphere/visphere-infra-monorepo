@@ -46,8 +46,7 @@ public class MfaProxyServiceImpl implements MfaProxyService {
         try {
             imageData = qrGenerator.generate(qrData);
         } catch (QrGenerationException ex) {
-            log.error("Unable to generate QR code. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to generate QR code. Cause: '{}'", ex.getMessage());
         }
         log.info("Successfully generated QR image data.");
         return Utils.getDataUriForImage(imageData, qrGenerator.getImageMimeType());

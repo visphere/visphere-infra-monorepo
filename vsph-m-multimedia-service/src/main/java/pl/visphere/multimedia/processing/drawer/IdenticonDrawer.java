@@ -64,8 +64,7 @@ public class IdenticonDrawer extends AbstractImageDrawer<String> {
 
             log.info("Successfuly generated indeticon image with username: '{}' and color: '{}'", inputData, color);
         } catch (Exception ex) {
-            log.error("Unable to create identicon image. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to create identicon image. Cause: '{}'", ex.getMessage());
         }
         return identiconAsBytes;
     }

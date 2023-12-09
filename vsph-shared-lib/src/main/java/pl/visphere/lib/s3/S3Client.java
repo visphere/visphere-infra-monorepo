@@ -77,7 +77,7 @@ public class S3Client {
         return createFullResourcePath(bucket, String.valueOf(resourceDir), payload, uuid);
     }
 
-    public InsertedObjectRes putObject(S3Bucket bucket, String resourceDir, FilePayload payload) {
+    public ObjectData putObject(S3Bucket bucket, String resourceDir, FilePayload payload) {
         String uuid = UUID.randomUUID().toString();
         if (payload.uuid() != null) {
             uuid = payload.uuid();
@@ -85,13 +85,13 @@ public class S3Client {
         final String fileName = String.format("%s-%s.%s", payload.prefix().getPrefix(), uuid, payload.extension().getExt());
         final String filePath = resourceDir.equals(StringUtils.EMPTY) ? fileName : resourceDir + "/" + fileName;
         convertBytesToTempFile(payload, file -> client.putObject(bucket.getName(), filePath, file));
-        return InsertedObjectRes.builder()
+        return ObjectData.builder()
             .uuid(uuid)
             .fullPath(createFullResourcePath(bucket, resourceDir, payload, uuid))
             .build();
     }
 
-    public InsertedObjectRes putObject(S3Bucket bucket, Long resourceDir, FilePayload payload) {
+    public ObjectData putObject(S3Bucket bucket, Long resourceDir, FilePayload payload) {
         return putObject(bucket, String.valueOf(resourceDir), payload);
     }
 
@@ -122,8 +122,7 @@ public class S3Client {
             objectBytes = object.getObjectContent().readAllBytes();
             mimeType = object.getObjectMetadata().getContentType();
         } catch (IOException ex) {
-            log.error("Unexpected error during read file bytes. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unexpected error during read file bytes. Cause: '{}'", ex.getMessage());
         }
         return FileStreamInfo.builder()
             .data(objectBytes)
@@ -139,14 +138,11 @@ public class S3Client {
             log.info("Successfully created temp file: '{}' and fill with bytes data", tempFile.getName());
             consumer.accept(tempFile);
         } catch (AmazonServiceException ex) {
-            log.error("Unexpected error during AWS service call. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unexpected error during AWS service call. Cause: '{}'", ex.getMessage());
         } catch (SdkClientException ex) {
-            log.error("Unable to call AWS service by client. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to call AWS service by client. Cause: '{}'", ex.getMessage());
         } catch (IOException ex) {
-            log.error("Unable to write bytes data to temp file. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to write bytes data to temp file. Cause: '{}'", ex.getMessage());
         } finally {
             if (tempFile != null) {
                 tempFile.deleteOnExit();

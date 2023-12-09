@@ -24,14 +24,10 @@ public class GzipCompressor {
             gzipOutputStream.close();
             compressedData = outputStream.toByteArray();
         } catch (IOException ex) {
-            log.error("Unable to perform GZIP compression on byte content. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to perform GZIP compression on byte content. Cause: '{}'",
+                ex.getMessage());
         }
         return compressedData;
-    }
-
-    public byte[] encode(String rawData) {
-        return encode(rawData.getBytes(StandardCharsets.UTF_8));
     }
 
     public byte[] decode(byte[] compressedData) {
@@ -48,8 +44,8 @@ public class GzipCompressor {
             }
             decompressedData = outputStream.toByteArray();
         } catch (IOException ex) {
-            log.error("Unable to perform GZIP decompression on byte content. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to perform GZIP decompression on byte content. Cause: '{}'",
+                ex.getMessage());
         }
         return decompressedData;
     }

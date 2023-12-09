@@ -80,7 +80,7 @@ public class ProfileColorServiceImpl implements ProfileColorService {
             .extension(identiconDrawer.getFileExtension())
             .build();
 
-        final InsertedObjectRes res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
+        final ObjectData res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setProfileColor(reqDto.getColor());
 

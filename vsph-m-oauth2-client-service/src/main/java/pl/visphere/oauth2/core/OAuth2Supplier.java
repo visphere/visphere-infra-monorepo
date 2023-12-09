@@ -28,9 +28,7 @@ public enum OAuth2Supplier {
         return Stream.of(values())
             .filter(s -> s.supplierName.equalsIgnoreCase(rawName) && suppliers.contains(s.supplierName))
             .findFirst()
-            .orElseThrow(() -> {
-                log.error("Unable to find supplier: '{}'. Supplier is not handled by OAuth2 client.", rawName);
-                return new GenericRestException();
-            });
+            .orElseThrow(() -> new GenericRestException(
+                "Unable to find supplier: '{}'. Supplier is not handled by OAuth2 client.", rawName));
     }
 }

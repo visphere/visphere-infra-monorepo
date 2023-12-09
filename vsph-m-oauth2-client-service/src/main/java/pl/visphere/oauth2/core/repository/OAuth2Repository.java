@@ -32,10 +32,7 @@ public class OAuth2Repository implements AuthorizationRequestRepository<OAuth2Au
     public OAuth2AuthorizationRequest loadAuthorizationRequest(HttpServletRequest req) {
         return cookiesService.getCookie(req, OAuth2Cookie.SESSION_PERSISTOR)
             .map(c -> cookiesService.deserializeValue(c, OAuth2AuthorizationRequest.class))
-            .orElseThrow(() -> {
-                log.error("Unable to find cookie: '{}'", OAuth2Cookie.SESSION_PERSISTOR);
-                return new GenericRestException();
-            });
+            .orElseThrow(() -> new GenericRestException("Unable to find cookie: '{}'", OAuth2Cookie.SESSION_PERSISTOR));
     }
 
     @Override

@@ -42,8 +42,7 @@ public abstract class AbstractImageDrawer<I> {
             ImageIO.write(bufferedImage, DEF_EXT.getExt(), outputStream);
             outputData = outputStream.toByteArray();
         } catch (IOException ex) {
-            log.error("Unable to convert BufferedImage to bytes array. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to convert BufferedImage to bytes array. Cause: '{}'", ex.getMessage());
         }
         return outputData;
     }

@@ -89,8 +89,7 @@ public class CookiesService {
         try (final ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
             returnObj = objectClazz.cast(inputStream.readObject());
         } catch (IOException | ClassNotFoundException ex) {
-            log.error("Unable to deserialize cookie value. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to deserialize cookie value. Cause: '{}'", ex.getMessage());
         }
         return returnObj;
     }

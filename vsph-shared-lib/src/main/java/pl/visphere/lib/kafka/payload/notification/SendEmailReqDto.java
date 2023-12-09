@@ -6,6 +6,7 @@ package pl.visphere.lib.kafka.payload.notification;
 
 public interface SendEmailReqDto {
     Long getUserId();
+    String getFullName();
     String getEmailAddress();
     String getProfileImageUuid();
 }

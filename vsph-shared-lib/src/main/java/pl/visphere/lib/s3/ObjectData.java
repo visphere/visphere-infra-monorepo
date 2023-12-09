@@ -7,7 +7,7 @@ package pl.visphere.lib.s3;
 import lombok.Builder;
 
 @Builder
-public record InsertedObjectRes(
+public record ObjectData(
     String uuid,
     String fullPath
 ) {

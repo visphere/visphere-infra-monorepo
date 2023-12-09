@@ -133,7 +133,7 @@ services:
     environment:
       - 'MINIO_ROOT_USER=${VSPH_S3_USERNAME}'
       - 'MINIO_ROOT_PASSWORD=${VSPH_S3_PASSWORD}'
-      - 'MINIO_DEFAULT_BUCKETS=spheres:public,users:public,emails:private'
+      - 'MINIO_DEFAULT_BUCKETS=spheres:public,users:public,emails:private,locked-users:private'
       - 'MINIO_SCHEME=http'
     volumes:
       - ./.volumes/s3/s3-volume:/bitnami/minio/data

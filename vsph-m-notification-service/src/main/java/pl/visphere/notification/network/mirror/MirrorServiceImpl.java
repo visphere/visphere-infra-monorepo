@@ -48,8 +48,7 @@ class MirrorServiceImpl implements MirrorService {
             final FileStreamInfo compressedStream = s3Client.getObjectByFullKey(S3Bucket.EMAILS, resourceKey);
             outputHtml = gzipCompressor.decodeAndReturnString(compressedStream.data());
         } catch (SdkClientException ex) {
-            log.error("Unable to get email object from S3. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to get email object from S3. Cause: '{}'", ex.getMessage());
         }
         log.info("Successfully find mirror email in S3 and decompress to raw html.");
         return outputHtml;

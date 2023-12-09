@@ -29,8 +29,7 @@ public class InitialsDrawer extends AbstractImageDrawer<char[]> {
             graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, resource.getFile()));
             log.info("Successfully registered custom font: '{}'", imageProperties.getFontPath());
         } catch (IOException | FontFormatException ex) {
-            log.error("Unable to load custom font from file. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to load custom font from file. Cause: '{}'", ex.getMessage());
         }
     }
 

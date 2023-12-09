@@ -76,8 +76,8 @@ public class OAuth2SuccessResolver extends SimpleUrlAuthenticationSuccessHandler
                 && authorizedUri.getPort() == redirectClientUri.getPort();
         });
         if (isNotAuthorizedUri) {
-            log.error("Attempt to authenticate via OAuth2 by not authorized URI/s: '{}'", redirectClientUri);
-            throw new GenericRestException();
+            throw new GenericRestException("Attempt to authenticate via OAuth2 by not authorized URI/s: '{}'",
+                redirectClientUri);
         }
 
         final UriComponentsBuilder uriComponentsBuilder = UriComponentsBuilder

@@ -9,7 +9,6 @@ import lombok.Builder;
 @Builder
 public record DefaultUserProfileReqDto(
     Long userId,
-    char[] initials,
-    String username
+    char[] initials
 ) {
 }

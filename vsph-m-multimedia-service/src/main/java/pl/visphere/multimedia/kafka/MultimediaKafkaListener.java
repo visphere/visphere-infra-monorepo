@@ -37,7 +37,7 @@ class MultimediaKafkaListener {
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.profile-image-details}")
-    void getProfileImageDetails(Message<Long> payload) {
+    void getProfileImageDetailsListener(Message<Long> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::getProfileImageDetails);
     }
 }

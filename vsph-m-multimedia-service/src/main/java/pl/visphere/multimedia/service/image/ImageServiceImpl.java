@@ -39,7 +39,7 @@ public class ImageServiceImpl implements ImageService {
         final byte[] imageData = initialsDrawer.drawImage(reqDto.initials(), randomColor);
 
         final FilePayload filePayload = createFilePayload(imageData);
-        final InsertedObjectRes res = s3Client
+        final ObjectData res = s3Client
             .putObject(S3Bucket.USERS, reqDto.userId(), filePayload);
 
         final AccountProfileEntity accountProfile = AccountProfileEntity.builder()
@@ -66,7 +66,7 @@ public class ImageServiceImpl implements ImageService {
         final String randomColor = initialsDrawer.getRandomColor();
         final byte[] imageData = initialsDrawer.drawImage(parseInitials(reqDto), randomColor);
 
-        final InsertedObjectRes res = s3Client
+        final ObjectData res = s3Client
             .putObject(S3Bucket.SPHERES, reqDto.guildId(), createFilePayload(imageData));
 
         final GuildProfileEntity guildProfile = GuildProfileEntity.builder()
@@ -106,7 +106,7 @@ public class ImageServiceImpl implements ImageService {
         final byte[] imageData = initialsDrawer.drawImage(parseInitials(reqDto), guildProfile.getProfileColor());
 
         s3Client.clearObjects(S3Bucket.SPHERES, reqDto.guildId(), S3ResourcePrefix.PROFILE);
-        final InsertedObjectRes res = s3Client
+        final ObjectData res = s3Client
             .putObject(S3Bucket.SPHERES, reqDto.guildId(), createFilePayload(imageData));
 
         guildProfile.setProfileImageUuid(res.uuid());

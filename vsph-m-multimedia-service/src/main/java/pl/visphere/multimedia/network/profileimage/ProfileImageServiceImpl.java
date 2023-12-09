@@ -74,15 +74,14 @@ class ProfileImageServiceImpl implements ProfileImageService {
                 .data(scaledImageData)
                 .extension(imageDrawer.getFileExtension())
                 .build();
-            final InsertedObjectRes res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
+            final ObjectData res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
 
             resourcePath = res.fullPath();
             accountProfile.setProfileImageUuid(res.uuid());
             accountProfile.setImageType(ImageType.CUSTOM);
 
         } catch (IOException ex) {
-            log.error("Unable to scale and save user profile image. Cause: '{}'", ex.getMessage());
-            throw new GenericRestException();
+            throw new GenericRestException("Unable to scale and save user profile image. Cause: '{}'", ex.getMessage());
         }
         log.info("successfully scaled and saved user image with path: '{}'", resourcePath);
         return MessageWithResourcePathResDto.builder()
@@ -109,7 +108,7 @@ class ProfileImageServiceImpl implements ProfileImageService {
             .extension(imageDrawer.getFileExtension())
             .build();
 
-        final InsertedObjectRes res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
+        final ObjectData res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setImageType(ImageType.IDENTICON);
 
@@ -144,7 +143,7 @@ class ProfileImageServiceImpl implements ProfileImageService {
             .build();
 
         s3Client.clearObjects(S3Bucket.USERS, user.getId(), S3ResourcePrefix.PROFILE);
-        final InsertedObjectRes res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
+        final ObjectData res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
 
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setImageType(ImageType.DEFAULT);

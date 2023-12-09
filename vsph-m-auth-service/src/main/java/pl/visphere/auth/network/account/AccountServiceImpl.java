@@ -131,7 +131,6 @@ class AccountServiceImpl implements AccountService {
         final DefaultUserProfileReqDto profileReqDto = DefaultUserProfileReqDto.builder()
             .initials(new char[]{ user.getFirstName().charAt(0), user.getLastName().charAt(0) })
             .userId(user.getId())
-            .username(user.getUsername())
             .build();
 
         final ProfileImageDetailsResDto profileResDto = syncQueueHandler
@@ -159,7 +158,7 @@ class AccountServiceImpl implements AccountService {
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, emailReqDto);
 
-        log.info("Successfully resend activate account message");
+        log.info("Successfully resend activate account message for user: '{}'", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS))
             .build();
