@@ -45,6 +45,8 @@ import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
+import java.time.ZonedDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -92,6 +94,7 @@ class MfaServiceImpl implements MfaService {
             throw new MfaException.MfaInvalidCodeException(code, user.getUsername());
         }
         final LoginResDto resDto = createLoginResponse(user);
+        cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, user.getId());
 
         log.info("Successfully authenticate with MFA via authenticator app for user: '{}'", resDto);
         return resDto;
@@ -126,7 +129,7 @@ class MfaServiceImpl implements MfaService {
         authenticationManager.authenticate(authToken);
 
         final OtaTokenEntity otaToken = otaTokenRepository
-            .findByTokenAndTypeAndIsUsedFalse(token, type)
+            .findByTokenAndTypeAndIsUsedFalseAndExpiredAtAfter(token, type, ZonedDateTime.now())
             .orElseThrow(() -> new MfaException.MfaInvalidCodeException(token));
 
         otaToken.setUsed(true);

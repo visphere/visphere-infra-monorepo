@@ -34,6 +34,8 @@ import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
+import java.time.ZonedDateTime;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -62,7 +64,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     public BaseMessageResDto verify(String token) {
         final OtaToken type = OtaToken.CHANGE_PASSWORD;
         final OtaTokenEntity otaToken = otaTokenRepository
-            .findByTokenAndTypeAndIsUsedFalse(token, type)
+            .findByTokenAndTypeAndIsUsedFalseAndExpiredAtAfter(token, type, ZonedDateTime.now())
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
 
         if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
@@ -91,7 +93,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     public BaseMessageResDto change(String token, ChangeReqDto reqDto) {
         final OtaToken type = OtaToken.CHANGE_PASSWORD;
         final OtaTokenEntity otaToken = otaTokenRepository
-            .findByTokenAndTypeAndIsUsedFalse(token, type)
+            .findByTokenAndTypeAndIsUsedFalseAndExpiredAtAfter(token, type, ZonedDateTime.now())
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
 
         if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {

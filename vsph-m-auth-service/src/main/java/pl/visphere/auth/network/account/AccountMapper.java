@@ -8,12 +8,16 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
+import pl.visphere.auth.domain.mfauser.MfaUserEntity;
 import pl.visphere.auth.domain.user.UserEntity;
+import pl.visphere.auth.network.account.dto.AccountDetailsResDto;
 import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
+
+import java.time.ZoneId;
 
 @Component
 @RequiredArgsConstructor
@@ -44,5 +48,17 @@ class AccountMapper {
         emailReqDto.setUserId(user.getId());
         emailReqDto.setProfileImageUuid(profileResDto.profileImageUuid());
         return emailReqDto;
+    }
+
+    AccountDetailsResDto mapToAccountDetailsRes(UserEntity user, String credentialsSupplier) {
+        final AccountDetailsResDto resDto = modelMapper.map(user, AccountDetailsResDto.class);
+        final MfaUserEntity mfaUser = user.getMfaUser();
+        resDto.setSecondEmailAddress(user.getSecondEmailAddress() == null ? "-" : user.getSecondEmailAddress());
+        resDto.setJoinDate(user.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate());
+        resDto.setCredentialsSupplier(credentialsSupplier);
+        resDto.setMfaEnabled(mfaUser != null);
+        resDto.setExternalOAuth2Supplier(user.getExternalCredProvider());
+        resDto.setMfaSetup(mfaUser != null && mfaUser.getMfaIsSetup() != null);
+        return resDto;
     }
 }

@@ -46,6 +46,13 @@ public class CacheService {
         }
     }
 
+    public void deleteCache(AppCache appCache, Object key) {
+        final Cache cache = getCache(appCache);
+        if (cache != null) {
+            cache.evict(key);
+        }
+    }
+
     private Cache getCache(AppCache appCache) {
         return cacheManager.getCache(appCache.getName());
     }

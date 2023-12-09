@@ -22,27 +22,27 @@ class NotificationKafkaListener {
     private final MailService mailService;
 
     @KafkaListener(topics = "${visphere.kafka.topic.email-activate-account}")
-    void sendForActivateAccount(Message<SendTokenEmailReqDto> reqDto) {
+    void sendForActivateAccountListener(Message<SendTokenEmailReqDto> reqDto) {
         asyncListenerHandler.parseAndInvoke(reqDto, mailService::activateAccount);
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.email-new-account}")
-    void sendForNewAccount(Message<SendBaseEmailReqDto> reqDto) {
+    void sendForNewAccountListener(Message<SendBaseEmailReqDto> reqDto) {
         asyncListenerHandler.parseAndInvoke(reqDto, mailService::newAccount);
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.email-change-password}")
-    void sendForChangePassword(Message<SendTokenEmailReqDto> reqDto) {
+    void sendForChangePasswordListener(Message<SendTokenEmailReqDto> reqDto) {
         asyncListenerHandler.parseAndInvoke(reqDto, mailService::changePassword);
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.email-password-changed}")
-    void sendForPasswordChanged(Message<SendBaseEmailReqDto> reqDto) {
+    void sendForPasswordChangedListener(Message<SendBaseEmailReqDto> reqDto) {
         asyncListenerHandler.parseAndInvoke(reqDto, mailService::passwordChanged);
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.email-mfa-code}")
-    void sendForMfaEmailCode(Message<SendTokenEmailReqDto> reqDto) {
+    void sendForMfaEmailCodeListener(Message<SendTokenEmailReqDto> reqDto) {
         asyncListenerHandler.parseAndInvoke(reqDto, mailService::mfaCode);
     }
 }

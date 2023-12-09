@@ -78,7 +78,6 @@ class UserServiceImpl implements UserService {
         final DefaultUserProfileReqDto profileReqDto = DefaultUserProfileReqDto.builder()
             .initials(new char[]{ reqDto.getFirstName().charAt(0), reqDto.getLastName().charAt(0) })
             .userId(oAuth2User.getUserId())
-            .username(reqDto.getUsername())
             .build();
 
         final ProfileImageDetailsResDto profileResDto = syncQueueHandler

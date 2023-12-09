@@ -11,13 +11,15 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.visphere.auth.domain.mfausers.MfaUserEntity;
+import pl.visphere.auth.cache.CacheName;
+import pl.visphere.auth.domain.mfauser.MfaUserEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.auth.domain.role.RoleRepository;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
+import pl.visphere.auth.exception.AccountException;
 import pl.visphere.auth.exception.OtaTokenException;
 import pl.visphere.auth.exception.RoleException;
 import pl.visphere.auth.i18n.LocaleSet;
@@ -44,7 +46,7 @@ import pl.visphere.lib.security.user.AppGrantedAuthority;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
 import java.time.LocalDate;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
@@ -69,27 +71,16 @@ class AccountServiceImpl implements AccountService {
     @Override
     public AccountDetailsResDto getAccountDetails(AuthUserDetails user) {
         final UserEntity userEntity = getUserProxyFromCache(user);
-        final boolean isExternalCredProvider = userEntity.getExternalCredProvider();
+
+        final boolean isExternalCredSupplier = userEntity.getExternalCredProvider();
 
         String credentialsSupplier = "local";
-        if (isExternalCredProvider) {
+        if (isExternalCredSupplier) {
             final OAuth2DetailsResDto detailsResDto = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
             credentialsSupplier = detailsResDto.supplier();
         }
-        final AccountDetailsResDto resDto = AccountDetailsResDto.builder()
-            .firstName(userEntity.getFirstName())
-            .lastName(userEntity.getLastName())
-            .username(userEntity.getUsername())
-            .emailAddress(userEntity.getEmailAddress())
-            .secondEmailAddress(userEntity.getSecondEmailAddress() == null ? "-" : userEntity.getSecondEmailAddress())
-            .birthDate(userEntity.getBirthDate())
-            .joinDate(userEntity.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate())
-            .isExternalOAuth2Supplier(isExternalCredProvider)
-            .credentialsSupplier(credentialsSupplier)
-            .isMfaEnabled(userEntity.getMfaUser() != null)
-            .build();
-
+        final AccountDetailsResDto resDto = accountMapper.mapToAccountDetailsRes(userEntity, credentialsSupplier);
         log.info("Successfully find and fetched user account details: '{}'", resDto);
         return resDto;
     }
@@ -166,7 +157,7 @@ class AccountServiceImpl implements AccountService {
     public BaseMessageResDto activate(String token) {
         final OtaToken type = OtaToken.ACTIVATE_ACCOUNT;
         final OtaTokenEntity otaToken = otaTokenRepository
-            .findByTokenAndTypeAndIsUsedFalse(token, type)
+            .findByTokenAndTypeAndIsUsedFalseAndExpiredAtAfter(token, type, ZonedDateTime.now())
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
 
         final UserEntity user = otaToken.getUser();

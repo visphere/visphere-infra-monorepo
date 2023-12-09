@@ -4,21 +4,23 @@
  */
 package pl.visphere.auth.network.account.dto;
 
-import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
-@Builder
-public record AccountDetailsResDto(
-    String firstName,
-    String lastName,
-    String username,
-    String emailAddress,
-    String secondEmailAddress,
-    LocalDate birthDate,
-    LocalDate joinDate,
-    boolean isExternalOAuth2Supplier,
-    String credentialsSupplier,
-    boolean isMfaEnabled
-) {
+@Data
+@NoArgsConstructor
+public class AccountDetailsResDto {
+    private String firstName;
+    private String lastName;
+    private String username;
+    private String emailAddress;
+    private String secondEmailAddress;
+    private LocalDate birthDate;
+    private LocalDate joinDate;
+    private boolean isExternalOAuth2Supplier;
+    private String credentialsSupplier;
+    private boolean isMfaEnabled;
+    private boolean isMfaSetup;
 }
