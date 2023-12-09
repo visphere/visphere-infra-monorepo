@@ -13,10 +13,12 @@ import dev.samstevens.totp.qr.ZxingPngQrGenerator;
 import dev.samstevens.totp.secret.DefaultSecretGenerator;
 import dev.samstevens.totp.secret.SecretGenerator;
 import dev.samstevens.totp.time.TimeProvider;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import pl.visphere.auth.service.mfa.UtcTimeProvider;
 import pl.visphere.lib.AbstractBaseServiceBeans;
+import pl.visphere.lib.cache.CacheService;
 
 @Configuration
 class ServiceConfig extends AbstractBaseServiceBeans {
@@ -35,5 +37,10 @@ class ServiceConfig extends AbstractBaseServiceBeans {
         final CodeGenerator codeGenerator = new DefaultCodeGenerator();
         final TimeProvider timeProvider = new UtcTimeProvider();
         return new DefaultCodeVerifier(codeGenerator, timeProvider);
+    }
+
+    @Bean
+    CacheService cacheService(CacheManager cacheManager) {
+        return new CacheService(cacheManager);
     }
 }

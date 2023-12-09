@@ -4,11 +4,13 @@
  */
 package pl.visphere.auth.network.account;
 
-import pl.visphere.auth.network.account.dto.ActivateAccountReqDto;
-import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
+import pl.visphere.auth.network.account.dto.*;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.security.user.AuthUserDetails;
 
 interface AccountService {
+    AccountDetailsResDto getAccountDetails(AuthUserDetails user);
+    UpdateAccountDetailsResDto updateAccountDetails(UpdateAccountDetailsReqDto reqDto, AuthUserDetails user);
     BaseMessageResDto createNew(CreateAccountReqDto reqDto);
     BaseMessageResDto activate(String token);
     BaseMessageResDto resend(ActivateAccountReqDto reqDto);

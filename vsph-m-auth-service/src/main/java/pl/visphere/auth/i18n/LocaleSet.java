@@ -28,6 +28,14 @@ public enum LocaleSet implements LocaleExtendableSet {
     ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.activateAccount.res.success"),
     RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.resendActivateAccount.res.success"),
     SEND_ALT_MFA_EMAIL_CODE_RESPONSE_SUCCESS("vsph.i18n.altMfaSendEmailCode.res.success"),
+    REQUEST_FIRST_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.requestFirstEmailAddress.res.success"),
+    RESEND_REQUEST_FIRST_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.resendRequestFirstEmailAddress.res.success"),
+    UPDATE_FIRST_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.updateFirstEmailAddress.res.success"),
+    REQUEST_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.requestSecondEmailAddress.res.success"),
+    RESEND_REQUEST_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.resendRequestSecondEmailAddress.res.success"),
+    UPDATE_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.updateSecondEmailAddress.res.success"),
+    REMOVE_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.removeSecondEmailAddress.res.success"),
+    UDPATE_ACCOUNT_DETAILS_RESPONSE_SUCCESS("vsph.i18n.updatedAccountDetails.res.success"),
     ;
 
     private final String holder;

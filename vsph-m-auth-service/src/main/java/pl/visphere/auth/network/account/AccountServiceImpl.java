@@ -21,25 +21,30 @@ import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.exception.OtaTokenException;
 import pl.visphere.auth.exception.RoleException;
 import pl.visphere.auth.i18n.LocaleSet;
-import pl.visphere.auth.network.account.dto.ActivateAccountReqDto;
-import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
+import pl.visphere.auth.network.account.dto.*;
 import pl.visphere.auth.service.mfa.MfaProxyService;
 import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
+import pl.visphere.lib.jwt.JwtService;
+import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AppGrantedAuthority;
+import pl.visphere.lib.security.user.AuthUserDetails;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
@@ -54,10 +59,66 @@ class AccountServiceImpl implements AccountService {
     private final PasswordEncoder passwordEncoder;
     private final OtaTokenService otaTokenService;
     private final MfaProxyService mfaProxyService;
+    private final CacheService cacheService;
+    private final JwtService jwtService;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final OtaTokenRepository otaTokenRepository;
+
+    @Override
+    public AccountDetailsResDto getAccountDetails(AuthUserDetails user) {
+        final UserEntity userEntity = getUserProxyFromCache(user);
+        final boolean isExternalCredProvider = userEntity.getExternalCredProvider();
+
+        String credentialsSupplier = "local";
+        if (isExternalCredProvider) {
+            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
+            credentialsSupplier = detailsResDto.supplier();
+        }
+        final AccountDetailsResDto resDto = AccountDetailsResDto.builder()
+            .firstName(userEntity.getFirstName())
+            .lastName(userEntity.getLastName())
+            .username(userEntity.getUsername())
+            .emailAddress(userEntity.getEmailAddress())
+            .secondEmailAddress(userEntity.getSecondEmailAddress() == null ? "-" : userEntity.getSecondEmailAddress())
+            .birthDate(userEntity.getBirthDate())
+            .joinDate(userEntity.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate())
+            .isExternalOAuth2Supplier(isExternalCredProvider)
+            .credentialsSupplier(credentialsSupplier)
+            .isMfaEnabled(userEntity.getMfaUser() != null)
+            .build();
+
+        log.info("Successfully find and fetched user account details: '{}'", resDto);
+        return resDto;
+    }
+
+    @Override
+    public UpdateAccountDetailsResDto updateAccountDetails(UpdateAccountDetailsReqDto reqDto, AuthUserDetails user) {
+        final UserEntity userEntity = getUserProxyFromCache(user);
+        final String username = reqDto.getUsername();
+
+        if (userRepository.existsByUsernameAndIdIsNot(username, user.getId())) {
+            throw new UserException.UserAlreadyExistException(username);
+        }
+        userEntity.setUsername(reqDto.getUsername());
+        userEntity.setFirstName(StringUtils.capitalize(reqDto.getFirstName()));
+        userEntity.setLastName(StringUtils.capitalize(reqDto.getLastName()));
+        userEntity.setBirthDate(parseToLocalDate(reqDto.getBirthDate()));
+
+        final TokenData tokenData = jwtService
+            .generateAccessToken(user.getId(), reqDto.getUsername(), user.getEmailAddress());
+
+        final UserEntity saved = userRepository.save(userEntity);
+        cacheService.updateCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId(), saved);
+
+        log.info("Successfully updated user account details for user: '{}'", userEntity);
+        return UpdateAccountDetailsResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.UDPATE_ACCOUNT_DETAILS_RESPONSE_SUCCESS))
+            .accessToken(tokenData.token())
+            .build();
+    }
 
     @Override
     @Transactional
@@ -76,7 +137,7 @@ class AccountServiceImpl implements AccountService {
         user.setFirstName(StringUtils.capitalize(reqDto.getFirstName()));
         user.setLastName(StringUtils.capitalize(reqDto.getLastName()));
         user.setPassword(passwordEncoder.encode(reqDto.getPassword()));
-        user.setBirthDate(LocalDate.parse(reqDto.getBirthDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
+        user.setBirthDate(parseToLocalDate(reqDto.getBirthDate()));
         user.addRole(role);
         user.setExternalCredProvider(false);
 
@@ -162,5 +223,24 @@ class AccountServiceImpl implements AccountService {
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS))
             .build();
+    }
+    private UserEntity getUserProxyFromCache(AuthUserDetails user) {
+        return cacheService
+            .getSafetyFromCache(CacheName.USER_ENTITY_USER_ID, user.getId(), UserEntity.class,
+                () -> userRepository.findById(user.getId()))
+            .orElseThrow(() -> new UserException.UserNotExistException(user.getId()));
+    }
+
+    private LocalDate parseToLocalDate(String birthDate) {
+        return LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+    }
+
+    private void sendEmail(UserEntity user, QueueTopic kafkaTopic) {
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(),
+                ProfileImageDetailsResDto.class);
+
+        final SendBaseEmailReqDto emailReqDto = accountMapper.mapToSendBaseEmailReq(user, profileImageDetails);
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(kafkaTopic, emailReqDto);
     }
 }

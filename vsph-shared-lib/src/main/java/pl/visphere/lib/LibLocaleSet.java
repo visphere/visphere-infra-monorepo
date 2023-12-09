@@ -28,6 +28,7 @@ public enum LibLocaleSet implements LocaleExtendableSet {
     GUILD_PROFILE_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.guildProfileNotFound"),
     OAUTH2_USER_WITH_SUPPLIER_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.oauth2UserWithSupplierNotFound"),
     OAUTH2_USER_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.oauth2UserNotFound"),
+    OAUTH2_IMMUTABLE_VALUE_EXCEPTION_MESSAGE("vsph.lib.exc.oauth2ImmutableValue"),
     ;
 
     private final String holder;

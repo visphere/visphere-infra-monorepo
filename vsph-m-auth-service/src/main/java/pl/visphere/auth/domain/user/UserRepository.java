@@ -23,6 +23,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     boolean existsByUsernameAndIdIsNot(String username, Long id);
     boolean existsByEmailAddress(String emailAddress);
     boolean existsByEmailAddressAndIdIsNot(String emailAddress, Long id);
+    boolean existsByIdAndExternalCredProviderIsTrue(Long id);
 
     @Query(value = """
             from UserEntity u join fetch u.roles

@@ -19,4 +19,5 @@ class OtaTokenProperties {
     private Integer activateAccountHours;
     private Integer changePasswordMinutes;
     private Integer mfaEmailMinutes;
+    private Integer changeEmailMinutes;
 }

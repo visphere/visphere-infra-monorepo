@@ -16,6 +16,11 @@ public enum LocaleSet implements LocaleExtendableSet {
     MAIL_MFA_CODE_TITLE("vsph.i18n.mail.mfaCode.title"),
     MAIL_PASSWORD_CHANGED_TITLE("vsph.i18n.mail.passwordChanged.title"),
     MAIL_NEW_ACCOUNT_TITLE("vsph.i18n.mail.newAccount.title"),
+    MAIL_REQ_UPDATE_EMAIL_TITLE("vsph.i18n.mail.reqUpdateEmail.title"),
+    MAIL_REQ_UPDATE_SECOND_EMAIL_TITLE("vsph.i18n.mail.reqUpdateSecondEmail.title"),
+    MAIL_UPDATED_EMAIL_TITLE("vsph.i18n.mail.updatedEmail.title"),
+    MAIL_UPDATED_SECOND_EMAIL_TITLE("vsph.i18n.mail.updatedSecondEmail.title"),
+    MAIL_REMOVED_SECOND_EMAIL_TITLE("vsph.i18n.mail.removedSecondEmail.title"),
     ;
 
     private final String holder;

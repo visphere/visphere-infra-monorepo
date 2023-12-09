@@ -17,7 +17,10 @@ import java.time.temporal.ChronoUnit;
 public enum OtaToken {
     ACTIVATE_ACCOUNT("activate-account-hours", 48, ChronoUnit.HOURS),
     CHANGE_PASSWORD("change-password-minutes", 10, ChronoUnit.MINUTES),
-    MFA_EMAIL("mfa-email-minutes", 5, ChronoUnit.MINUTES);
+    MFA_EMAIL("mfa-email-minutes", 5, ChronoUnit.MINUTES),
+    CHANGE_EMAIL("change-email", 10, ChronoUnit.MINUTES),
+    CHANGE_SECOND_EMAIL("change-second-email", 10, ChronoUnit.MINUTES),
+    ;
 
     private final String holder;
     private final long defaultValue;
