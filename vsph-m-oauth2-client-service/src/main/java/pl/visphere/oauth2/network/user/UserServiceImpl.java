@@ -7,16 +7,19 @@ package pl.visphere.oauth2.network.user;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.jwt.*;
 import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.auth.LoginOAuth2UserDetailsResDto;
 import pl.visphere.lib.kafka.payload.auth.UpdateOAuth2UserDetailsReqDto;
 import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.oauth2.core.OAuth2Supplier;
@@ -36,6 +39,7 @@ class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final ModelMapper modelMapper;
     private final I18nService i18nService;
+    private final AsyncQueueHandler asyncQueueHandler;
 
     private final OAuth2UserRepository oAuth2UserRepository;
 
@@ -91,8 +95,16 @@ class UserServiceImpl implements UserService {
         resDto.setProfileUrl(oAuth2User.getProfileImageUrl());
         resDto.setProfileColor(profileResDto.profileColor());
         resDto.setSettings(new UserSettingsResDto());
+        resDto.setIsDisabled(loginResDto.isDisabled());
 
-        // TODO: send welcome email message
+        final SendBaseEmailReqDto emailReqDto = SendBaseEmailReqDto.builder()
+            .userId(oAuth2User.getUserId())
+            .username(loginResDto.getUsername())
+            .fullName(userDetailsReqDto.getFirstName() + StringUtils.SPACE + userDetailsReqDto.getLastName())
+            .emailAddress(loginResDto.getEmailAddress())
+            .isExternalCredentialsSupplier(true)
+            .build();
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_NEW_ACCOUNT, emailReqDto);
 
         log.info("Successfully updated and init logged OAuth2 user with data: '{}'.", resDto);
         return resDto;
