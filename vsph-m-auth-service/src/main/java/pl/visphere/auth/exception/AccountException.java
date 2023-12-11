@@ -24,7 +24,23 @@ public class AccountException {
     public static class IncorrectOldPasswordException extends AbstractRestException {
         public IncorrectOldPasswordException(String username) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.INVALID_OLD_PASSWORD_EXCEPTION_MESSAGE);
-            log.error("Attempt to change password with incorrect old password for user: '{}'", username);
+            log.error("Attempt to change password with incorrect old password for user: '{}'.", username);
+        }
+    }
+
+    @Slf4j
+    public static class AccountAlreadyEnabledException extends AbstractRestException {
+        public AccountAlreadyEnabledException(String username) {
+            super(HttpStatus.BAD_REQUEST, LocaleSet.ACCOUNT_ALREADY_ENABLED_EXCEPTION_MESSAGE);
+            log.error("Attempt to enable already enabled account for user: '{}'.", username);
+        }
+    }
+
+    @Slf4j
+    public static class AccountAlreadyDisabledException extends AbstractRestException {
+        public AccountAlreadyDisabledException(String username) {
+            super(HttpStatus.BAD_REQUEST, LocaleSet.ACCOUNT_ALREADY_DISABLED_EXCEPTION_MESSAGE);
+            log.error("Attempt to disable already disabled account for user: '{}'.", username);
         }
     }
 }

@@ -57,7 +57,7 @@ class AccountMapper {
         resDto.setCredentialsSupplier(credentialsSupplier);
         resDto.setMfaEnabled(mfaUser != null);
         resDto.setExternalOAuth2Supplier(user.getExternalCredProvider());
-        resDto.setMfaSetup(mfaUser != null && mfaUser.getMfaIsSetup() != null);
+        resDto.setMfaSetup(mfaUser != null && mfaUser.getMfaIsSetup() != null && mfaUser.getMfaIsSetup());
         return resDto;
     }
 }

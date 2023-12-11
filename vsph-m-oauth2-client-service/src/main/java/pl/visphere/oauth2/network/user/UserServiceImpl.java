@@ -121,6 +121,7 @@ class UserServiceImpl implements UserService {
         resDto.setSettings(settingsResDto);
         resDto.setProfileUrl(imageUrl);
         resDto.setProfileColor(profileImageDetails.profileColor());
+        resDto.setIsDisabled(loginResDto.isDisabled());
 
         log.info("Successfully login OAuth2 user with data: '{}'.", resDto);
         return resDto;

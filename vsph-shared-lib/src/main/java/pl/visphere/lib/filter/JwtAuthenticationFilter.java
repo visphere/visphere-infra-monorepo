@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
+import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.jwt.JwtException;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.JwtState;
@@ -27,6 +28,7 @@ import pl.visphere.lib.kafka.ResponseObject;
 import pl.visphere.lib.kafka.payload.NullableObjectWrapper;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.UserPrincipalAuthenticationToken;
+import pl.visphere.lib.security.user.AuthUserDetails;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -58,6 +60,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         } catch (AuthenticationException ex) {
             chain.doFilter(req, res);
             return;
+        }
+        if (((AuthUserDetails) userDetails).isDisabled()) {
+            throw new UserException.UserAccountDisabledException(userDetails.getUsername());
         }
         final NullableObjectWrapper<Boolean> isOnBlacklist = syncQueueHandler
             .sendWithBlockThread(QueueTopic.JWT_IS_ON_BLACKLIST, token, Boolean.class)

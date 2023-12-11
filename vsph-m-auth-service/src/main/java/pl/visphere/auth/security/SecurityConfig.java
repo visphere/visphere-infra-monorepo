@@ -39,6 +39,7 @@ class SecurityConfig {
         "/api/v1/auth/account/new",
         "/api/v1/auth/account/activate/{token}",
         "/api/v1/auth/account/activate/resend",
+        "/api/v1/auth/account/enable",
         "/api/v1/auth/password/renew/request",
         "/api/v1/auth/password/renew/{token}/verify",
         "/api/v1/auth/password/renew/resend",

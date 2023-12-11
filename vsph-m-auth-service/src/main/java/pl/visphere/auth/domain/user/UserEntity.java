@@ -44,6 +44,9 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
     @Column(insertable = false)
     private Boolean isActivated;
 
+    @Column(insertable = false)
+    private Boolean isDisabled;
+
     private Boolean externalCredProvider;
 
     @ManyToMany
@@ -121,6 +124,14 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.isActivated = isActivated;
     }
 
+    public Boolean getIsDisabled() {
+        return isDisabled;
+    }
+
+    public void setIsDisabled(Boolean disabled) {
+        isDisabled = disabled;
+    }
+
     public Boolean getExternalCredProvider() {
         return externalCredProvider;
     }
@@ -164,6 +175,7 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
             ", lastName=" + lastName +
             ", birthDate=" + birthDate +
             ", isActivated=" + isActivated +
+            ", isDisabled=" + isDisabled +
             ", externalCredProvider=" + externalCredProvider +
             '}';
     }

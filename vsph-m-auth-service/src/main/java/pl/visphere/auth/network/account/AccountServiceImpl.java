@@ -4,6 +4,8 @@
  */
 package pl.visphere.auth.network.account;
 
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +17,8 @@ import pl.visphere.auth.cache.CacheName;
 import pl.visphere.auth.domain.mfauser.MfaUserEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
+import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
+import pl.visphere.auth.domain.refreshtoken.RefreshTokenRepository;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.auth.domain.role.RoleRepository;
 import pl.visphere.auth.domain.user.UserEntity;
@@ -29,8 +33,11 @@ import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.cache.CacheService;
+import pl.visphere.lib.exception.AbstractRestException;
+import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
+import pl.visphere.lib.jwt.JwtException;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
@@ -49,6 +56,7 @@ import pl.visphere.lib.security.user.AuthUserDetails;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -68,6 +76,7 @@ class AccountServiceImpl implements AccountService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final OtaTokenRepository otaTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public AccountDetailsResDto getAccountDetails(AuthUserDetails user) {
@@ -217,6 +226,58 @@ class AccountServiceImpl implements AccountService {
             .message(i18nService.getMessage(LocaleSet.RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS))
             .build();
     }
+
+    @Override
+    @Transactional
+    public BaseMessageResDto disable(PasswordReqDto reqDto, AuthUserDetails user) {
+        final UserEntity userEntity = findUserAndCheckPasswordForLocal(reqDto, user);
+        if (userEntity.getIsDisabled()) {
+            throw new AccountException.AccountAlreadyDisabledException(user.getUsername());
+        }
+        logoutFromAll(userEntity);
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.REPLACE_PROFILE_IMAGE_WITH_LOCKED, user.getId());
+
+        userEntity.setIsDisabled(true);
+        cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, user.getId());
+
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_DISABLED_ACCOUNT,
+            accountMapper.mapToSendBaseEmailReq(userEntity));
+
+        log.info("Successfully disabled account for user: '{}'.", userEntity);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.DISABLED_ACCOUNT_RESPONSE_SUCCESS))
+            .build();
+    }
+
+    @Override
+    @Transactional
+    public BaseMessageResDto enable(HttpServletRequest req) {
+        final String accessToken = jwtService.extractFromReq(req);
+        final Claims claims = jwtService
+            .extractClaims(accessToken)
+            .orElseThrow(JwtException.JwtGeneralException::new);
+        final String username = claims.getSubject();
+
+        final UserEntity userEntity = userRepository
+            .findByUsernameOrEmailAddress(username)
+            .orElseThrow(() -> new UserException.UserNotExistException(username));
+        if (!userEntity.getIsDisabled()) {
+            throw new AccountException.AccountAlreadyEnabledException(username);
+        }
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.REPLACE_LOCKED_WITH_PROFILE_IMAGE, userEntity.getId());
+        cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId());
+
+        userEntity.setIsDisabled(false);
+
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ENABLED_ACCOUNT,
+            accountMapper.mapToSendBaseEmailReq(userEntity));
+
+        log.info("Successfully enabled account for user: '{}'.", userEntity);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.ENABLED_ACCOUNT_RESPONSE_SUCCESS))
+            .build();
+    }
+
     private UserEntity getUserProxyFromCache(AuthUserDetails user) {
         return cacheService
             .getSafetyFromCache(CacheName.USER_ENTITY_USER_ID, user.getId(), UserEntity.class,
@@ -228,12 +289,30 @@ class AccountServiceImpl implements AccountService {
         return LocalDate.parse(birthDate, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
     }
 
-    private void sendEmail(UserEntity user, QueueTopic kafkaTopic) {
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(),
-                ProfileImageDetailsResDto.class);
+    private UserEntity findUserAndCheckPasswordForLocal(PasswordReqDto reqDto, AuthUserDetails user) {
+        final UserEntity userEntity = userRepository
+            .findById(user.getId())
+            .orElseThrow(() -> new UserException.UserNotExistException(user.getUsername()));
 
-        final SendBaseEmailReqDto emailReqDto = accountMapper.mapToSendBaseEmailReq(user, profileImageDetails);
-        asyncQueueHandler.sendAsyncWithNonBlockingThread(kafkaTopic, emailReqDto);
+        final MfaUserEntity mfaUser = userEntity.getMfaUser();
+        final boolean checkedPassword = passwordEncoder.matches(reqDto.getPassword(), userEntity.getPassword());
+        final String mfaToken = reqDto.getMfaCode();
+
+        if ((mfaUser == null || !mfaUser.getMfaIsSetup())) {
+            if (!checkedPassword && !userEntity.getExternalCredProvider()) {
+                throw new AccountException.IncorrectPasswordException(user.getUsername());
+            }
+            return userEntity;
+        }
+        if (mfaProxyService.isOtpNotValid(mfaUser.getMfaSecret(), mfaToken) || !checkedPassword) {
+            throw new AccountException.IncorrectPasswordOrMfaCodeException(user.getUsername(), mfaToken);
+        }
+        return userEntity;
+    }
+
+    private void logoutFromAll(UserEntity user) {
+        final List<RefreshTokenEntity> refreshTokenEntity = refreshTokenRepository
+            .findAllByUser_Id(user.getId());
+        refreshTokenRepository.deleteAll(refreshTokenEntity);
     }
 }

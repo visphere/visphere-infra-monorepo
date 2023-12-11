@@ -23,6 +23,7 @@ public class CheckUserResDto {
     private String emailAddress;
     private String secondEmailAddress;
     private boolean enabledMfa;
+    private boolean isDisabled;
     private boolean isActivated;
     private Set<AppGrantedAuthority> authorities;
 }

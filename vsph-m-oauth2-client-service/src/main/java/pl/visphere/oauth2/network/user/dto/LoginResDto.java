@@ -18,5 +18,6 @@ public class LoginResDto {
     private String profileColor;
     private String accessToken;
     private String refreshToken;
+    private Boolean isDisabled;
     private UserSettingsResDto settings;
 }

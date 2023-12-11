@@ -72,14 +72,16 @@ class IdentityServiceImpl implements IdentityService {
         String refreshToken = StringUtils.EMPTY;
         if (user.getIsActivated() && user.getMfaUser() == null) {
             token = generateToken(user);
-            final TokenData generateRefreshToken = jwtService.generateRefreshToken();
-            final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
-                .refreshToken(generateRefreshToken.token())
-                .expiringAt(jwtService.convertToZonedDateTime(generateRefreshToken.expiredAt()))
-                .user(user)
-                .build();
-            refreshToken = generateRefreshToken.token();
-            refreshTokenRepository.save(refreshTokenEntity);
+            if (!user.getIsDisabled()) {
+                final TokenData generateRefreshToken = jwtService.generateRefreshToken();
+                final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+                    .refreshToken(generateRefreshToken.token())
+                    .expiringAt(jwtService.convertToZonedDateTime(generateRefreshToken.expiredAt()))
+                    .user(user)
+                    .build();
+                refreshToken = generateRefreshToken.token();
+                refreshTokenRepository.save(refreshTokenEntity);
+            }
         }
 
         String userProfileUrl = StringUtils.EMPTY;
@@ -111,7 +113,9 @@ class IdentityServiceImpl implements IdentityService {
         final UserEntity user = userRepository
             .findById(userDetails.getId())
             .orElseThrow(() -> new UserException.UserNotExistException(userDetails.getId()));
-
+        if (user.getIsDisabled()) {
+            throw new UserException.UserAccountDisabledException(user.getUsername());
+        }
         boolean hasCustomImage = true;
         String profileImagePath = StringUtils.EMPTY;
 
@@ -153,7 +157,9 @@ class IdentityServiceImpl implements IdentityService {
         final UserEntity user = userRepository
             .findById(userId)
             .orElseThrow(() -> new UserException.UserNotExistException(userId));
-
+        if (user.getIsDisabled()) {
+            throw new UserException.UserAccountDisabledException(user.getUsername());
+        }
         final RefreshTokenEntity refreshToken = refreshTokenRepository
             .findByRefreshTokenAndUserId(reqDto.getRefreshToken(), user.getId())
             .orElseThrow(() -> new RefrehTokenException.RefreshTokenExpiredException(reqDto.getRefreshToken()));

@@ -4,8 +4,10 @@
  */
 package pl.visphere.auth.network.mfa;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -38,6 +40,7 @@ import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendStateEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
@@ -46,6 +49,7 @@ import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -190,20 +194,24 @@ class MfaServiceImpl implements MfaService {
             .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
 
         final TokenData access = jwtService.generateAccessToken(user.getId(), user.getUsername(), user.getEmailAddress());
-        final TokenData refresh = jwtService.generateRefreshToken();
-
-        final RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
-            .refreshToken(refresh.token())
-            .expiringAt(jwtService.convertToZonedDateTime(refresh.expiredAt()))
-            .user(user)
-            .build();
 
         final UserSettingsResDto settingsResDto = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
                 UserSettingsResDto.class);
 
-        refreshTokenRepository.save(refreshToken);
+        String refreshToken = StringUtils.EMPTY;
+        if (!user.getIsDisabled()) {
+            final TokenData refresh = jwtService.generateRefreshToken();
+
+            final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+                .refreshToken(refresh.token())
+                .expiringAt(jwtService.convertToZonedDateTime(refresh.expiredAt()))
+                .user(user)
+                .build();
+            refreshTokenRepository.save(refreshTokenEntity);
+            refreshToken = refresh.token();
+        }
         return new LoginResDto(profileImageDetails.profileImagePath(), profileImageDetails.profileColor(), user,
-            access.token(), refresh.token(), settingsResDto);
+            access.token(), refreshToken, settingsResDto);
     }
 }

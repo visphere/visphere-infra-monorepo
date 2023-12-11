@@ -52,7 +52,15 @@ public class UserException {
     public static class UserAlreadyActivatedException extends AbstractRestException {
         public UserAlreadyActivatedException(String username) {
             super(HttpStatus.BAD_REQUEST, LibLocaleSet.USER_ALREADY_ACTIVATED_EXCEPTION_MESSAGE);
-            log.error("Attempt to already activated user: '{}'", username);
+            log.error("Attempt to already activated user: '{}'.", username);
+        }
+    }
+
+    @Slf4j
+    public static class UserAccountDisabledException extends AbstractRestException {
+        public UserAccountDisabledException(String username) {
+            super(HttpStatus.FORBIDDEN, LibLocaleSet.USER_ACCOUNT_DISABLED_EXCEPTION_MESSAGE);
+            log.error("Attempt to log in on disabled account for user: '{}'.", username);
         }
     }
 }

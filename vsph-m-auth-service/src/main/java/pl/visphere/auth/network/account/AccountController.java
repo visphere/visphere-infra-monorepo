@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.network.account;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -46,5 +47,18 @@ class AccountController {
     @PostMapping("/activate/resend")
     ResponseEntity<BaseMessageResDto> resend(@Valid @RequestBody ActivateAccountReqDto reqDto) {
         return ResponseEntity.ok(accountService.resend(reqDto));
+    }
+
+    @PostMapping("/disable")
+    ResponseEntity<BaseMessageResDto> disable(
+        @Valid @RequestBody PasswordReqDto reqDto,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(accountService.disable(reqDto, user));
+    }
+
+    @PostMapping("/enable")
+    ResponseEntity<BaseMessageResDto> enable(HttpServletRequest req) {
+        return ResponseEntity.ok(accountService.enable(req));
     }
 }

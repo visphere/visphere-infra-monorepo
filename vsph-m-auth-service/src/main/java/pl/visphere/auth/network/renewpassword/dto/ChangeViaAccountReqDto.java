@@ -5,6 +5,7 @@
 package pl.visphere.auth.network.renewpassword.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
@@ -26,6 +27,9 @@ public class ChangeViaAccountReqDto implements PasswordValidatorModel {
 
     @NotBlank(message = "vsph.lib.jpa.confirmedPassword.notBlank")
     private String confirmedNewPassword;
+
+    @NotNull(message = "vsph.lib.jpa.logoutFromAll.notNull")
+    private boolean logoutFromAll;
 
     @Override
     public String getPassword() {

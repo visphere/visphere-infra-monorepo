@@ -185,22 +185,25 @@ public class UserServiceImpl implements UserService {
         final TokenData access = jwtService
             .generateAccessToken(user.getId(), user.getUsername(), user.getEmailAddress());
 
-        final TokenData refresh = jwtService.generateRefreshToken();
-        final RefreshTokenEntity refreshToken = RefreshTokenEntity.builder()
-            .refreshToken(refresh.token())
-            .expiringAt(jwtService.convertToZonedDateTime(refresh.expiredAt()))
-            .user(user)
-            .build();
-
-        refreshTokenRepository.save(refreshToken);
-
-        log.info("Successfully persisted refresh token for user: '{}'", user);
+        String refrehToken = StringUtils.EMPTY;
+        if (!user.getIsDisabled()) {
+            final TokenData refresh = jwtService.generateRefreshToken();
+            final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
+                .refreshToken(refresh.token())
+                .expiringAt(jwtService.convertToZonedDateTime(refresh.expiredAt()))
+                .user(user)
+                .build();
+            refreshTokenRepository.save(refreshTokenEntity);
+            refrehToken = refresh.token();
+        }
+        log.info("Successfully persisted refresh token for user: '{}'.", user);
         return LoginOAuth2UserDetailsResDto.builder()
             .username(user.getUsername())
             .fullName(firstName + StringUtils.SPACE + lastName)
             .emailAddress(user.getEmailAddress())
             .accessToken(access.token())
-            .refreshToken(refresh.token())
+            .refreshToken(refrehToken)
+            .isDisabled(user.getIsDisabled())
             .build();
     }
 

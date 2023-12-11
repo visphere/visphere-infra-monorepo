@@ -24,6 +24,8 @@ public class AuthUserDetails implements UserDetails {
     @Getter
     private final String emailAddress;
     private final Set<AppGrantedAuthority> authorities;
+    @Getter
+    private final boolean isDisabled;
 
     public AuthUserDetails(CheckUserResDto resDto) {
         this.id = resDto.getId();
@@ -31,6 +33,7 @@ public class AuthUserDetails implements UserDetails {
         this.password = resDto.getPassword();
         this.emailAddress = resDto.getEmailAddress();
         this.authorities = resDto.getAuthorities();
+        this.isDisabled = resDto.isDisabled();
     }
 
     @Override

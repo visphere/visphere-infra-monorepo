@@ -19,4 +19,5 @@ public class LoginOAuth2UserDetailsResDto {
     private String fullName;
     private String accessToken;
     private String refreshToken;
+    private boolean isDisabled;
 }
