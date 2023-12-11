@@ -4,20 +4,13 @@
  */
 package pl.visphere.lib.kafka.payload.notification;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor
-public class SendStateEmailReqDto implements SendEmailReqDto {
-    private Long userId;
-    private String fullName;
-    private String username;
-    private String emailAddress;
-    private String profileImageUuid;
+@EqualsAndHashCode(callSuper = true)
+public class SendStateEmailReqDto extends SendBaseEmailReqDto implements SendEmailReqDto {
     private Boolean isStateActive;
 }

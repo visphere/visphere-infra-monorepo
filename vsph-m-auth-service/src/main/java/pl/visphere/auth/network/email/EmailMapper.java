@@ -19,24 +19,22 @@ import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 class EmailMapper {
     private final ModelMapper modelMapper;
 
-    SendTokenEmailReqDto mapToSendTokenEmailReq(
-        UserEntity user, String emailAddress, GenerateOtaResDto otaResDto, ProfileImageDetailsResDto resDto
-    ) {
+    SendTokenEmailReqDto mapToSendTokenEmailReq(UserEntity user, String emailAddress, GenerateOtaResDto otaResDto) {
         final SendTokenEmailReqDto reqDto = modelMapper.map(user, SendTokenEmailReqDto.class);
         reqDto.setUserId(user.getId());
         reqDto.setEmailAddress(emailAddress);
         reqDto.setFullName(createFullName(user));
-        reqDto.setProfileImageUuid(resDto.profileImageUuid());
+        reqDto.setIsExternalCredentialsSupplier(user.getExternalCredProvider());
         reqDto.setOtaToken(otaResDto.token());
         return reqDto;
     }
 
-    SendBaseEmailReqDto mapToSendBaseEmailReq(UserEntity user, String emailAddress, ProfileImageDetailsResDto resDto) {
+    SendBaseEmailReqDto mapToSendBaseEmailReq(UserEntity user, String emailAddress) {
         final SendBaseEmailReqDto reqDto = modelMapper.map(user, SendBaseEmailReqDto.class);
         reqDto.setUserId(user.getId());
         reqDto.setEmailAddress(emailAddress);
         reqDto.setFullName(createFullName(user));
-        reqDto.setProfileImageUuid(resDto.profileImageUuid());
+        reqDto.setIsExternalCredentialsSupplier(user.getExternalCredProvider());
         return reqDto;
     }
 

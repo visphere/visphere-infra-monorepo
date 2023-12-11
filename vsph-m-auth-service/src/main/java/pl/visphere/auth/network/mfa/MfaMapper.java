@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import pl.visphere.auth.domain.user.UserEntity;
-import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendStateEmailReqDto;
 
 @Component
@@ -17,14 +17,20 @@ import pl.visphere.lib.kafka.payload.notification.SendStateEmailReqDto;
 class MfaMapper {
     private final ModelMapper modelMapper;
 
-    public SendStateEmailReqDto mapToSendStateEmailReq(
-        UserEntity user, ProfileImageDetailsResDto profileImageDetails, boolean isStateActive
-    ) {
+    public SendStateEmailReqDto mapToSendStateEmailReq(UserEntity user, boolean isStateActive) {
         final SendStateEmailReqDto reqDto = modelMapper.map(user, SendStateEmailReqDto.class);
         reqDto.setUserId(user.getId());
         reqDto.setFullName(createFullName(user));
         reqDto.setIsStateActive(isStateActive);
-        reqDto.setProfileImageUuid(profileImageDetails.profileImageUuid());
+        reqDto.setIsExternalCredentialsSupplier(user.getExternalCredProvider());
+        return reqDto;
+    }
+
+    public SendBaseEmailReqDto mapToSendBaseEmailReq(UserEntity user) {
+        final SendBaseEmailReqDto reqDto = modelMapper.map(user, SendBaseEmailReqDto.class);
+        reqDto.setUserId(user.getId());
+        reqDto.setFullName(createFullName(user));
+        reqDto.setIsExternalCredentialsSupplier(user.getExternalCredProvider());
         return reqDto;
     }
 

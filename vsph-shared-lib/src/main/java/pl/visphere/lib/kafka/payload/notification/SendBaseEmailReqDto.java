@@ -18,5 +18,5 @@ public class SendBaseEmailReqDto implements SendEmailReqDto {
     private String fullName;
     private String username;
     private String emailAddress;
-    private String profileImageUuid;
+    private Boolean isExternalCredentialsSupplier;
 }

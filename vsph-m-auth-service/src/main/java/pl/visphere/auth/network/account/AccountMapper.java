@@ -13,7 +13,6 @@ import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.network.account.dto.AccountDetailsResDto;
 import pl.visphere.auth.network.account.dto.CreateAccountReqDto;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
-import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 
@@ -29,7 +28,7 @@ class AccountMapper {
         emailReqDto.setUserId(userId);
         emailReqDto.setFullName(reqDto.getFirstName() + StringUtils.SPACE + reqDto.getLastName());
         emailReqDto.setOtaToken(resDto.token());
-        emailReqDto.setProfileImageUuid(StringUtils.EMPTY);
+        emailReqDto.setIsExternalCredentialsSupplier(false);
         return emailReqDto;
     }
 
@@ -38,15 +37,15 @@ class AccountMapper {
         emailReqDto.setUserId(userId);
         emailReqDto.setFullName(user.getFirstName() + StringUtils.SPACE + user.getLastName());
         emailReqDto.setOtaToken(resDto.token());
-        emailReqDto.setProfileImageUuid(StringUtils.EMPTY);
+        emailReqDto.setIsExternalCredentialsSupplier(user.getExternalCredProvider());
         return emailReqDto;
     }
 
-    SendBaseEmailReqDto mapToSendBaseEmailReq(UserEntity user, ProfileImageDetailsResDto profileResDto) {
+    SendBaseEmailReqDto mapToSendBaseEmailReq(UserEntity user) {
         final SendBaseEmailReqDto emailReqDto = modelMapper.map(user, SendBaseEmailReqDto.class);
         emailReqDto.setFullName(user.getFirstName() + StringUtils.SPACE + user.getLastName());
         emailReqDto.setUserId(user.getId());
-        emailReqDto.setProfileImageUuid(profileResDto.profileImageUuid());
+        emailReqDto.setIsExternalCredentialsSupplier(user.getExternalCredProvider());
         return emailReqDto;
     }
 

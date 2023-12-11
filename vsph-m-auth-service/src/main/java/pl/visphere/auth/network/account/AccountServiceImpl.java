@@ -185,11 +185,10 @@ class AccountServiceImpl implements AccountService {
             .userId(user.getId())
             .build();
 
-        final ProfileImageDetailsResDto profileResDto = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.GENERATE_DEFAULT_USER_PROFILE, profileReqDto,
-                ProfileImageDetailsResDto.class);
+        syncQueueHandler.sendNotNullWithBlockThread(QueueTopic.GENERATE_DEFAULT_USER_PROFILE, profileReqDto,
+            ProfileImageDetailsResDto.class);
 
-        final SendBaseEmailReqDto emailReqDto = accountMapper.mapToSendBaseEmailReq(activatedUser, profileResDto);
+        final SendBaseEmailReqDto emailReqDto = accountMapper.mapToSendBaseEmailReq(activatedUser);
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_NEW_ACCOUNT, emailReqDto);
 
         log.info("Successfully activated account for user: '{}'.", activatedUser);

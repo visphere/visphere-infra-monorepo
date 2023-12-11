@@ -104,12 +104,8 @@ class MfaServiceImpl implements MfaService {
     public BaseMessageResDto altSendEmail(MfaCredentialsReqDto reqDto) {
         final UserEntity user = authenticateUser(reqDto);
 
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
         final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.MFA_EMAIL);
-        final SendTokenEmailReqDto emailReqDto = otaTokenEmailMapper.mapToSendTokenEmailReq(user, otaResDto,
-            profileImageDetails);
+        final SendTokenEmailReqDto emailReqDto = otaTokenEmailMapper.mapToSendTokenEmailReq(user, otaResDto);
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_MFA_CODE, emailReqDto);
 
@@ -166,12 +162,7 @@ class MfaServiceImpl implements MfaService {
         }
         cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId());
 
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
-        final SendStateEmailReqDto emailReqDto = mfaMapper.mapToSendStateEmailReq(userEntity,
-            profileImageDetails, isEnabled);
-
+        final SendStateEmailReqDto emailReqDto = mfaMapper.mapToSendStateEmailReq(userEntity, isEnabled);
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_UPDATED_MFA_STATE, emailReqDto);
 
         log.info("MFA settings updated for user: '{}' with value: '{}'.", userEntity, isEnabled);

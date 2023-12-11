@@ -8,5 +8,5 @@ public interface SendEmailReqDto {
     Long getUserId();
     String getFullName();
     String getEmailAddress();
-    String getProfileImageUuid();
+    Boolean getIsExternalCredentialsSupplier();
 }

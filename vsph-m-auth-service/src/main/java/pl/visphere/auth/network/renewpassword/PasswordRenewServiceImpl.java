@@ -27,10 +27,8 @@ import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
-import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
-import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
@@ -45,7 +43,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     private final PasswordEncoder passwordEncoder;
     private final AsyncQueueHandler asyncQueueHandler;
     private final OtaTokenEmailMapper otaTokenEmailMapper;
-    private final SyncQueueHandler syncQueueHandler;
+    private final JwtService jwtService;
 
     private final UserRepository userRepository;
     private final OtaTokenRepository otaTokenRepository;
@@ -133,10 +131,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     }
 
     private void sendEmailAfterUpdatedPassword(UserEntity user) {
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
-        final SendBaseEmailReqDto emailReqDto = otaTokenEmailMapper.mapToSendBaseEmailReq(user, profileImageDetails);
+        final SendBaseEmailReqDto emailReqDto = otaTokenEmailMapper.mapToSendBaseEmailReq(user);
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_PASSWORD_CHANGED, emailReqDto);
     }
 
@@ -145,12 +140,9 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
             .findByLocalUsernameOrEmailAddress(username)
             .orElseThrow(() -> new UserException.UserNotExistException(username));
 
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
         final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.MFA_EMAIL);
         final SendTokenEmailReqDto emailReqDto = otaTokenEmailMapper
-            .mapToSendTokenEmailReq(user, otaResDto, profileImageDetails);
+            .mapToSendTokenEmailReq(user, otaResDto);
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_CHANGE_PASSWORD, emailReqDto);
         return user;
