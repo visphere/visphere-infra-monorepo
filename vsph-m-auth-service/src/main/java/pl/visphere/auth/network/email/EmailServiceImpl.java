@@ -7,6 +7,7 @@ package pl.visphere.auth.network.email;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.auth.cache.CacheName;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
@@ -23,7 +24,6 @@ import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
-import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
@@ -80,13 +80,14 @@ class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto updateFirstEmailAddress(EmailAddressReqDto reqDto, String token, AuthUserDetails user) {
-        final UserEntity userEntity = getUser(user, "update email address");
+        final UserEntity userEntity = getUser(user, "update email address", true);
         final String email = reqDto.getEmailAddress();
         checkIfUserWithSameEmailExist(reqDto, user.getId());
 
         userEntity.setEmailAddress(email);
-        saveAndUpdateCache(userEntity);
+        cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId());
 
         sendAsyncEmail(userEntity, email, QueueTopic.EMAIL_CHANGED_EMAIL);
 
@@ -97,12 +98,14 @@ class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto updateSecondEmailAddress(
         SecondEmailAddressReqDto reqDto, String token, AuthUserDetails user
     ) {
-        final UserEntity userEntity = getUser(user, "update second email address");
+        final UserEntity userEntity = getUser(user, "update second email address", false);
+
         userEntity.setSecondEmailAddress(reqDto.getEmailAddress());
-        saveAndUpdateCache(userEntity);
+        cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId());
 
         sendAsyncEmail(userEntity, userEntity.getEmailAddress(), QueueTopic.EMAIL_CHANGED_SECOND_EMAIL);
 
@@ -113,10 +116,12 @@ class EmailServiceImpl implements EmailService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto deleteSecondEmailAddress(AuthUserDetails user) {
-        final UserEntity userEntity = getUser(user, "delete second email address");
+        final UserEntity userEntity = getUser(user, "delete second email address", false);
+
         userEntity.setSecondEmailAddress(null);
-        saveAndUpdateCache(userEntity);
+        cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId());
 
         sendAsyncEmail(userEntity, userEntity.getEmailAddress(), QueueTopic.EMAIL_REMOVED_SECOND_EMAIL);
 
@@ -126,18 +131,18 @@ class EmailServiceImpl implements EmailService {
             .build();
     }
 
-    private UserEntity getUser(AuthUserDetails user, String action) {
+    private UserEntity getUser(AuthUserDetails user, String action, boolean onlyForLocal) {
         final UserEntity userEntity = userRepository
             .findById(user.getId())
             .orElseThrow(() -> new UserException.UserNotExistException(user.getId()));
-        if (userRepository.existsByIdAndExternalCredProviderIsTrue(user.getId())) {
+        if (userRepository.existsByIdAndExternalCredProviderIsTrue(user.getId()) && onlyForLocal) {
             throw new AccountException.ImmutableValueException(action);
         }
         return userEntity;
     }
 
     private UserEntity commonRequestUpdateFirstEmailAddress(EmailAddressDto dto, AuthUserDetails user) {
-        final UserEntity userEntity = getUser(user, "request for update email address");
+        final UserEntity userEntity = getUser(user, "request for update email address", true);
         checkIfUserWithSameEmailExist(dto, user.getId());
 
         generateOtaAndsendAsyncEmail(userEntity, dto, OtaToken.CHANGE_EMAIL,
@@ -146,35 +151,24 @@ class EmailServiceImpl implements EmailService {
     }
 
     private UserEntity commonRequestUpdateSecondEmailAddress(SecondEmailAddressReqDto reqDto, AuthUserDetails user) {
-        final UserEntity userEntity = getUser(user, "request for update second email address");
+        final UserEntity userEntity = getUser(user, "request for update second email address", false);
 
         generateOtaAndsendAsyncEmail(userEntity, reqDto, OtaToken.CHANGE_SECOND_EMAIL,
             QueueTopic.EMAIL_REQ_CHANGE_SECOND_EMAIL);
         return userEntity;
     }
 
-    private void saveAndUpdateCache(UserEntity userEntity) {
-        final UserEntity saved = userRepository.save(userEntity);
-        cacheService.updateCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId(), saved);
-    }
-
     private void generateOtaAndsendAsyncEmail(UserEntity user, EmailAddressDto dto, OtaToken otaType, QueueTopic kafkaTopic) {
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
         final GenerateOtaResDto otaResDto = otaTokenService.generate(user, otaType);
         final SendTokenEmailReqDto emailReqDto = emailMapper
-            .mapToSendTokenEmailReq(user, dto.getEmailAddress(), otaResDto, profileImageDetails);
+            .mapToSendTokenEmailReq(user, dto.getEmailAddress(), otaResDto);
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(kafkaTopic, emailReqDto);
     }
 
     private void sendAsyncEmail(UserEntity user, String emailAddress, QueueTopic kafkaTopic) {
-        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
-
         final SendBaseEmailReqDto emailReqDto = emailMapper
-            .mapToSendBaseEmailReq(user, emailAddress, profileImageDetails);
+            .mapToSendBaseEmailReq(user, emailAddress);
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(kafkaTopic, emailReqDto);
     }

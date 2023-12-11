@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.exception.app.UserException;
@@ -45,6 +46,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto relateLangWithUser(RelatedValueReqDto reqDto, AuthUserDetails user) {
         final UserRelationModel relation = getUserRelationModel(user);
 
@@ -53,7 +55,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
             : LocaleSet.REMOVE_RELATED_LANG_RESPONSE_SUCCESS;
 
         relation.setLang(reqDto.getRelatedValue());
-        saveAndUpdateCache(user, relation);
+        cacheService.deleteCache(CacheName.USER_RELATION_MODEL_USER_ID, user.getId());
 
         log.info("Successfully updated related lang for user: '{}'.", relation);
         return BaseMessageResDto.builder()
@@ -62,6 +64,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto relateThemeWithUser(RelatedValueReqDto reqDto, AuthUserDetails user) {
         final UserRelationModel relation = getUserRelationModel(user);
 
@@ -70,7 +73,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
             : LocaleSet.REMOVE_RELATED_THEME_RESPONSE_SUCCESS;
 
         relation.setTheme(reqDto.getRelatedValue());
-        saveAndUpdateCache(user, relation);
+        cacheService.deleteCache(CacheName.USER_RELATION_MODEL_USER_ID, user.getId());
 
         log.info("Successfully updated related theme for user: '{}'.", relation);
         return BaseMessageResDto.builder()
@@ -79,14 +82,15 @@ class UserSettingsServiceImpl implements UserSettingsService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto updatePushNotificationsSettings(boolean isEnabled, AuthUserDetails user) {
         final UserRelationModel relation = getUserRelationModel(user);
 
-        relation.setPushNotifsEnabled(isEnabled);
         if (!isEnabled) {
             relation.setPushNotifsSoundEnabled(false);
         }
-        saveAndUpdateCache(user, relation);
+        relation.setPushNotifsEnabled(isEnabled);
+        cacheService.deleteCache(CacheName.USER_RELATION_MODEL_USER_ID, user.getId());
 
         log.info("Successfully updated push notifications settings for user: '{}'.", relation);
         return BaseMessageResDto.builder()
@@ -95,6 +99,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto updatePushNotificationsSoundSettings(boolean isEnabled, AuthUserDetails user) {
         final UserRelationModel relation = getUserRelationModel(user);
 
@@ -102,7 +107,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
             relation.setPushNotifsEnabled(true);
         }
         relation.setPushNotifsSoundEnabled(isEnabled);
-        saveAndUpdateCache(user, relation);
+        cacheService.deleteCache(CacheName.USER_RELATION_MODEL_USER_ID, user.getId());
 
         log.info("Successfully updated push notifications sound settings for user: '{}'.", relation);
         return BaseMessageResDto.builder()
@@ -114,10 +119,5 @@ class UserSettingsServiceImpl implements UserSettingsService {
         return userRelationRepository
             .findByUserId(user.getId())
             .orElseThrow(() -> new UserException.UserNotExistException(user.getId()));
-    }
-
-    private void saveAndUpdateCache(AuthUserDetails user, UserRelationModel relation) {
-        final UserRelationModel saved = userRelationRepository.save(relation);
-        cacheService.updateCache(CacheName.USER_RELATION_MODEL_USER_ID, user.getId(), saved);
     }
 }

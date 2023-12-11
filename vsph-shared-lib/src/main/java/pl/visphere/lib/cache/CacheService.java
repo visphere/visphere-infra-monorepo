@@ -38,14 +38,6 @@ public class CacheService {
         return Optional.empty();
     }
 
-    public void updateCache(AppCache appCache, Object key, Object persistedObj) {
-        final Cache cache = getCache(appCache);
-        if (cache != null) {
-            cache.evict(key);
-            cache.put(key, persistedObj);
-        }
-    }
-
     public void deleteCache(AppCache appCache, Object key) {
         final Cache cache = getCache(appCache);
         if (cache != null) {

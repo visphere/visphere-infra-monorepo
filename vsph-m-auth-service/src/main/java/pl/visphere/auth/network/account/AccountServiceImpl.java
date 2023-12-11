@@ -86,6 +86,7 @@ class AccountServiceImpl implements AccountService {
     }
 
     @Override
+    @Transactional
     public UpdateAccountDetailsResDto updateAccountDetails(UpdateAccountDetailsReqDto reqDto, AuthUserDetails user) {
         final UserEntity userEntity = getUserProxyFromCache(user);
         final String username = reqDto.getUsername();
@@ -101,8 +102,7 @@ class AccountServiceImpl implements AccountService {
         final TokenData tokenData = jwtService
             .generateAccessToken(user.getId(), reqDto.getUsername(), user.getEmailAddress());
 
-        final UserEntity saved = userRepository.save(userEntity);
-        cacheService.updateCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId(), saved);
+        cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId());
 
         log.info("Successfully updated user account details for user: '{}'.", userEntity);
         return UpdateAccountDetailsResDto.builder()

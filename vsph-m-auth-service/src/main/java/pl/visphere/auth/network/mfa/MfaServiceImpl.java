@@ -164,8 +164,7 @@ class MfaServiceImpl implements MfaService {
             mfaUserRepository.deleteById(mfaUser.getId());
             userEntity.setMfaUser(null);
         }
-        final UserEntity saved = userRepository.save(userEntity);
-        cacheService.updateCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId(), saved);
+        cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId());
 
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
