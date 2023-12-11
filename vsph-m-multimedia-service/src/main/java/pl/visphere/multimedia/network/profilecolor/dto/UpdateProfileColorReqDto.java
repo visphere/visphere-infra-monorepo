@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Getter;
 import lombok.Setter;
 import pl.visphere.lib.RegexConstant;
+import pl.visphere.multimedia.validator.ValidateColorPalette;
 
 @Getter
 @Setter
@@ -16,6 +17,7 @@ public class UpdateProfileColorReqDto {
 
     @NotBlank(message = "vsph.multimedia.jpa.color.notBlank")
     @Pattern(regexp = RegexConstant.COLOR_HEX, message = "vsph.multimedia.jpa.color.pattern")
+    @ValidateColorPalette(message = "vsph.multimedia.jpa.color.inArray")
     private String color;
 
     @Override
