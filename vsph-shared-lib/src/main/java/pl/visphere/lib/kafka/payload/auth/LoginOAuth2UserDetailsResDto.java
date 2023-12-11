@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -19,5 +21,6 @@ public class LoginOAuth2UserDetailsResDto {
     private String fullName;
     private String accessToken;
     private String refreshToken;
+    private LocalDate joinDate;
     private boolean isDisabled;
 }

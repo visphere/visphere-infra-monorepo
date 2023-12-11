@@ -16,8 +16,6 @@ import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 
-import java.time.ZoneId;
-
 @Component
 @RequiredArgsConstructor
 class AccountMapper {
@@ -49,12 +47,10 @@ class AccountMapper {
         return emailReqDto;
     }
 
-    AccountDetailsResDto mapToAccountDetailsRes(UserEntity user, String credentialsSupplier) {
+    AccountDetailsResDto mapToAccountDetailsRes(UserEntity user) {
         final AccountDetailsResDto resDto = modelMapper.map(user, AccountDetailsResDto.class);
         final MfaUserEntity mfaUser = user.getMfaUser();
         resDto.setSecondEmailAddress(user.getSecondEmailAddress() == null ? "-" : user.getSecondEmailAddress());
-        resDto.setJoinDate(user.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate());
-        resDto.setCredentialsSupplier(credentialsSupplier);
         resDto.setMfaEnabled(mfaUser != null);
         resDto.setExternalOAuth2Supplier(user.getExternalCredProvider());
         resDto.setMfaSetup(mfaUser != null && mfaUser.getMfaIsSetup() != null && mfaUser.getMfaIsSetup());

@@ -9,6 +9,9 @@ import org.apache.commons.lang3.StringUtils;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+
 @Builder
 public record LoginResDto(
     String fullName,
@@ -18,10 +21,12 @@ public record LoginResDto(
     String profileColor,
     String accessToken,
     String refreshToken,
+    String credentialsSupplier,
     boolean isDisabled,
     boolean isActivated,
     boolean isMfaEnabled,
     boolean isMfaSetup,
+    LocalDate joinDate,
     UserSettingsResDto settings
 ) {
     public LoginResDto(
@@ -36,10 +41,12 @@ public record LoginResDto(
             profileColor,
             token,
             refreshToken,
+            "local",
             user.getIsDisabled(),
             user.getIsActivated(),
             user.getMfaUser() != null,
             user.getMfaUser() != null ? user.getMfaUser().getMfaIsSetup() : false,
+            user.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate(),
             resDto
         );
     }

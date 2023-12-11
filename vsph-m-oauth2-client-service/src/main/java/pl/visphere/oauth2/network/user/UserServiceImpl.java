@@ -96,6 +96,8 @@ class UserServiceImpl implements UserService {
         resDto.setProfileColor(profileResDto.profileColor());
         resDto.setSettings(new UserSettingsResDto());
         resDto.setIsDisabled(loginResDto.isDisabled());
+        resDto.setJoinDate(loginResDto.getJoinDate());
+        resDto.setCredentialsSupplier(oAuth2User.getSupplier().getSupplierName());
 
         final SendBaseEmailReqDto emailReqDto = SendBaseEmailReqDto.builder()
             .userId(oAuth2User.getUserId())
@@ -134,6 +136,8 @@ class UserServiceImpl implements UserService {
         resDto.setProfileUrl(imageUrl);
         resDto.setProfileColor(profileImageDetails.profileColor());
         resDto.setIsDisabled(loginResDto.isDisabled());
+        resDto.setJoinDate(loginResDto.getJoinDate());
+        resDto.setCredentialsSupplier(oAuth2User.getSupplier().getSupplierName());
 
         log.info("Successfully login OAuth2 user with data: '{}'.", resDto);
         return resDto;

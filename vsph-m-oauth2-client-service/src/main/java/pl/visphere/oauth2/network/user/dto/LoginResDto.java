@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 
+import java.time.LocalDate;
+
 @Data
 @NoArgsConstructor
 public class LoginResDto {
@@ -18,6 +20,8 @@ public class LoginResDto {
     private String profileColor;
     private String accessToken;
     private String refreshToken;
+    private String credentialsSupplier;
     private Boolean isDisabled;
+    private LocalDate joinDate;
     private UserSettingsResDto settings;
 }

@@ -18,9 +18,7 @@ public class AccountDetailsResDto {
     private String emailAddress;
     private String secondEmailAddress;
     private LocalDate birthDate;
-    private LocalDate joinDate;
     private boolean isExternalOAuth2Supplier;
-    private String credentialsSupplier;
     private boolean isMfaEnabled;
     private boolean isMfaSetup;
 }

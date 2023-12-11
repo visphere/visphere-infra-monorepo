@@ -28,6 +28,7 @@ import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AppGrantedAuthority;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -204,6 +205,7 @@ public class UserServiceImpl implements UserService {
             .accessToken(access.token())
             .refreshToken(refrehToken)
             .isDisabled(user.getIsDisabled())
+            .joinDate(user.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate())
             .build();
     }
 

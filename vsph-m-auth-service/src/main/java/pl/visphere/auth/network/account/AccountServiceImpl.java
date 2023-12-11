@@ -45,7 +45,6 @@ import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.PersistUserNotifSettingsReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
-import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AppGrantedAuthority;
@@ -83,13 +82,7 @@ class AccountServiceImpl implements AccountService {
                 () -> userRepository.findById(user.getId()))
             .orElseThrow(() -> new UserException.UserNotExistException(user.getId()));
 
-        String credentialsSupplier = "local";
-        if (userEntity.getExternalCredProvider()) {
-            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
-                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
-            credentialsSupplier = detailsResDto.supplier();
-        }
-        final AccountDetailsResDto resDto = accountMapper.mapToAccountDetailsRes(userEntity, credentialsSupplier);
+        final AccountDetailsResDto resDto = accountMapper.mapToAccountDetailsRes(userEntity);
         log.info("Successfully find and fetched user account details: '{}'.", resDto);
         return resDto;
     }
