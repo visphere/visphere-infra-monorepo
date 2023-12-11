@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.network.renewpassword;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -43,9 +44,10 @@ class PasswordRenewController {
 
     @PatchMapping("/logged/change")
     ResponseEntity<BaseMessageResDto> changeViaAccount(
+        HttpServletRequest req,
         @Valid @RequestBody ChangeViaAccountReqDto reqDto,
         @LoggedUser AuthUserDetails user
     ) {
-        return ResponseEntity.ok(passwordRenewService.changeViaAccount(reqDto, user));
+        return ResponseEntity.ok(passwordRenewService.changeViaAccount(req, reqDto, user));
     }
 }

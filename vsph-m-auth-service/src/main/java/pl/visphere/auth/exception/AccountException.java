@@ -21,6 +21,24 @@ public class AccountException {
     }
 
     @Slf4j
+    public static class IncorrectPasswordException extends AbstractRestException {
+        public IncorrectPasswordException(String username) {
+            super(HttpStatus.BAD_REQUEST, LocaleSet.INVALID_PASSWORD_EXCEPTION_MESSAGE);
+            log.error("Attempt to perform authenticate via incorrect password for user: '{}'.", username);
+        }
+    }
+
+    @Slf4j
+    public static class IncorrectPasswordOrMfaCodeException extends AbstractRestException {
+        public IncorrectPasswordOrMfaCodeException(String username, String code) {
+            super(HttpStatus.BAD_REQUEST, LocaleSet.INVALID_PASSWORD_OR_MFA_CODE_EXCEPTION_MESSAGE);
+            log.error(
+                "Attempt to perform authenticate via incorrect password and/or mfa code for user: '{}' and code: '{}'.",
+                username, code);
+        }
+    }
+
+    @Slf4j
     public static class IncorrectOldPasswordException extends AbstractRestException {
         public IncorrectOldPasswordException(String username) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.INVALID_OLD_PASSWORD_EXCEPTION_MESSAGE);

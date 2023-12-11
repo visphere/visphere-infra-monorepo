@@ -24,6 +24,8 @@ public enum LocaleSet implements LocaleExtendableSet {
     MFA_CURRENTLY_ENABLED_EXCEPTION_MESSAGE("vsph.auth.exc.mfaCurrentlyEnabled"),
     MFA_CURRENTLY_DISABLED_EXCEPTION_MESSAGE("vsph.auth.exc.mfaCurrentlyDisabled"),
     MFA_INVALID_CODE_EXCEPTION_MESSAGE("vsph.auth.exc.mfaInvalidCode"),
+    INVALID_PASSWORD_EXCEPTION_MESSAGE("vsph.auth.exc.invalidPassword"),
+    INVALID_PASSWORD_OR_MFA_CODE_EXCEPTION_MESSAGE("vsph.auth.exc.invalidPasswordOrMfaCode"),
     INVALID_OLD_PASSWORD_EXCEPTION_MESSAGE("vsph.auth.exc.invalidOldPassword"),
     ACCOUNT_ALREADY_ENABLED_EXCEPTION_MESSAGE("vsph.auth.exc.accountAlreadyEnabled"),
     ACCOUNT_ALREADY_DISABLED_EXCEPTION_MESSAGE("vsph.auth.exc.accountAlreadyDisabled"),

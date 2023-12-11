@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.network.renewpassword;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
+import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
+import pl.visphere.auth.domain.refreshtoken.RefreshTokenRepository;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
 import pl.visphere.auth.exception.AccountException;
@@ -25,6 +28,7 @@ import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
+import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
@@ -33,6 +37,7 @@ import pl.visphere.lib.security.OtaToken;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -47,6 +52,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
 
     private final UserRepository userRepository;
     private final OtaTokenRepository otaTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public BaseMessageResDto request(AttemptReqDto reqDto) {
@@ -112,7 +118,9 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     }
 
     @Override
-    public BaseMessageResDto changeViaAccount(ChangeViaAccountReqDto reqDto, AuthUserDetails user) {
+    public BaseMessageResDto changeViaAccount(
+        HttpServletRequest req, ChangeViaAccountReqDto reqDto, AuthUserDetails user
+    ) {
         final UserEntity userEntity = userRepository
             .findByLocalUsernameOrEmailAddress(user.getUsername())
             .orElseThrow(() -> new UserException.UserNotExistException(user.getUsername()));
@@ -122,6 +130,13 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
         }
         userEntity.setPassword(reqDto.getNewPassword());
 
+        if (reqDto.isLogoutFromAll()) {
+            final String refreshToken = jwtService.extractRefreshFromReq(req);
+            final List<RefreshTokenEntity> activeTokens = refreshTokenRepository
+                .findAllByUser_IdAndRefreshTokenNot(user.getId(), refreshToken);
+            refreshTokenRepository.deleteAll(activeTokens);
+            log.info("Successfully terminated user sessions count: '{}'.", activeTokens.size());
+        }
         sendEmailAfterUpdatedPassword(userEntity);
 
         log.info("Successfully updated password via logged account for user: '{}'.", userEntity);

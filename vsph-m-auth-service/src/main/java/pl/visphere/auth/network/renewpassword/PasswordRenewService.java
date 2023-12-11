@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.network.renewpassword;
 
+import jakarta.servlet.http.HttpServletRequest;
 import pl.visphere.auth.network.renewpassword.dto.AttemptReqDto;
 import pl.visphere.auth.network.renewpassword.dto.ChangeReqDto;
 import pl.visphere.auth.network.renewpassword.dto.ChangeViaAccountReqDto;
@@ -15,5 +16,5 @@ interface PasswordRenewService {
     BaseMessageResDto verify(String token);
     BaseMessageResDto resend(AttemptReqDto reqDto);
     BaseMessageResDto change(String token, ChangeReqDto reqDto);
-    BaseMessageResDto changeViaAccount(ChangeViaAccountReqDto reqDto, AuthUserDetails user);
+    BaseMessageResDto changeViaAccount(HttpServletRequest req, ChangeViaAccountReqDto reqDto, AuthUserDetails user);
 }
