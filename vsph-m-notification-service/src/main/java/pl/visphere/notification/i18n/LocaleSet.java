@@ -27,6 +27,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     MAIL_REMOVED_SECOND_EMAIL_TITLE("vsph.i18n.mail.removedSecondEmail.title"),
     MAIL_ENABLED_ACCOUNT_TITLE("vsph.i18n.mail.enabledAccount.title"),
     MAIL_DISABLED_ACCOUNT_TITLE("vsph.i18n.mail.disabledAccount.title"),
+    MAIL_DELETED_ACCOUNT_TITLE("vsph.i18n.mail.deletedAccount.title"),
     ;
 
     private final String holder;
