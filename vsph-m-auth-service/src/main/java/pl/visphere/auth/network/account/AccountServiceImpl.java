@@ -33,8 +33,6 @@ import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.cache.CacheService;
-import pl.visphere.lib.exception.AbstractRestException;
-import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.jwt.JwtException;
@@ -80,12 +78,13 @@ class AccountServiceImpl implements AccountService {
 
     @Override
     public AccountDetailsResDto getAccountDetails(AuthUserDetails user) {
-        final UserEntity userEntity = getUserProxyFromCache(user);
-
-        final boolean isExternalCredSupplier = userEntity.getExternalCredProvider();
+        final UserEntity userEntity = cacheService
+            .getSafetyFromCache(CacheName.USER_ENTITY_USER_ID, user.getId(), UserEntity.class,
+                () -> userRepository.findById(user.getId()))
+            .orElseThrow(() -> new UserException.UserNotExistException(user.getId()));
 
         String credentialsSupplier = "local";
-        if (isExternalCredSupplier) {
+        if (userEntity.getExternalCredProvider()) {
             final OAuth2DetailsResDto detailsResDto = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
             credentialsSupplier = detailsResDto.supplier();
@@ -98,7 +97,9 @@ class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public UpdateAccountDetailsResDto updateAccountDetails(UpdateAccountDetailsReqDto reqDto, AuthUserDetails user) {
-        final UserEntity userEntity = getUserProxyFromCache(user);
+        final UserEntity userEntity = userRepository
+            .findById(user.getId())
+            .orElseThrow(() -> new UserException.UserNotExistException(user.getId()));
         final String username = reqDto.getUsername();
 
         if (userRepository.existsByUsernameAndIdIsNot(username, user.getId())) {
@@ -153,7 +154,7 @@ class AccountServiceImpl implements AccountService {
             .isEmailNotifsEnabled(reqDto.getAllowNotifs())
             .build();
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.PERSIST_NOTIF_USER_SETTINGS, notifSettingsReqDto);
-        
+
         final GenerateOtaResDto otaResDto = otaTokenService.generate(savedUser, OtaToken.ACTIVATE_ACCOUNT);
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, accountMapper
             .mapToSendTokenEmailReq(reqDto, otaResDto, savedUser.getId()));
