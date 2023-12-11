@@ -37,6 +37,7 @@ import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.notification.PersistUserNotifSettingsReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
@@ -132,19 +133,21 @@ class AccountServiceImpl implements AccountService {
         user.addRole(role);
         user.setExternalCredProvider(false);
 
-        // TODO: save global notification settings in notifications microservice table
-
         if (reqDto.getEnabledMfa()) {
             user.persistMfaUser(new MfaUserEntity());
             log.info("Successfully addded MFA user details user: '{}'.", user);
         }
         final UserEntity savedUser = userRepository.save(user);
+
+        final PersistUserNotifSettingsReqDto notifSettingsReqDto = PersistUserNotifSettingsReqDto.builder()
+            .userId(savedUser.getId())
+            .isEmailNotifsEnabled(reqDto.getAllowNotifs())
+            .build();
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.PERSIST_NOTIF_USER_SETTINGS, notifSettingsReqDto);
+        
         final GenerateOtaResDto otaResDto = otaTokenService.generate(savedUser, OtaToken.ACTIVATE_ACCOUNT);
-
-        final SendTokenEmailReqDto emailReqDto = accountMapper
-            .mapToSendTokenEmailReq(reqDto, otaResDto, savedUser.getId());
-
-        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, emailReqDto);
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, accountMapper
+            .mapToSendTokenEmailReq(reqDto, otaResDto, savedUser.getId()));
 
         log.info("Successfully created user account: '{}'.", savedUser);
         return BaseMessageResDto.builder()

@@ -11,6 +11,8 @@ import pl.visphere.lib.i18n.LocaleExtendableSet;
 @Getter
 @RequiredArgsConstructor
 public enum LocaleSet implements LocaleExtendableSet {
+    TOGGLE_USER_MAIL_NOTIF_STATE_RESPONSE_SUCCESS("vsph.i18n.toggleUserMailNotifState.res.success"),
+    USER_NOTIFS_NOT_FOUND_EXCEPTION_MESSAGE("vsph.notifications.exc.userNotifsNotFound"),
     MAIL_ACTIVATE_ACCOUNT_TITLE("vsph.i18n.mail.activateAccount.title"),
     MAIL_CHANGE_PASSWORD_TITLE("vsph.i18n.mail.changePassword.title"),
     MAIL_MFA_CODE_TITLE("vsph.i18n.mail.mfaCode.title"),

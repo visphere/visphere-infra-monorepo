@@ -15,4 +15,5 @@ public class UpdateOAuth2UserDetailsReqDto {
     private String firstName;
     private String lastName;
     private String birthDate;
+    private Boolean allowNotifs;
 }

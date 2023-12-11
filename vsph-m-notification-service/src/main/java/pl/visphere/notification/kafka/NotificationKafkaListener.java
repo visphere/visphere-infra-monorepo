@@ -9,40 +9,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
-import pl.visphere.lib.kafka.async.AsyncListenerHandler;
-import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
-import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
-import pl.visphere.notification.service.mail.MailService;
+import pl.visphere.lib.kafka.payload.notification.PersistUserNotifSettingsReqDto;
+import pl.visphere.lib.kafka.sync.SyncListenerHandler;
+import pl.visphere.notification.service.usernotif.UserNotifService;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-class NotificationKafkaListener {
-    private final AsyncListenerHandler asyncListenerHandler;
-    private final MailService mailService;
-
-    @KafkaListener(topics = "${visphere.kafka.topic.email-activate-account}")
-    void sendForActivateAccountListener(Message<SendTokenEmailReqDto> reqDto) {
-        asyncListenerHandler.parseAndInvoke(reqDto, mailService::activateAccount);
-    }
-
-    @KafkaListener(topics = "${visphere.kafka.topic.email-new-account}")
-    void sendForNewAccountListener(Message<SendBaseEmailReqDto> reqDto) {
-        asyncListenerHandler.parseAndInvoke(reqDto, mailService::newAccount);
-    }
-
-    @KafkaListener(topics = "${visphere.kafka.topic.email-change-password}")
-    void sendForChangePasswordListener(Message<SendTokenEmailReqDto> reqDto) {
-        asyncListenerHandler.parseAndInvoke(reqDto, mailService::changePassword);
-    }
-
-    @KafkaListener(topics = "${visphere.kafka.topic.email-password-changed}")
-    void sendForPasswordChangedListener(Message<SendBaseEmailReqDto> reqDto) {
-        asyncListenerHandler.parseAndInvoke(reqDto, mailService::passwordChanged);
-    }
-
-    @KafkaListener(topics = "${visphere.kafka.topic.email-mfa-code}")
-    void sendForMfaEmailCodeListener(Message<SendTokenEmailReqDto> reqDto) {
-        asyncListenerHandler.parseAndInvoke(reqDto, mailService::mfaCode);
+public class NotificationKafkaListener {
+    private final SyncListenerHandler syncListenerHandler;
+    private final UserNotifService userNotifService;
+    
+    @KafkaListener(topics = "${visphere.kafka.topic.persist-notif-user-settings}")
+    void sendForActivateAccountListener(Message<PersistUserNotifSettingsReqDto> reqDto) {
+        syncListenerHandler.parseAndSendResponse(reqDto, userNotifService::persistUserNotifSettings);
     }
 }

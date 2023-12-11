@@ -41,6 +41,7 @@ public enum QueueTopic implements Property {
     PROFILE_IMAGE_DETAILS("profile-image-details"),
     GET_USER_PERSISTED_RELATED_SETTINGS("get-user-persisted-related-settings"),
     INSTANTIATE_USER_RELATED_SETTINGS("instantiate-user-related-settings"),
+    PERSIST_NOTIF_USER_SETTINGS("persist-notif-user-settings"),
     ;
 
     private final String topicKey;

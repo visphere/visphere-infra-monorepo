@@ -12,6 +12,7 @@
   <!-- datatables migrations, common for dev and docker -->
   <include file="migrations/2023-10-22_0000000_create-ota-tokens-table.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-10-29_0000000_remove-ota-tokens-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-12-11_0000000_create-notifs-settings-table.xml" relativeToChangelogFile="true"/>
 
   <!-- data loaders, common for dev and docker -->
 

@@ -21,7 +21,10 @@ import pl.visphere.auth.exception.RoleException;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
+import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.auth.*;
+import pl.visphere.lib.kafka.payload.notification.PersistUserNotifSettingsReqDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AppGrantedAuthority;
 
 import java.time.LocalDate;
@@ -36,6 +39,7 @@ import java.util.stream.Collectors;
 public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final JwtService jwtService;
+    private final SyncQueueHandler syncQueueHandler;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -149,6 +153,12 @@ public class UserServiceImpl implements UserService {
         user.setLastName(lastName);
         user.setBirthDate(LocalDate.parse(reqDto.getBirthDate(), DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         user.setIsActivated(true);
+
+        final PersistUserNotifSettingsReqDto notifSettingsReqDto = PersistUserNotifSettingsReqDto.builder()
+            .userId(user.getId())
+            .isEmailNotifsEnabled(reqDto.getAllowNotifs())
+            .build();
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.PERSIST_NOTIF_USER_SETTINGS, notifSettingsReqDto);
 
         final LoginOAuth2UserDetailsResDto resDto = generateTokens(user, firstName, lastName);
 

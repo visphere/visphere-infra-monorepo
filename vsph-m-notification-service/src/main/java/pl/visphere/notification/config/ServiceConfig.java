@@ -6,11 +6,13 @@ package pl.visphere.notification.config;
 
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.MustacheFactory;
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 import pl.visphere.lib.AbstractBaseServiceBeans;
+import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.file.GzipCompressor;
 import pl.visphere.lib.s3.S3Client;
 
@@ -36,5 +38,10 @@ class ServiceConfig extends AbstractBaseServiceBeans {
     @Bean
     GzipCompressor gzipCompressor() {
         return new GzipCompressor();
+    }
+
+    @Bean
+    CacheService cacheService(CacheManager cacheManager) {
+        return new CacheService(cacheManager);
     }
 }
