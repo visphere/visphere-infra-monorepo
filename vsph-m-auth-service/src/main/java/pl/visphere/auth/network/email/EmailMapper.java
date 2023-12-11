@@ -10,7 +10,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
-import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
 
