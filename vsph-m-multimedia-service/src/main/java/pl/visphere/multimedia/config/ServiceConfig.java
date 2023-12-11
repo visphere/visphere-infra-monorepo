@@ -7,6 +7,7 @@ package pl.visphere.multimedia.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import org.springframework.web.client.RestTemplate;
 import pl.visphere.lib.AbstractBaseServiceBeans;
 import pl.visphere.lib.s3.S3Client;
 import pl.visphere.lib.s3.S3Helper;
@@ -23,5 +24,10 @@ class ServiceConfig extends AbstractBaseServiceBeans {
     @Bean
     S3Helper s3Helper(Environment environment) {
         return new S3Helper(environment);
+    }
+
+    @Bean
+    RestTemplate restTemplate() {
+        return new RestTemplate();
     }
 }

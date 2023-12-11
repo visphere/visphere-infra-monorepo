@@ -6,31 +6,18 @@ package pl.visphere.multimedia.processing.drawer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.io.ClassPathResource;
-import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.multimedia.processing.ImageProperties;
+import pl.visphere.multimedia.processing.ResourcesRestLoader;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.StringJoiner;
 
 @Slf4j
 public class InitialsDrawer extends AbstractImageDrawer<char[]> {
-    public InitialsDrawer(ImageProperties imageProperties) {
+    public InitialsDrawer(ImageProperties imageProperties, ResourcesRestLoader resourcesRestLoader) {
         super(imageProperties);
-        loadCustomFontFromFile();
-    }
-
-    private void loadCustomFontFromFile() {
-        try {
-            final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            final ClassPathResource resource = new ClassPathResource(imageProperties.getFontPath());
-            graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, resource.getFile()));
-            log.info("Successfully registered custom font: '{}'", imageProperties.getFontPath());
-        } catch (IOException | FontFormatException ex) {
-            throw new GenericRestException("Unable to load custom font from file. Cause: '{}'", ex.getMessage());
-        }
+        resourcesRestLoader.loadFontFromExternalServer();
     }
 
     @Override
