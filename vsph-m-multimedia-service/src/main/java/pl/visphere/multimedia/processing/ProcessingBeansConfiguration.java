@@ -10,11 +10,13 @@ import org.springframework.context.annotation.Configuration;
 import pl.visphere.multimedia.processing.drawer.IdenticonDrawer;
 import pl.visphere.multimedia.processing.drawer.ImageDrawer;
 import pl.visphere.multimedia.processing.drawer.InitialsDrawer;
+import pl.visphere.multimedia.processing.drawer.LockerDrawer;
 
 @Configuration
 @RequiredArgsConstructor
 public class ProcessingBeansConfiguration {
     private final ImageProperties imageProperties;
+    private final ResourcesRestLoader resourcesRestLoader;
 
     @Bean
     IdenticonDrawer identiconDrawer() {
@@ -23,7 +25,12 @@ public class ProcessingBeansConfiguration {
 
     @Bean
     InitialsDrawer initialsDrawer() {
-        return new InitialsDrawer(imageProperties);
+        return new InitialsDrawer(imageProperties, resourcesRestLoader);
+    }
+
+    @Bean
+    LockerDrawer lockedDrawer() {
+        return new LockerDrawer(imageProperties, resourcesRestLoader);
     }
 
     @Bean

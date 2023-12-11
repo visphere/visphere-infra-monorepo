@@ -13,6 +13,7 @@ public enum S3Bucket {
     SPHERES("spheres"),
     USERS("users"),
     EMAILS("emails"),
+    LOCKED_USERS("locked-users"),
     ;
 
     private final String name;

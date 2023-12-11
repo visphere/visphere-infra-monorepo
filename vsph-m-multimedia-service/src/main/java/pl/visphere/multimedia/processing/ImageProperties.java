@@ -25,4 +25,5 @@ public class ImageProperties {
     private int fontSize;
     private int size;
     private int maxSizeMb;
+    private String lockerAlphaBlendPath;
 }

@@ -11,6 +11,8 @@ import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 
 public interface ImageService {
     ProfileImageDetailsResDto generateDefaultProfile(DefaultUserProfileReqDto reqDto);
+    void replaceProfileWithLocked(Long userId);
+    void replaceLockedWithProfile(Long userId);
     DefaultGuildProfileResDto generateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto);
     DefaultGuildProfileResDto updateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto);
     ProfileImageDetailsResDto getProfileImageDetails(Long userId);

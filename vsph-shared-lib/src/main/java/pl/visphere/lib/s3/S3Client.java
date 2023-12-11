@@ -91,6 +91,29 @@ public class S3Client {
             .build();
     }
 
+    public void moveObject(S3Bucket inputBucket, S3Bucket outputBucket, String fileKey) {
+        client.copyObject(inputBucket.getName(), fileKey, outputBucket.getName(), fileKey);
+        client.deleteObject(inputBucket.getName(), fileKey);
+    }
+
+    public void deleteObject(S3Bucket bucket, String fileKey) {
+        client.deleteObject(bucket.getName(), fileKey);
+    }
+
+    public String findObjectKey(S3Bucket bucket, String resourceDir, S3ResourcePrefix resourcePrefix) {
+        final ObjectListing objects = client.listObjects(bucket.getName(), resourceDir);
+        return objects.getObjectSummaries().stream()
+            .map(S3ObjectSummary::getKey)
+            .filter(key -> key.contains(resourcePrefix.getPrefix()))
+            .findFirst()
+            .orElseThrow(() -> new GenericRestException("Object with dir: '{}' in bucket: '{}' not found",
+                resourceDir, bucket));
+    }
+
+    public String findObjectKey(S3Bucket bucket, Long resourceDir, S3ResourcePrefix prefix) {
+        return findObjectKey(bucket, String.valueOf(resourceDir), prefix);
+    }
+
     public ObjectData putObject(S3Bucket bucket, Long resourceDir, FilePayload payload) {
         return putObject(bucket, String.valueOf(resourceDir), payload);
     }
@@ -112,6 +135,21 @@ public class S3Client {
 
     public void clearObjects(S3Bucket bucket, Long resourceDir, S3ResourcePrefix resourcePrefix) {
         clearObjects(bucket, String.valueOf(resourceDir), resourcePrefix);
+    }
+
+    public ObjectData parseObjectKey(S3Bucket bucket, String key) {
+        final int uuidStartPos = key.indexOf('-');
+        if (uuidStartPos == -1) {
+            throw new GenericRestException("Object with key: '{}' has invalid structure.", key);
+        }
+        final StringJoiner joiner = new StringJoiner("/")
+            .add(cdnBaseUrl)
+            .add(bucket.getName())
+            .add(key);
+        return ObjectData.builder()
+            .uuid(key.substring(uuidStartPos + 1, uuidStartPos + 37))
+            .fullPath(joiner.toString())
+            .build();
     }
 
     public FileStreamInfo getObjectByFullKey(S3Bucket bucket, String resourceKey) {

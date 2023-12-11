@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileResDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
@@ -21,12 +22,16 @@ import pl.visphere.multimedia.domain.guildprofile.GuildProfileRepository;
 import pl.visphere.multimedia.exception.AccountProfileException;
 import pl.visphere.multimedia.exception.GuildProfileException;
 import pl.visphere.multimedia.processing.drawer.InitialsDrawer;
+import pl.visphere.multimedia.processing.drawer.LockerDrawer;
+
+import java.util.StringJoiner;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ImageServiceImpl implements ImageService {
     private final InitialsDrawer initialsDrawer;
+    private final LockerDrawer lockerDrawer;
     private final S3Client s3Client;
     private final S3Helper s3Helper;
 
@@ -59,6 +64,51 @@ public class ImageServiceImpl implements ImageService {
 
         log.info("Successfully generated default profile image: '{}'.", resDto);
         return resDto;
+    }
+
+    @Override
+    @Transactional
+    public void replaceProfileWithLocked(Long userId) {
+        final AccountProfileEntity accountProfile = accountProfileRepository
+            .findByUserId(userId)
+            .orElseThrow(() -> new AccountProfileException.AccountProfileNotFoundException(userId));
+
+        final byte[] imageData = lockerDrawer.drawImage(accountProfile.getProfileColor(), null);
+
+        final String key = s3Client.findObjectKey(S3Bucket.USERS, userId, S3ResourcePrefix.PROFILE);
+        s3Client.moveObject(S3Bucket.USERS, S3Bucket.LOCKED_USERS, key);
+
+        final FilePayload filePayload = createFilePayload(imageData);
+        final ObjectData res = s3Client
+            .putObject(S3Bucket.USERS, userId, filePayload);
+
+        accountProfile.setProfileImageUuid(res.uuid());
+        log.info("Successfully replaced profile image with locked profile: '{}'.", accountProfile);
+    }
+
+    @Override
+    @Transactional
+    public void replaceLockedWithProfile(Long userId) {
+        final String key = s3Client.findObjectKey(S3Bucket.LOCKED_USERS, userId, S3ResourcePrefix.PROFILE);
+        final ObjectData res = s3Client.parseObjectKey(S3Bucket.LOCKED_USERS, key);
+
+        final AccountProfileEntity accountProfile = accountProfileRepository
+            .findByUserId(userId)
+            .orElseThrow(() -> new AccountProfileException.AccountProfileNotFoundException(userId));
+
+        final StringJoiner resourceName = new StringJoiner("-")
+            .add(S3ResourcePrefix.PROFILE.getPrefix())
+            .add(accountProfile.getProfileImageUuid() + "." + FileExtension.PNG.getExt());
+
+        final StringJoiner lockedKey = new StringJoiner("/")
+            .add(userId.toString())
+            .add(resourceName.toString());
+
+        s3Client.deleteObject(S3Bucket.USERS, lockedKey.toString());
+        s3Client.moveObject(S3Bucket.LOCKED_USERS, S3Bucket.USERS, key);
+
+        accountProfile.setProfileImageUuid(res.uuid());
+        log.info("Successfully revert locked profile with previous user setting: '{}'.", accountProfile);
     }
 
     @Override

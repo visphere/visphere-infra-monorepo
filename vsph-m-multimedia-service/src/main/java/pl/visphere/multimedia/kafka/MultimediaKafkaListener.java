@@ -40,4 +40,14 @@ class MultimediaKafkaListener {
     void getProfileImageDetailsListener(Message<Long> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::getProfileImageDetails);
     }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.replace-profile-image-with-locked}")
+    void replaceProfileImageWithLockedListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::replaceProfileWithLocked);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.replace-locked-with-profile-image}")
+    void replaceLockedWithProfileImage(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::replaceLockedWithProfile);
+    }
 }
