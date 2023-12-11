@@ -21,6 +21,8 @@ public enum HbsTemplate implements HbsFile {
     UPDATED_EMAIL("updated-email"),
     UPDATED_SECOND_EMAIL("updated-second-email"),
     REMOVED_SECOND_EMAIL("removed-second-email"),
+    ENABLED_ACCOUNT("enabled-account"),
+    DISABLED_ACCOUNT("disabled-account"),
     ;
 
     private final String templateName;
