@@ -175,6 +175,36 @@ class MfaServiceImpl implements MfaService {
             .build();
     }
 
+    @Override
+    @Transactional
+    public BaseMessageResDto resetMfaSetup(HttpServletRequest req, boolean logoutFromAll, AuthUserDetails user) {
+        final UserEntity userEntity = userRepository
+            .findByLocalUsernameOrEmailAddress(user.getUsername())
+            .orElseThrow(() -> new UserException.UserNotExistException(user.getUsername()));
+
+        final MfaUserEntity mfaUser = userEntity.getMfaUser();
+        if (mfaUser == null || mfaUser.getMfaIsSetup() == null || mfaUser.getMfaIsSetup()) {
+            throw new MfaException.MfaNotEnabledException(userEntity.getUsername());
+        }
+        mfaUser.setMfaIsSetup(false);
+        mfaUser.setMfaSecret(null);
+        if (logoutFromAll) {
+            final String refreshToken = jwtService.extractRefreshFromReq(req);
+            final List<RefreshTokenEntity> activeTokens = refreshTokenRepository
+                .findAllByUser_IdAndRefreshTokenNot(user.getId(), refreshToken);
+            refreshTokenRepository.deleteAll(activeTokens);
+            log.info("Successfully terminated user sessions count: '{}'.", activeTokens.size());
+        }
+
+        final SendBaseEmailReqDto emailReqDto = mfaMapper.mapToSendBaseEmailReq(userEntity);
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_RESET_MFA_STATE, emailReqDto);
+
+        log.info("MFA settings reset for user: '{}'.", userEntity);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.MFA_RESET_SETTINGS_RESPONSE_SUCCESS))
+            .build();
+    }
+
     private UserEntity authenticateUser(MfaCredentialsReqDto reqDto) {
         final var authToken = new UsernamePasswordAuthenticationToken(reqDto.getUsernameOrEmailAddress(),
             reqDto.getPassword());

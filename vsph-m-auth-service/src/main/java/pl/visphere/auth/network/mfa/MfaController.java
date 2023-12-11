@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.network.mfa;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -54,5 +55,14 @@ class MfaController {
         @LoggedUser AuthUserDetails user
     ) {
         return ResponseEntity.ok(mfaService.toggleMfaAccountState(enabled, user));
+    }
+
+    @DeleteMapping("/reset")
+    ResponseEntity<BaseMessageResDto> resetMfaAccountState(
+        HttpServletRequest req,
+        @RequestParam boolean logoutFromAll,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(mfaService.resetMfaSetup(req, logoutFromAll, user));
     }
 }

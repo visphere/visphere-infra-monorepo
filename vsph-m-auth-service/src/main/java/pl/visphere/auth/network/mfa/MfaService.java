@@ -4,6 +4,7 @@
  */
 package pl.visphere.auth.network.mfa;
 
+import jakarta.servlet.http.HttpServletRequest;
 import pl.visphere.auth.network.LoginResDto;
 import pl.visphere.auth.network.mfa.dto.MfaAuthenticatorDataResDto;
 import pl.visphere.auth.network.mfa.dto.MfaCredentialsReqDto;
@@ -16,4 +17,5 @@ interface MfaService {
     BaseMessageResDto altSendEmail(MfaCredentialsReqDto reqDto);
     LoginResDto altVerifyEmailToken(String token, MfaCredentialsReqDto reqDto);
     BaseMessageResDto toggleMfaAccountState(boolean isEnabled, AuthUserDetails user);
+    BaseMessageResDto resetMfaSetup(HttpServletRequest req, boolean logoutFromAll, AuthUserDetails user);
 }

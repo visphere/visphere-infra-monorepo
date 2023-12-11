@@ -28,6 +28,7 @@ public enum QueueTopic implements Property {
     EMAIL_PASSWORD_CHANGED("email-password-changed", false),
     EMAIL_MFA_CODE("email-mfa-code", false),
     EMAIL_UPDATED_MFA_STATE("email-updated-mfa-state", false),
+    EMAIL_RESET_MFA_STATE("email-reset-mfa-state", false),
     EMAIL_REQ_CHANGE_EMAIL("email-req-change-email", false),
     EMAIL_REQ_CHANGE_SECOND_EMAIL("email-req-change-second-email", false),
     EMAIL_CHANGED_EMAIL("email-changed-email", false),

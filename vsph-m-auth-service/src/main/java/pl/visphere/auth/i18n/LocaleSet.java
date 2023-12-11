@@ -39,6 +39,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     UPDATE_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.updateSecondEmailAddress.res.success"),
     REMOVE_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS("vsph.i18n.removeSecondEmailAddress.res.success"),
     MFA_UPDATE_SETTINGS_RESPONSE_SUCCESS("vsph.i18n.mfaUpdateSettings.res.success"),
+    MFA_RESET_SETTINGS_RESPONSE_SUCCESS("vsph.i18n.mfaResetSettings.res.success"),
     UDPATE_ACCOUNT_DETAILS_RESPONSE_SUCCESS("vsph.i18n.updatedAccountDetails.res.success"),
     DISABLED_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.disabledAccount.res.success"),
     ENABLED_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.enabledAccount.res.success"),
