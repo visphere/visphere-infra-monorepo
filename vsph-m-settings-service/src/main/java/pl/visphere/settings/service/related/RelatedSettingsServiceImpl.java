@@ -32,7 +32,7 @@ class RelatedSettingsServiceImpl implements RelatedSettingsService {
             .orElseThrow(() -> new UserException.UserNotExistException(userId));
 
         final UserSettingsResDto resDto = modelMapper.map(userRelation, UserSettingsResDto.class);
-        log.info("Successfully found user relation settings: '{}'", resDto);
+        log.info("Successfully found user relation settings: '{}'.", resDto);
         return resDto;
     }
 
@@ -47,6 +47,6 @@ class RelatedSettingsServiceImpl implements RelatedSettingsService {
             .build();
 
         userRelationRepository.save(userRelationModel);
-        log.info("Successfully instantiated user relation model entity: '{}'", userRelationModel);
+        log.info("Successfully instantiated user relation model entity: '{}'.", userRelationModel);
     }
 }

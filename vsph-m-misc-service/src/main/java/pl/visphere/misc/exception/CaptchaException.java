@@ -15,7 +15,7 @@ public class CaptchaException {
     public static class CaptchaVerificationException extends AbstractRestException {
         public CaptchaVerificationException(CaptchaVerifyReqDto reqDto) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.CAPTCHA_RESPONSE_ERROR);
-            log.error("Attempt to verified captcha was ended failure. Income details: '{}'", reqDto);
+            log.error("Attempt to verified captcha was ended failure. Income details: '{}'.", reqDto);
         }
     }
 }

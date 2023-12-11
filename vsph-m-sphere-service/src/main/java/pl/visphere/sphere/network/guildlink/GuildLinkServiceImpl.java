@@ -70,7 +70,7 @@ class GuildLinkServiceImpl implements GuildLinkService {
 
         final GuildLinkEntity savedGuildLink = guildLinkRepository.save(guildLink);
 
-        log.info("Successfully created new guild link: '{}'", savedGuildLink);
+        log.info("Successfully created new guild link: '{}'.", savedGuildLink);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LINK_CREATED_RESPONSE_SUCCESS))
             .build();
@@ -90,7 +90,7 @@ class GuildLinkServiceImpl implements GuildLinkService {
         final ZonedDateTime prevExpiredTime = guildLink.getExpiredAt();
         guildLink.setExpiredAt(reqDto.getNewExpirationTime());
 
-        log.info("Successfully updated link expiration time from: '{}' to: '{}'", expiredAt, prevExpiredTime);
+        log.info("Successfully updated link expiration time from: '{}' to: '{}'.", expiredAt, prevExpiredTime);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LINK_UPDATED_EXPIRATION_RESPONSE_SUCCESS))
             .build();
@@ -105,7 +105,7 @@ class GuildLinkServiceImpl implements GuildLinkService {
         final boolean prevActive = guildLink.getActive();
         guildLink.setActive(reqDto.isActive());
 
-        log.info("Successfully updated link active state from: '{}' to: '{}'", prevActive, reqDto.isActive());
+        log.info("Successfully updated link active state from: '{}' to: '{}'.", prevActive, reqDto.isActive());
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LINK_UPDATED_ACTIVE_RESPONSE_SUCCESS))
             .build();
@@ -119,7 +119,7 @@ class GuildLinkServiceImpl implements GuildLinkService {
 
         guildLinkRepository.delete(guildLink);
 
-        log.info("Successfully deleted link: '{}'", guildLink);
+        log.info("Successfully deleted link: '{}'.", guildLink);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LINK_DELETED_RESPONSE_SUCCESS))
             .build();

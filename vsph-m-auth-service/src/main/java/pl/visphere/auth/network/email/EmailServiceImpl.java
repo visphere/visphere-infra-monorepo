@@ -46,7 +46,7 @@ class EmailServiceImpl implements EmailService {
     @Override
     public BaseMessageResDto requestUpdateFirstEmailAdrress(EmailAddressReqDto reqDto, AuthUserDetails user) {
         final UserEntity userEntity = commonRequestUpdateFirstEmailAddress(reqDto, user);
-        log.info("Successfully invoke request for change email address for user: '{}'", userEntity);
+        log.info("Successfully invoke request for change email address for user: '{}'.", userEntity);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.REQUEST_FIRST_EMAIL_ADDRESS_RESPONSE_SUCCESS))
             .build();
@@ -55,7 +55,7 @@ class EmailServiceImpl implements EmailService {
     @Override
     public BaseMessageResDto requestResendUpdateFirstEmailAdrress(EmailAddressReqDto reqDto, AuthUserDetails user) {
         final UserEntity userEntity = commonRequestUpdateFirstEmailAddress(reqDto, user);
-        log.info("Successfully invoke resend request for change email address for user: '{}'", userEntity);
+        log.info("Successfully invoke resend request for change email address for user: '{}'.", userEntity);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.RESEND_REQUEST_FIRST_EMAIL_ADDRESS_RESPONSE_SUCCESS))
             .build();
@@ -64,7 +64,7 @@ class EmailServiceImpl implements EmailService {
     @Override
     public BaseMessageResDto requestUpdateSecondEmailAdrress(SecondEmailAddressReqDto reqDto, AuthUserDetails user) {
         final UserEntity userEntity = commonRequestUpdateSecondEmailAddress(reqDto, user);
-        log.info("Successfully invoke request for change second email address for user: '{}'", userEntity);
+        log.info("Successfully invoke request for change second email address for user: '{}'.", userEntity);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.REQUEST_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS))
             .build();
@@ -73,7 +73,7 @@ class EmailServiceImpl implements EmailService {
     @Override
     public BaseMessageResDto requestResendUpdateSecondEmailAdrress(SecondEmailAddressReqDto reqDto, AuthUserDetails user) {
         final UserEntity userEntity = commonRequestUpdateSecondEmailAddress(reqDto, user);
-        log.info("Successfully invoke resend request for change email address for user: '{}'", userEntity);
+        log.info("Successfully invoke resend request for change email address for user: '{}'.", userEntity);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.RESEND_REQUEST_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS))
             .build();
@@ -90,7 +90,7 @@ class EmailServiceImpl implements EmailService {
 
         sendAsyncEmail(userEntity, email, QueueTopic.EMAIL_CHANGED_EMAIL);
 
-        log.info("Successfully validate token and change email address for user: '{}'", userEntity);
+        log.info("Successfully validate token and change email address for user: '{}'.", userEntity);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.UPDATE_FIRST_EMAIL_ADDRESS_RESPONSE_SUCCESS))
             .build();
@@ -106,7 +106,7 @@ class EmailServiceImpl implements EmailService {
 
         sendAsyncEmail(userEntity, userEntity.getEmailAddress(), QueueTopic.EMAIL_CHANGED_SECOND_EMAIL);
 
-        log.info("Successfully validate token and change second email address for user: '{}'", userEntity);
+        log.info("Successfully validate token and change second email address for user: '{}'.", userEntity);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.UPDATE_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS))
             .build();
@@ -120,7 +120,7 @@ class EmailServiceImpl implements EmailService {
 
         sendAsyncEmail(userEntity, userEntity.getEmailAddress(), QueueTopic.EMAIL_REMOVED_SECOND_EMAIL);
 
-        log.info("Successfully removed second email address for user: '{}'", userEntity);
+        log.info("Successfully removed second email address for user: '{}'.", userEntity);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.REMOVE_SECOND_EMAIL_ADDRESS_RESPONSE_SUCCESS))
             .build();

@@ -99,7 +99,7 @@ class IdentityServiceImpl implements IdentityService {
         final LoginResDto resDto = new LoginResDto(userProfileUrl, userProfileColor, user, token, refreshToken,
             settingsResDto);
 
-        log.info("Successfully login via username and password for user: '{}'", resDto);
+        log.info("Successfully login via username and password for user: '{}'.", resDto);
         return resDto;
     }
 
@@ -139,7 +139,7 @@ class IdentityServiceImpl implements IdentityService {
         final LoginResDto resDto = new LoginResDto(profileImagePath, profileImageDetails.profileColor(),
             user, accessToken, refreshTokenEntity.getRefreshToken(), settingsResDto);
 
-        log.info("Successfully login via access token for user: '{}'", resDto);
+        log.info("Successfully login via access token for user: '{}'.", resDto);
         return resDto;
     }
 
@@ -158,7 +158,7 @@ class IdentityServiceImpl implements IdentityService {
             .findByRefreshTokenAndUserId(reqDto.getRefreshToken(), user.getId())
             .orElseThrow(() -> new RefrehTokenException.RefreshTokenExpiredException(reqDto.getRefreshToken()));
 
-        log.info("Successfully refresh expired access token for user: '{}'", user);
+        log.info("Successfully refresh expired access token for user: '{}'.", user);
         return RefreshResDto.builder()
             .renewAccessToken(generateToken(user))
             .refreshToken(refreshToken.getRefreshToken())
@@ -190,7 +190,7 @@ class IdentityServiceImpl implements IdentityService {
         refreshTokenRepository.delete(refreshTokenEntity);
         SecurityContextHolder.clearContext();
 
-        log.info("Successfully logged out user: '{}'", user);
+        log.info("Successfully logged out user: '{}'.", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.LOGOUT_RESPONSE_SUCCESS))
             .build();

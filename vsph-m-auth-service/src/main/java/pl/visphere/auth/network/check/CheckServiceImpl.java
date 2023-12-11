@@ -89,7 +89,7 @@ public class CheckServiceImpl implements CheckService {
         final int pos = resDtos.size();
         final int neg = reqDtos.size() - pos;
 
-        log.info("Successfully checked accounts with pos: '{}' and neg: '{}'. Summary: '{}'", pos, neg, resDtos);
+        log.info("Successfully checked accounts with pos: '{}' and neg: '{}'. Summary: '{}'.", pos, neg, resDtos);
         return resDtos;
     }
 
@@ -97,7 +97,7 @@ public class CheckServiceImpl implements CheckService {
         final CheckAlreadyExistResDto resDto = CheckAlreadyExistResDto.builder()
             .alreadyExist(alreadyExist)
             .build();
-        log.info("Successfully check account prop: '{}' with value: '{}' and response: '{}'", by, value, resDto);
+        log.info("Successfully check account prop: '{}' with value: '{}' and response: '{}'.", by, value, resDto);
         return resDto;
     }
 }

@@ -69,7 +69,7 @@ public class SyncQueueHandler {
             final String key = UUID.randomUUID().toString();
             final Locale currentLocale = LocaleContextHolder.getLocale();
 
-            log.info("Started sync kafka call into '{}' with key: '{}' and data: '{}'", decodedTopic, key, data);
+            log.info("Started sync kafka call into '{}' with key: '{}' and data: '{}'.", decodedTopic, key, data);
 
             final ProducerRecord<String, Object> record = new ProducerRecord<>(decodedTopic, null, key, data);
             record.headers().add(new RecordHeader(KafkaHeaders.REPLY_TOPIC, replyTopic.getBytes()));
@@ -79,7 +79,7 @@ public class SyncQueueHandler {
             final ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
             final KafkaNullableResponseWrapper resp = (KafkaNullableResponseWrapper) response.value();
 
-            log.info("End sync kafka call into '{}' with response: '{}'", decodedTopic, resp);
+            log.info("End sync kafka call into '{}' with response: '{}'.", decodedTopic, resp);
 
             ResponseObject responseObject = ResponseObject.IS_NULL;
             R payload = null;
@@ -92,7 +92,7 @@ public class SyncQueueHandler {
             }
             return Optional.of(new NullableObjectWrapper<>(responseObject, payload));
         } catch (ExecutionException | InterruptedException | TimeoutException ex) {
-            log.error("Unexpected issue during sync call. Cause '{}'", ex.getMessage());
+            log.error("Unexpected issue during sync call. Cause '{}'.", ex.getMessage());
             return Optional.empty();
         }
     }
@@ -114,7 +114,7 @@ public class SyncQueueHandler {
         final ContainerProperties props = replyContainer.getContainerProperties();
         props.setMissingTopicsFatal(false);
         props.setGroupId(groupId);
-        log.info("Fabricated reply templates for '{}': '{}'", groupId, replyTopics);
+        log.info("Fabricated reply templates for '{}': '{}'.", groupId, replyTopics);
         return new ReplyingKafkaTemplate<>(pf, replyContainer);
     }
 

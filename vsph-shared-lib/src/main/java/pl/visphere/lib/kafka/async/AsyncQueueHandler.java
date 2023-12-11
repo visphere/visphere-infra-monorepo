@@ -29,12 +29,12 @@ public class AsyncQueueHandler {
         final String decodedTopic = topic.getValue(environment);
         final Locale currentLocale = LocaleContextHolder.getLocale();
 
-        log.info("Started async kafka call into '{}' with key: '{}' and data: '{}'", decodedTopic, key, data);
+        log.info("Started async kafka call into '{}' with key: '{}' and data: '{}'.", decodedTopic, key, data);
 
         final ProducerRecord<String, Object> record = new ProducerRecord<>(decodedTopic, key, data);
         record.headers().add(LOCALE_HEADER, SerializationUtils.serialize(currentLocale));
 
         kafkaTemplate.send(record);
-        log.info("End async kafka call into '{}'", decodedTopic);
+        log.info("End async kafka call into '{}'.", decodedTopic);
     }
 }

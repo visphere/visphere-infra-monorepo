@@ -40,7 +40,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
 
         final UserRelatedSettingsResDto resDto = modelMapper.map(userRelation, UserRelatedSettingsResDto.class);
 
-        log.info("Successfully fetched user settings: '{}'", resDto);
+        log.info("Successfully fetched user settings: '{}'.", resDto);
         return resDto;
     }
 
@@ -55,7 +55,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
         relation.setLang(reqDto.getRelatedValue());
         saveAndUpdateCache(user, relation);
 
-        log.info("Successfully updated related lang for user: '{}'", relation);
+        log.info("Successfully updated related lang for user: '{}'.", relation);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(responseMessage))
             .build();
@@ -72,7 +72,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
         relation.setTheme(reqDto.getRelatedValue());
         saveAndUpdateCache(user, relation);
 
-        log.info("Successfully updated related theme for user: '{}'", relation);
+        log.info("Successfully updated related theme for user: '{}'.", relation);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(responseMessage))
             .build();
@@ -88,7 +88,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
         }
         saveAndUpdateCache(user, relation);
 
-        log.info("Successfully updated push notifications settings for user: '{}'", relation);
+        log.info("Successfully updated push notifications settings for user: '{}'.", relation);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.PUSH_NOTIFICATIONS_RESPONSE_SUCCESS))
             .build();
@@ -104,7 +104,7 @@ class UserSettingsServiceImpl implements UserSettingsService {
         relation.setPushNotifsSoundEnabled(isEnabled);
         saveAndUpdateCache(user, relation);
 
-        log.info("Successfully updated push notifications sound settings for user: '{}'", relation);
+        log.info("Successfully updated push notifications sound settings for user: '{}'.", relation);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.PUSH_NOTIFICATIONS_SOUND_RESPONSE_SUCCESS))
             .build();

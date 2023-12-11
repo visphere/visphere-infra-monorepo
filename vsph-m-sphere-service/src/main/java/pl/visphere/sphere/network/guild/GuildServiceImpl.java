@@ -58,7 +58,7 @@ public class GuildServiceImpl implements GuildService {
             "sphereName", reqDto.getName()
         ));
 
-        log.info("Successfully created new guild sphere: '{}'", savedGuild);
+        log.info("Successfully created new guild sphere: '{}'.", savedGuild);
         return CreateGuildResDto.builder()
             .id(savedGuild.getId())
             .message(message)
@@ -82,7 +82,7 @@ public class GuildServiceImpl implements GuildService {
             .sendNotNullWithBlockThread(QueueTopic.UPDATE_DEFAULT_GUILD_PROFILE, guildProfileReqDto,
                 DefaultGuildProfileResDto.class);
 
-        log.info("Successfully updated guild name from: '{}' to: '{}'", prevName, reqDto.getName());
+        log.info("Successfully updated guild name from: '{}' to: '{}'.", prevName, reqDto.getName());
         return UpdateGuildResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_UPDATE_NAME_RESPONSE_SUCCESS))
             .profileUrl(resDto.imageFullPath())
@@ -115,10 +115,10 @@ public class GuildServiceImpl implements GuildService {
         if (reqDto.isUnactiveAllPreviousLinks()) {
             guildLinkRepository.removeAllByGuild_Id(guildId);
             outputMessage = LocaleSet.SPHERE_GUILD_UPDATE_VISIBILITY_WITH_REMOVE_LINKS_RESPONSE_SUCCESS;
-            log.info("Successfully removed all connected join sphere links from guild: '{}'", guild);
+            log.info("Successfully removed all connected join sphere links from guild: '{}'.", guild);
         }
 
-        log.info("Successfully update guild private mode from: '{}' to: '{}'", prevIsPrivate, reqDto.isPrivate());
+        log.info("Successfully update guild private mode from: '{}' to: '{}'.", prevIsPrivate, reqDto.isPrivate());
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(outputMessage))
             .build();

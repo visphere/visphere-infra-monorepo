@@ -15,7 +15,7 @@ public class OtaTokenException {
     public static class OtaTokenNotFoundException extends AbstractRestException {
         public OtaTokenNotFoundException(String token, OtaToken type) {
             super(HttpStatus.NOT_FOUND, LibLocaleSet.OTA_TOKEN_NOT_FOUND_EXCEPTION_MESSAGE);
-            log.error("Searching ota token by token: '{}' and type: '{}' not found in database", token, type.getHolder());
+            log.error("Searching ota token by token: '{}' and type: '{}' not found in database.", token, type.getHolder());
         }
     }
 }

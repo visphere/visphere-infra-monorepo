@@ -59,7 +59,7 @@ public class InitialsDrawer extends AbstractImageDrawer<char[]> {
         graphics2D.drawString(initials, xPos, yPos);
         graphics2D.dispose();
 
-        log.info("Successfully generated initials image with initials: '{}' and color: '{}'", initials, color);
+        log.info("Successfully generated initials image with initials: '{}' and color: '{}'.", initials, color);
         return generateByteArrayFromBufferedImage(bufferedImage);
     }
 }

@@ -75,7 +75,7 @@ class MfaServiceImpl implements MfaService {
             throw new MfaException.MfaAlreadyIsSetupException(user.getUsername());
         }
         final String mfaSecret = mfaUser.getMfaSecret();
-        log.info("Successfully return MFA authenticator app details for user: '{}'", user);
+        log.info("Successfully return MFA authenticator app details for user: '{}'.", user);
         return MfaAuthenticatorDataResDto.builder()
             .imageUri(mfaProxyService.generateQrCodeUri(mfaSecret))
             .secret(mfaSecret)
@@ -96,7 +96,7 @@ class MfaServiceImpl implements MfaService {
         final LoginResDto resDto = createLoginResponse(user);
         cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, user.getId());
 
-        log.info("Successfully authenticate with MFA via authenticator app for user: '{}'", resDto);
+        log.info("Successfully authenticate with MFA via authenticator app for user: '{}'.", resDto);
         return resDto;
     }
 
@@ -113,7 +113,7 @@ class MfaServiceImpl implements MfaService {
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_MFA_CODE, emailReqDto);
 
-        log.info("Successfully send message with MFA code for user: '{}'", user);
+        log.info("Successfully send message with MFA code for user: '{}'.", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SEND_ALT_MFA_EMAIL_CODE_RESPONSE_SUCCESS))
             .build();
@@ -137,7 +137,7 @@ class MfaServiceImpl implements MfaService {
         final UserEntity user = otaToken.getUser();
         final LoginResDto resDto = createLoginResponse(user);
 
-        log.info("Successfully authenticate with MFA via alternative email code for user: '{}'", resDto);
+        log.info("Successfully authenticate with MFA via alternative email code for user: '{}'.", resDto);
         return resDto;
     }
 
@@ -175,7 +175,7 @@ class MfaServiceImpl implements MfaService {
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_UPDATED_MFA_STATE, emailReqDto);
 
-        log.info("MFA settings updated for user: '{}' with value: '{}'", userEntity, isEnabled);
+        log.info("MFA settings updated for user: '{}' with value: '{}'.", userEntity, isEnabled);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.MFA_UPDATE_SETTINGS_RESPONSE_SUCCESS))
             .build();

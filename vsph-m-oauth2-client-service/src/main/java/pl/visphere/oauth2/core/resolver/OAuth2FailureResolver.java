@@ -50,7 +50,7 @@ public class OAuth2FailureResolver extends SimpleUrlAuthenticationFailureHandler
             .queryParam("message", i18nService.getMessage(ex.getMessage()))
             .queryParam("type", "danger");
 
-        log.error("OAuth2 authorization failed. Redirect to: '{}'. Cause: '{}'", targetUrl, ex.getMessage());
+        log.error("OAuth2 authorization failed. Redirect to: '{}'. Cause: '{}'.", targetUrl, ex.getMessage());
         getRedirectStrategy().sendRedirect(req, res, uriComponentsBuilder.toUriString());
     }
 }

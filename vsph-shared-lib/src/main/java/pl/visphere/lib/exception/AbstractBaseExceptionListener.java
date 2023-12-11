@@ -68,7 +68,7 @@ public abstract class AbstractBaseExceptionListener {
     @ExceptionHandler(AuthenticationException.class)
     ResponseEntity<MessageExceptionResDto> authenticationException(HttpServletRequest req, AuthenticationException ex) {
         final HttpStatus responseStatus = HttpStatus.UNAUTHORIZED;
-        log.error("Spring security context exception. Cause: '{}'", ex.getMessage());
+        log.error("Spring security context exception. Cause: '{}'.", ex.getMessage());
         return new ResponseEntity<>(new MessageExceptionResDto(responseStatus, req, ex.getMessage()), responseStatus);
     }
 
@@ -76,7 +76,7 @@ public abstract class AbstractBaseExceptionListener {
     ResponseEntity<MessageExceptionResDto> unknowServerException(HttpServletRequest req, Exception ex) {
         final HttpStatus reponseStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         final String message = i18nService.getMessage(LibLocaleSet.UNKNOW_SERVER_EXCEPTION_MESSAGE);
-        log.error("Unexpected issue during server process. Cause: '{}'", ex.getMessage());
+        log.error("Unexpected issue during server process. Cause: '{}'.", ex.getMessage());
         return new ResponseEntity<>(new MessageExceptionResDto(reponseStatus, req, message), reponseStatus);
     }
 }

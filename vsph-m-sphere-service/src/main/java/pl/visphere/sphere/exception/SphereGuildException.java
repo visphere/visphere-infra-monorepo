@@ -18,7 +18,7 @@ public class SphereGuildException {
             super(HttpStatus.NOT_FOUND, LocaleSet.SPHERE_GUILD_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE, Map.of(
                 "guildId", guildId
             ));
-            log.error("Searching sphere guild for id: '{}' not found in database", guildId);
+            log.error("Searching sphere guild for id: '{}' not found in database.", guildId);
         }
     }
 }

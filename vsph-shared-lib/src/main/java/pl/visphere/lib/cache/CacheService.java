@@ -24,14 +24,14 @@ public class CacheService {
         if (cache != null) {
             Optional<T> cached = Optional.ofNullable(cache.get(key, clazz));
             if (cached.isPresent()) {
-                log.info("Getting value from cache: '{}' with key: '{}'", cached.get(), key);
+                log.info("Getting value from cache: '{}' with key: '{}'.", cached.get(), key);
                 return cached;
             }
             cached = notPresent.get();
             if (cached.isEmpty()) {
                 return Optional.empty();
             }
-            log.info("Persisted value in cache: '{}' with key: '{}'", cached.get(), key);
+            log.info("Persisted value in cache: '{}' with key: '{}'.", cached.get(), key);
             cache.put(key, cached.get());
             return cached;
         }

@@ -93,14 +93,14 @@ public class JwtService {
                 .setSigningKey(getSignedKey()).build()
                 .parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException ex) {
-            log.error("Passed token is expired. Cause: '{}'", ex.getMessage());
+            log.error("Passed token is expired. Cause: '{}'.", ex.getMessage());
             state = JwtState.EXPIRED;
             claims = ex.getClaims();
         } catch (SignatureException ex) {
-            log.error("Passed token signature is invalid. Cause: '{}'", ex.getMessage());
+            log.error("Passed token signature is invalid. Cause: '{}'.", ex.getMessage());
             state = JwtState.INVALID;
         } catch (RuntimeException ex) {
-            log.error("Passed token is malformed or corrupted. Cause: '{}'", ex.getMessage());
+            log.error("Passed token is malformed or corrupted. Cause: '{}'.", ex.getMessage());
             state = JwtState.INVALID;
         }
         return JwtValidateState.builder()

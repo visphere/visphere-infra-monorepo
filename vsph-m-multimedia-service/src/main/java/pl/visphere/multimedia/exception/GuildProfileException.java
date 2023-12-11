@@ -14,7 +14,7 @@ public class GuildProfileException {
     public static class GuildProfileNotFoundException extends AbstractRestException {
         public GuildProfileNotFoundException(Long guildId) {
             super(HttpStatus.NOT_FOUND, LibLocaleSet.GUILD_PROFILE_NOT_FOUND_EXCEPTION_MESSAGE);
-            log.error("Searching guild profile for guild id: '{}' not found in database", guildId);
+            log.error("Searching guild profile for guild id: '{}' not found in database.", guildId);
         }
     }
 }

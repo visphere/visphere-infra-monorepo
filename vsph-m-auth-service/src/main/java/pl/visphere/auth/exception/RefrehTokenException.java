@@ -14,7 +14,7 @@ public class RefrehTokenException {
     public static class RefreshTokenNotFoundException extends AbstractRestException {
         public RefreshTokenNotFoundException(String token) {
             super(HttpStatus.NOT_FOUND, LocaleSet.REFRESH_TOKEN_NOT_FOUND_EXCEPTION_MESSAGE);
-            log.error("Searching refresh token by token: '{}' not found in database", token);
+            log.error("Searching refresh token by token: '{}' not found in database.", token);
         }
     }
 
@@ -22,7 +22,7 @@ public class RefrehTokenException {
     public static class RefreshTokenExpiredException extends AbstractRestException {
         public RefreshTokenExpiredException(String token) {
             super(HttpStatus.FORBIDDEN, LocaleSet.REFRESH_TOKEN_EXPIRED_EXCEPTION_MESSAGE);
-            log.error("Current refresh token: '{}' is expired", token);
+            log.error("Current refresh token: '{}' is expired.", token);
         }
     }
 }

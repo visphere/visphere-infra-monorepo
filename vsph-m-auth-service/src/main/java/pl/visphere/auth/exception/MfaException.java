@@ -14,7 +14,7 @@ public class MfaException {
     public static class MfaAlreadyIsSetupException extends AbstractRestException {
         public MfaAlreadyIsSetupException(String username) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.MFA_IS_ALREADY_SETUP_EXCEPTION_MESSAGE);
-            log.error("Attempt to re-setup MFA for user: '{}'", username);
+            log.error("Attempt to re-setup MFA for user: '{}'.", username);
         }
     }
 
@@ -22,7 +22,7 @@ public class MfaException {
     public static class MfaNotEnabledException extends AbstractRestException {
         public MfaNotEnabledException(String username) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.MFA_NOT_ENABLED_EXCEPTION_MESSAGE);
-            log.error("Attempt to access MFA features for non-enabled MFA account: '{}'", username);
+            log.error("Attempt to access MFA features for non-enabled MFA account: '{}'.", username);
         }
     }
 
@@ -38,7 +38,7 @@ public class MfaException {
     public static class MfaCurrentlyDisabledException extends AbstractRestException {
         public MfaCurrentlyDisabledException(String username) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.MFA_CURRENTLY_DISABLED_EXCEPTION_MESSAGE);
-            log.error("Attempt to disable MFA features for already disabled on account: '{}'", username);
+            log.error("Attempt to disable MFA features for already disabled on account: '{}'.", username);
         }
     }
 
@@ -46,12 +46,12 @@ public class MfaException {
     public static class MfaInvalidCodeException extends AbstractRestException {
         public MfaInvalidCodeException(String code, String username) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.MFA_INVALID_CODE_EXCEPTION_MESSAGE);
-            log.error("Attempt to authorize MFA with invalid code: '{}' for user: '{}'", code, username);
+            log.error("Attempt to authorize MFA with invalid code: '{}' for user: '{}'.", code, username);
         }
 
         public MfaInvalidCodeException(String code) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.MFA_INVALID_CODE_EXCEPTION_MESSAGE);
-            log.error("Attempt to authorize MFA with invalid code: '{}'", code);
+            log.error("Attempt to authorize MFA with invalid code: '{}'.", code);
         }
     }
 }

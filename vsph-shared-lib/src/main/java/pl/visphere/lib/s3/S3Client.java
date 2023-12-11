@@ -58,9 +58,9 @@ public class S3Client {
             .build();
         try {
             final List<String> buckets = client.listBuckets().stream().map(Bucket::getName).toList();
-            log.info("Successfully connected with S3 service. Found buckets: '{}'", buckets);
+            log.info("Successfully connected with S3 service. Found buckets: '{}'.", buckets);
         } catch (AmazonServiceException ex) {
-            log.error("Unable to connect with S3 service. Cause: '{}'", ex.getMessage());
+            log.error("Unable to connect with S3 service. Cause: '{}'.", ex.getMessage());
         }
     }
 
@@ -122,7 +122,7 @@ public class S3Client {
             objectBytes = object.getObjectContent().readAllBytes();
             mimeType = object.getObjectMetadata().getContentType();
         } catch (IOException ex) {
-            throw new GenericRestException("Unexpected error during read file bytes. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unexpected error during read file bytes. Cause: '{}'.", ex.getMessage());
         }
         return FileStreamInfo.builder()
             .data(objectBytes)
@@ -135,18 +135,18 @@ public class S3Client {
         try {
             tempFile = File.createTempFile(payload.prefix().getPrefix(), "." + payload.extension().getExt());
             Files.write(tempFile.toPath(), payload.data());
-            log.info("Successfully created temp file: '{}' and fill with bytes data", tempFile.getName());
+            log.info("Successfully created temp file: '{}' and fill with bytes data.", tempFile.getName());
             consumer.accept(tempFile);
         } catch (AmazonServiceException ex) {
-            throw new GenericRestException("Unexpected error during AWS service call. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unexpected error during AWS service call. Cause: '{}'.", ex.getMessage());
         } catch (SdkClientException ex) {
-            throw new GenericRestException("Unable to call AWS service by client. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unable to call AWS service by client. Cause: '{}'.", ex.getMessage());
         } catch (IOException ex) {
-            throw new GenericRestException("Unable to write bytes data to temp file. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unable to write bytes data to temp file. Cause: '{}'.", ex.getMessage());
         } finally {
             if (tempFile != null) {
                 tempFile.deleteOnExit();
-                log.info("Removed temp file: '{}'", tempFile.getName());
+                log.info("Removed temp file: '{}'.", tempFile.getName());
             }
         }
     }

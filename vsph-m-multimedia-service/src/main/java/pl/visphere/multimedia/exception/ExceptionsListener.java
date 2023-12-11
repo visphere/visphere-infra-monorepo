@@ -40,7 +40,7 @@ class ExceptionsListener extends AbstractBaseExceptionListener {
         final String message = i18nService.getMessage(LocaleSet.MAX_UPLOADED_FILE_SIZE_EXCEEDED_EXCEPTION_MESSAGE, Map.of(
             "maxSize", environment.getProperty("spring.servlet.multipart.max-file-size", "?")
         ));
-        log.error("Multipart file max upload size eceeded. Cause: '{}'", ex.getMaxUploadSize());
+        log.error("Multipart file max upload size eceeded. Cause: '{}'.", ex.getMaxUploadSize());
         return new ResponseEntity<>(new MessageExceptionResDto(responseStatus, req, message), responseStatus);
     }
 }

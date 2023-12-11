@@ -46,7 +46,7 @@ public class MfaProxyServiceImpl implements MfaProxyService {
         try {
             imageData = qrGenerator.generate(qrData);
         } catch (QrGenerationException ex) {
-            throw new GenericRestException("Unable to generate QR code. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unable to generate QR code. Cause: '{}'.", ex.getMessage());
         }
         log.info("Successfully generated QR image data.");
         return Utils.getDataUriForImage(imageData, qrGenerator.getImageMimeType());
@@ -60,7 +60,7 @@ public class MfaProxyServiceImpl implements MfaProxyService {
     @Override
     public boolean isOtpValid(String secret, String code) {
         final boolean isVerified = codeVerifier.isValidCode(secret, code);
-        log.info("Successfully verified OTA with result: '{}'", isVerified);
+        log.info("Successfully verified OTA with result: '{}'.", isVerified);
         return isVerified;
     }
 

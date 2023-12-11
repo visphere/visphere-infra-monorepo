@@ -57,7 +57,7 @@ public class ImageServiceImpl implements ImageService {
             .profileColor(randomColor)
             .build();
 
-        log.info("Successfully generated default profile image: '{}'", resDto);
+        log.info("Successfully generated default profile image: '{}'.", resDto);
         return resDto;
     }
 
@@ -78,7 +78,7 @@ public class ImageServiceImpl implements ImageService {
 
         final GuildProfileEntity savedGuildProfile = guildProfileRepository.save(guildProfile);
 
-        log.info("Successfully generated default guild profile image: '{}'", savedGuildProfile);
+        log.info("Successfully generated default guild profile image: '{}'.", savedGuildProfile);
         return DefaultGuildProfileResDto.builder()
             .imageFullPath(res.fullPath())
             .build();
@@ -113,7 +113,7 @@ public class ImageServiceImpl implements ImageService {
 
         final GuildProfileEntity savedGuildProfile = guildProfileRepository.save(guildProfile);
 
-        log.info("Successfully updated default guild profile image: '{}'", savedGuildProfile);
+        log.info("Successfully updated default guild profile image: '{}'.", savedGuildProfile);
         return DefaultGuildProfileResDto.builder()
             .imageFullPath(res.fullPath())
             .build();
@@ -131,7 +131,7 @@ public class ImageServiceImpl implements ImageService {
             .profileImagePath(s3Helper.prepareUserProfilePath(userId, accountProfile.getProfileImageUuid()))
             .build();
 
-        log.info("Successfully get account profile details: '{}'", resDto);
+        log.info("Successfully get account profile details: '{}'.", resDto);
         return resDto;
     }
 

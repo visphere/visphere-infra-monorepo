@@ -55,9 +55,9 @@ public class MailSenderService {
 
             javaMailSender.send(mimeMessage);
 
-            log.info("Successfully send email message with payload: '{}'", payloadDto);
+            log.info("Successfully send email message with payload: '{}'.", payloadDto);
         } catch (MessagingException | IOException ex) {
-            throw new GenericRestException("Unable to send email message with payload: '{}'. Cause: '{}'",
+            throw new GenericRestException("Unable to send email message with payload: '{}'. Cause: '{}'.",
                 payloadDto, ex.getMessage());
         }
     }

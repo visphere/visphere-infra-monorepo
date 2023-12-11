@@ -96,9 +96,9 @@ public class HbsProcessingService {
 
             outputHtml = mjmlApiService.sendRequestForParse(builder.toString());
         } catch (IOException ex) {
-            throw new GenericRestException("Unable to process HBS template. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unable to process HBS template. Cause: '{}'.", ex.getMessage());
         }
-        log.info("Successfully processed email template: '{}' with title: '{}'", template.getTemplateName(), title);
+        log.info("Successfully processed email template: '{}' with title: '{}'.", template.getTemplateName(), title);
         return outputHtml;
     }
 

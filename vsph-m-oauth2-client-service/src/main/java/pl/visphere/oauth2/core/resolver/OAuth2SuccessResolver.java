@@ -41,14 +41,14 @@ public class OAuth2SuccessResolver extends SimpleUrlAuthenticationSuccessHandler
 
         final String targetUrl = determineTargetUrl(req, res, auth);
         if (res.isCommitted()) {
-            log.info("Response has been already committed. Unable to redirect to address: '{}'", targetUrl);
+            log.info("Response has been already committed. Unable to redirect to address: '{}'.", targetUrl);
             return;
         }
         clearAuthenticationAttributes(req);
         cookiesService.deleteCookies(req, res,
             List.of(SESSION_PERSISTOR, AFTER_LOGIN_REDIR_URL, AFTER_SIGNUP_REDIR_URL));
 
-        log.info("Redirect to '{}'", targetUrl);
+        log.info("Redirect to '{}'.", targetUrl);
         getRedirectStrategy().sendRedirect(req, res, targetUrl);
     }
 
@@ -76,7 +76,7 @@ public class OAuth2SuccessResolver extends SimpleUrlAuthenticationSuccessHandler
                 && authorizedUri.getPort() == redirectClientUri.getPort();
         });
         if (isNotAuthorizedUri) {
-            throw new GenericRestException("Attempt to authenticate via OAuth2 by not authorized URI/s: '{}'",
+            throw new GenericRestException("Attempt to authenticate via OAuth2 by not authorized URI/s: '{}'.",
                 redirectClientUri);
         }
 
@@ -85,7 +85,7 @@ public class OAuth2SuccessResolver extends SimpleUrlAuthenticationSuccessHandler
             .queryParam("token", tokenData.token())
             .queryParam("supplier", supplierName);
 
-        log.info("Successfully login user: '{}' via OAuth2 supplier: '{}'", userDetails, supplierName);
+        log.info("Successfully login user: '{}' via OAuth2 supplier: '{}'.", userDetails, supplierName);
         return uriComponentsBuilder.toUriString();
     }
 }

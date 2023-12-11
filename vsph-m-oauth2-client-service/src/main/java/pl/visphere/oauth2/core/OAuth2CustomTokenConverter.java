@@ -39,7 +39,7 @@ public class OAuth2CustomTokenConverter implements Converter<Map<String, Object>
             .additionalParameters(additionalParameters)
             .build();
 
-        log.info("Successfully generated OAuth2 token with parameters: '{}'", response);
+        log.info("Successfully generated OAuth2 token with parameters: '{}'.", response);
         return response;
     }
 

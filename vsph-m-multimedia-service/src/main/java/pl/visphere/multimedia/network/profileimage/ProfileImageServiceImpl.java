@@ -81,9 +81,9 @@ class ProfileImageServiceImpl implements ProfileImageService {
             accountProfile.setImageType(ImageType.CUSTOM);
 
         } catch (IOException ex) {
-            throw new GenericRestException("Unable to scale and save user profile image. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unable to scale and save user profile image. Cause: '{}'.", ex.getMessage());
         }
-        log.info("successfully scaled and saved user image with path: '{}'", resourcePath);
+        log.info("successfully scaled and saved user image with path: '{}'.", resourcePath);
         return MessageWithResourcePathResDto.builder()
             .message(i18nService.getMessage(LocaleSet.USER_PROFILE_CUSTOM_IMAGE_UPDATE_RESPONSE_SUCCESS))
             .resourcePath(resourcePath)
@@ -112,7 +112,7 @@ class ProfileImageServiceImpl implements ProfileImageService {
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setImageType(ImageType.IDENTICON);
 
-        log.info("Successfully generated identicon image for username: '{}' and color: '{}'", user.getUsername(),
+        log.info("Successfully generated identicon image for username: '{}' and color: '{}'.", user.getUsername(),
             accountProfile.getProfileColor());
 
         return MessageWithResourcePathResDto.builder()
@@ -148,7 +148,7 @@ class ProfileImageServiceImpl implements ProfileImageService {
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setImageType(ImageType.DEFAULT);
 
-        log.info("Successfully removed image and generated initials profile for username: '{}' and color: '{}'",
+        log.info("Successfully removed image and generated initials profile for username: '{}' and color: '{}'.",
             user.getUsername(), accountProfile.getProfileColor());
 
         return MessageWithResourcePathResDto.builder()

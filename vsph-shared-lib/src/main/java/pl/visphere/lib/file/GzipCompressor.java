@@ -24,7 +24,7 @@ public class GzipCompressor {
             gzipOutputStream.close();
             compressedData = outputStream.toByteArray();
         } catch (IOException ex) {
-            throw new GenericRestException("Unable to perform GZIP compression on byte content. Cause: '{}'",
+            throw new GenericRestException("Unable to perform GZIP compression on byte content. Cause: '{}'.",
                 ex.getMessage());
         }
         return compressedData;

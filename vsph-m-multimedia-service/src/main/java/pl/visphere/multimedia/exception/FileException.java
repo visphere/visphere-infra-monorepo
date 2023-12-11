@@ -22,7 +22,7 @@ public class FileException {
             super(HttpStatus.BAD_REQUEST, LocaleSet.FILE_EXTENSION_NOT_SUPPORTED_EXCEPTION_MESSAGE, Map.of(
                 "extensions", Arrays.stream(supported).map(MimeType::getName).collect(Collectors.joining(", "))
             ));
-            log.error("Attempt to pass unsuported file extension. Supported extensions: '{}'", Arrays.asList(supported));
+            log.error("Attempt to pass unsuported file extension. Supported extensions: '{}'.", Arrays.asList(supported));
         }
     }
 
@@ -32,7 +32,7 @@ public class FileException {
             super(HttpStatus.BAD_REQUEST, LocaleSet.MAX_UPLOADED_FILE_SIZE_EXCEEDED_EXCEPTION_MESSAGE, Map.of(
                 "maxSize", maxSizeMb
             ));
-            log.error("Attempt to pass too large file. Max file size: '{}', passed: '{}'", maxSizeMb,
+            log.error("Attempt to pass too large file. Max file size: '{}', passed: '{}'.", maxSizeMb,
                 FileUtils.byteCountToDisplaySize(passedMb));
         }
     }
@@ -41,7 +41,7 @@ public class FileException {
     public static class FileIsCorruptedException extends AbstractRestException {
         public FileIsCorruptedException(String reason) {
             super(HttpStatus.BAD_REQUEST, LocaleSet.FILE_IS_CORRUPTED_EXCEPTION_MESSAGE);
-            log.error("Attempt to process unsupported or corrupted file. Cause: '{}'", reason);
+            log.error("Attempt to process unsupported or corrupted file. Cause: '{}'.", reason);
         }
     }
 }

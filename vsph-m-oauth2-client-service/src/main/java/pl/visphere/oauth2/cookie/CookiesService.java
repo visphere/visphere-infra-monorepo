@@ -29,16 +29,16 @@ public class CookiesService {
     public Optional<Cookie> getCookie(HttpServletRequest req, ConfigurableCookie cookie) {
         final Cookie[] reqCookies = req.getCookies();
         if (reqCookies == null) {
-            log.warn("Cookie: '{}' not found", cookie);
+            log.warn("Cookie: '{}' not found.", cookie);
             return Optional.empty();
         }
         for (final Cookie reqCookie : reqCookies) {
             if (Objects.equals(cookie.getCookieName(), reqCookie.getName())) {
-                log.info("Successfully find cookie: '{}'", reqCookie);
+                log.info("Successfully find cookie: '{}'.", reqCookie);
                 return Optional.of(reqCookie);
             }
         }
-        log.warn("Cookie: '{}' not found", cookie);
+        log.warn("Cookie: '{}' not found.", cookie);
         return Optional.empty();
     }
 
@@ -48,7 +48,7 @@ public class CookiesService {
         cookie.setHttpOnly(true);
         cookie.setMaxAge(payload.maxAge());
         res.addCookie(cookie);
-        log.info("Successfully added cookie: '{}' to HttpServletResponse object", cookie);
+        log.info("Successfully added cookie: '{}' to HttpServletResponse object.", cookie);
     }
 
     public void deleteCookie(HttpServletRequest req, HttpServletResponse res, ConfigurableCookie cookie) {
@@ -62,7 +62,7 @@ public class CookiesService {
                 reqCookie.setPath(COOKIE_PATH);
                 reqCookie.setMaxAge(0);
                 res.addCookie(reqCookie);
-                log.info("Successfully deleted cookie: '{}'", reqCookie);
+                log.info("Successfully deleted cookie: '{}'.", reqCookie);
             }
         }
     }
@@ -89,7 +89,7 @@ public class CookiesService {
         try (final ObjectInputStream inputStream = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
             returnObj = objectClazz.cast(inputStream.readObject());
         } catch (IOException | ClassNotFoundException ex) {
-            throw new GenericRestException("Unable to deserialize cookie value. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unable to deserialize cookie value. Cause: '{}'.", ex.getMessage());
         }
         return returnObj;
     }

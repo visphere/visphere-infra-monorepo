@@ -15,7 +15,7 @@ public class AccountException {
     public static class ImmutableValueException extends AbstractRestException {
         public ImmutableValueException(String action) {
             super(HttpStatus.BAD_REQUEST, LibLocaleSet.OAUTH2_IMMUTABLE_VALUE_EXCEPTION_MESSAGE);
-            log.error("Attempt to change immutable value on action: '{}' for account with external credentials provider",
+            log.error("Attempt to change immutable value on action: '{}' for account with external credentials provider.",
                 action);
         }
     }

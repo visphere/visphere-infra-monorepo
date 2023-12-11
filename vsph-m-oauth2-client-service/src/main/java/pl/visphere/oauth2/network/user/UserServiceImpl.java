@@ -59,7 +59,7 @@ class UserServiceImpl implements UserService {
             .message(i18nService.getMessage(LocaleSet.GET_FILL_DATA_RESPONSE_SUCCESS))
             .build();
 
-        log.info("Successfully parsed and created OAuth2 user initial data: '{}'", resDto);
+        log.info("Successfully parsed and created OAuth2 user initial data: '{}'.", resDto);
         return resDto;
     }
 
@@ -94,7 +94,7 @@ class UserServiceImpl implements UserService {
 
         // TODO: send welcome email message
 
-        log.info("Successfully updated and init logged OAuth2 user with data: '{}'", resDto);
+        log.info("Successfully updated and init logged OAuth2 user with data: '{}'.", resDto);
         return resDto;
     }
 
@@ -122,7 +122,7 @@ class UserServiceImpl implements UserService {
         resDto.setProfileUrl(imageUrl);
         resDto.setProfileColor(profileImageDetails.profileColor());
 
-        log.info("Successfully login OAuth2 user with data: '{}'", resDto);
+        log.info("Successfully login OAuth2 user with data: '{}'.", resDto);
         return resDto;
     }
 

@@ -62,9 +62,9 @@ public class IdenticonDrawer extends AbstractImageDrawer<String> {
             graphics2D.dispose();
             identiconAsBytes = generateByteArrayFromBufferedImage(bufferedImage);
 
-            log.info("Successfuly generated indeticon image with username: '{}' and color: '{}'", inputData, color);
+            log.info("Successfuly generated indeticon image with username: '{}' and color: '{}'.", inputData, color);
         } catch (Exception ex) {
-            throw new GenericRestException("Unable to create identicon image. Cause: '{}'", ex.getMessage());
+            throw new GenericRestException("Unable to create identicon image. Cause: '{}'.", ex.getMessage());
         }
         return identiconAsBytes;
     }

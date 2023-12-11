@@ -20,13 +20,13 @@ public class OAuth2UserException {
             super(HttpStatus.NOT_FOUND, LibLocaleSet.OAUTH2_USER_WITH_SUPPLIER_NOT_FOUND_EXCEPTION_MESSAGE, Map.of(
                 "supplier", supplier
             ));
-            log.error("Searched user with OAuth2 ID: '{}' and supplier: '{}' not found in database",
+            log.error("Searched user with OAuth2 ID: '{}' and supplier: '{}' not found in database.",
                 oauth2UserId, supplier);
         }
 
         public OAuth2UserNotFoundException(Long userId) {
             super(HttpStatus.NOT_FOUND, LibLocaleSet.OAUTH2_USER_NOT_FOUND_EXCEPTION_MESSAGE);
-            log.error("Searched user with OAuth2 ID: '{}' not found in database", userId);
+            log.error("Searched user with OAuth2 ID: '{}' not found in database.", userId);
         }
     }
 
@@ -36,7 +36,7 @@ public class OAuth2UserException {
             super(HttpStatus.BAD_REQUEST, LocaleSet.OAUTH2_USER_ALREADY_ACTIVATED_EXCEPTION_MESSAGE, Map.of(
                 "supplier", supplier
             ));
-            log.error("Searched user account with OAuth2 ID: '{}' and supplier: '{}' has been already activated",
+            log.error("Searched user account with OAuth2 ID: '{}' and supplier: '{}' has been already activated.",
                 oauth2UserId, supplier);
         }
     }

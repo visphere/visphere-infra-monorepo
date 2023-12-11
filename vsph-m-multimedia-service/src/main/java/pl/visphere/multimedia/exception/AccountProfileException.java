@@ -14,7 +14,7 @@ public class AccountProfileException {
     public static class AccountProfileNotFoundException extends AbstractRestException {
         public AccountProfileNotFoundException(Long userId) {
             super(HttpStatus.NOT_FOUND, LibLocaleSet.ACCOUNT_PROFILE_NOT_FOUND_EXCEPTION_MESSAGE);
-            log.error("Searching account profile for user id: '{}' not found in database", userId);
+            log.error("Searching account profile for user id: '{}' not found in database.", userId);
         }
     }
 }

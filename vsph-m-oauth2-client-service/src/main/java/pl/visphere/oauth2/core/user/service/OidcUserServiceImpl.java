@@ -50,7 +50,7 @@ public class OidcUserServiceImpl extends OidcUserService {
                 .isAlreadySignup(response.isAlreadySignup())
                 .build();
 
-            log.info("Successfully load user from OAuth2 (OIDC) client: '{}'", resData);
+            log.info("Successfully load user from OAuth2 (OIDC) client: '{}'.", resData);
             return resData;
         } catch (AbstractRestException ex) {
             throw new AuthenticationServiceException(ex.getPlaceholder().getHolder());

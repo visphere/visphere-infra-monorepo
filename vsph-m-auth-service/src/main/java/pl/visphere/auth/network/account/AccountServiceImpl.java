@@ -81,7 +81,7 @@ class AccountServiceImpl implements AccountService {
             credentialsSupplier = detailsResDto.supplier();
         }
         final AccountDetailsResDto resDto = accountMapper.mapToAccountDetailsRes(userEntity, credentialsSupplier);
-        log.info("Successfully find and fetched user account details: '{}'", resDto);
+        log.info("Successfully find and fetched user account details: '{}'.", resDto);
         return resDto;
     }
 
@@ -104,7 +104,7 @@ class AccountServiceImpl implements AccountService {
         final UserEntity saved = userRepository.save(userEntity);
         cacheService.updateCache(CacheName.USER_ENTITY_USER_ID, userEntity.getId(), saved);
 
-        log.info("Successfully updated user account details for user: '{}'", userEntity);
+        log.info("Successfully updated user account details for user: '{}'.", userEntity);
         return UpdateAccountDetailsResDto.builder()
             .message(i18nService.getMessage(LocaleSet.UDPATE_ACCOUNT_DETAILS_RESPONSE_SUCCESS))
             .accessToken(tokenData.token())
@@ -136,7 +136,7 @@ class AccountServiceImpl implements AccountService {
 
         if (reqDto.getEnabledMfa()) {
             user.persistMfaUser(new MfaUserEntity());
-            log.info("Successfully addded MFA user details user: '{}'", user);
+            log.info("Successfully addded MFA user details user: '{}'.", user);
         }
         final UserEntity savedUser = userRepository.save(user);
         final GenerateOtaResDto otaResDto = otaTokenService.generate(savedUser, OtaToken.ACTIVATE_ACCOUNT);
@@ -146,7 +146,7 @@ class AccountServiceImpl implements AccountService {
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, emailReqDto);
 
-        log.info("Successfully created user account: '{}'", savedUser);
+        log.info("Successfully created user account: '{}'.", savedUser);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.CREATE_ACCOUNT_RESPONSE_SUCCESS))
             .build();
@@ -165,7 +165,7 @@ class AccountServiceImpl implements AccountService {
             throw new UserException.UserAlreadyActivatedException(user.getUsername());
         }
         if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
-            log.error("Attempt to activate account with expired token: '{}'", otaToken);
+            log.error("Attempt to activate account with expired token: '{}'.", otaToken);
             throw new OtaTokenException.OtaTokenNotFoundException(token, type);
         }
         otaToken.setUsed(true);
@@ -173,7 +173,7 @@ class AccountServiceImpl implements AccountService {
 
         if (user.getMfaUser() != null) {
             user.getMfaUser().setMfaSecret(mfaProxyService.generateSecret());
-            log.info("Successfully saved MFA secret key for user: '{}'", user);
+            log.info("Successfully saved MFA secret key for user: '{}'.", user);
         }
         final UserEntity activatedUser = userRepository.save(user);
 
@@ -192,7 +192,7 @@ class AccountServiceImpl implements AccountService {
         final SendBaseEmailReqDto emailReqDto = accountMapper.mapToSendBaseEmailReq(activatedUser, profileResDto);
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_NEW_ACCOUNT, emailReqDto);
 
-        log.info("Successfully activated account for user: '{}'", activatedUser);
+        log.info("Successfully activated account for user: '{}'.", activatedUser);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.ACTIVATE_ACCOUNT_RESPONSE_SUCCESS))
             .build();
@@ -210,7 +210,7 @@ class AccountServiceImpl implements AccountService {
 
         asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_ACTIVATE_ACCOUNT, emailReqDto);
 
-        log.info("Successfully resend activate account message for user: '{}'", user);
+        log.info("Successfully resend activate account message for user: '{}'.", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS))
             .build();

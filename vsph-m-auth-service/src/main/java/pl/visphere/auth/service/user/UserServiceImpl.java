@@ -54,7 +54,7 @@ public class UserServiceImpl implements UserService {
         final CheckUserResDto resDto = modelMapper.map(user, CheckUserResDto.class);
         resDto.setAuthorities(authorities);
 
-        log.info("Successfully find user with details: '{}'", resDto);
+        log.info("Successfully find user with details: '{}'.", resDto);
         return resDto;
     }
 
@@ -67,7 +67,7 @@ public class UserServiceImpl implements UserService {
         final UserDetailsResDto resDto = modelMapper.map(user, UserDetailsResDto.class);
         resDto.setActivated(user.getIsActivated());
 
-        log.info("Successfully find user and map to details: '{}'", resDto);
+        log.info("Successfully find user and map to details: '{}'.", resDto);
         return resDto;
     }
 
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService {
             .stream().map(RoleEntity::getRole)
             .collect(Collectors.toSet());
 
-        log.info("Successfully persist new user with external credentials provider: '{}'", savedUser);
+        log.info("Successfully persist new user with external credentials provider: '{}'.", savedUser);
         return PersistOAuth2UserResDto.builder()
             .userId(savedUser.getId())
             .username(temporaryUsername)
@@ -119,7 +119,7 @@ public class UserServiceImpl implements UserService {
             .stream().map(RoleEntity::getRole)
             .collect(Collectors.toSet());
 
-        log.info("Successfully get OAuth2 user details for external credentials provider: '{}'", user);
+        log.info("Successfully get OAuth2 user details for external credentials provider: '{}'.", user);
         return OAuth2UserDetailsResDto.builder()
             .username(user.getUsername())
             .emailAddress(user.getEmailAddress())
@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
 
         final LoginOAuth2UserDetailsResDto resDto = generateTokens(user, firstName, lastName);
 
-        log.info("Successfully updated OAuth2 user: '{}' details for external credentials provider", user);
+        log.info("Successfully updated OAuth2 user: '{}' details for external credentials provider.", user);
         return resDto;
     }
 
@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService {
         }
         final LoginOAuth2UserDetailsResDto resDto = generateTokens(user);
 
-        log.info("Successfully log in OAuth2 user: '{}' details for external credentials provider", user);
+        log.info("Successfully log in OAuth2 user: '{}' details for external credentials provider.", user);
         return resDto;
     }
 

@@ -84,7 +84,7 @@ public class ProfileColorServiceImpl implements ProfileColorService {
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setProfileColor(reqDto.getColor());
 
-        log.info("Successfully updated profile color from: '{}' to: '{}'", prevColor, reqDto.getColor());
+        log.info("Successfully updated profile color from: '{}' to: '{}'.", prevColor, reqDto.getColor());
         return MessageWithResourcePathResDto.builder()
             .resourcePath(res.fullPath())
             .message(i18nService.getMessage(LocaleSet.USER_PROFILE_COLOR_UPDATE_RESPONSE_SUCCESS))

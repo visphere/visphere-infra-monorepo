@@ -59,7 +59,7 @@ public class OAuth2ServiceImpl implements OAuth2Service, OAuth2UserLoader {
                 .build();
 
             final OAuth2UserEntity savedOAuth2User = oAuth2UserRepository.save(newOAuth2User);
-            log.info("Successfully saved OAuth2 user details: '{}'", savedOAuth2User);
+            log.info("Successfully saved OAuth2 user details: '{}'.", savedOAuth2User);
 
             authUserDetails = AuthUserDetails.builder()
                 .id(resDto.userId())
@@ -102,7 +102,7 @@ public class OAuth2ServiceImpl implements OAuth2Service, OAuth2UserLoader {
             .profileImageUrl(oAuth2User.getProfileImageUrl())
             .build();
 
-        log.info("Successfully get and process OAuth2 user account details: '{}'", resDto);
+        log.info("Successfully get and process OAuth2 user account details: '{}'.", resDto);
         return resDto;
     }
 }

@@ -48,7 +48,7 @@ public class OAuth2UserServiceImpl extends DefaultOAuth2UserService {
                 .isAlreadySignup(response.isAlreadySignup())
                 .build();
 
-            log.info("Successfully load user from OAuth2 client: '{}'", resData);
+            log.info("Successfully load user from OAuth2 client: '{}'.", resData);
             return resData;
         } catch (AbstractRestException ex) {
             throw new AuthenticationServiceException(ex.getPlaceholder().getHolder());

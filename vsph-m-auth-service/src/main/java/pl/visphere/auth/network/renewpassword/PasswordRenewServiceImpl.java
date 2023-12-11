@@ -54,7 +54,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     public BaseMessageResDto request(AttemptReqDto reqDto) {
         final UserEntity user = sendRequestForChangePassword(reqDto.getUsernameOrEmailAddress());
 
-        log.info("Successfully send request for change password for user: '{}'", user);
+        log.info("Successfully send request for change password for user: '{}'.", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.ATTEMPT_CHANGE_PASSWORD_RESPONSE_SUCCESS))
             .build();
@@ -68,11 +68,11 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
 
         if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
-            log.error("Attempt to validate expired token: '{}'", otaToken);
+            log.error("Attempt to validate expired token: '{}'.", otaToken);
             throw new OtaTokenException.OtaTokenNotFoundException(token, type);
         }
 
-        log.info("Successfully validated ota token: '{}'", otaToken);
+        log.info("Successfully validated ota token: '{}'.", otaToken);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.TOKEN_VERIFICATION_RESPONSE_SUCCESS))
             .build();
@@ -82,7 +82,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
     public BaseMessageResDto resend(AttemptReqDto reqDto) {
         final UserEntity user = sendRequestForChangePassword(reqDto.getUsernameOrEmailAddress());
 
-        log.info("Successfully resend email message for request change password for user: '{}'", user);
+        log.info("Successfully resend email message for request change password for user: '{}'.", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.RESEND_TOKEN_VERIFICATION_RESPONSE_SUCCESS))
             .build();
@@ -97,7 +97,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
             .orElseThrow(() -> new OtaTokenException.OtaTokenNotFoundException(token, type));
 
         if (otaTokenService.checkIfIsExpired(otaToken.getExpiredAt())) {
-            log.error("Attempt to change password with expired token: '{}'", otaToken);
+            log.error("Attempt to change password with expired token: '{}'.", otaToken);
             throw new OtaTokenException.OtaTokenNotFoundException(token, type);
         }
         final UserEntity user = otaToken.getUser();
@@ -107,7 +107,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
 
         sendEmailAfterUpdatedPassword(user);
 
-        log.info("Successfully change password for user: '{}'", user);
+        log.info("Successfully change password for user: '{}'.", user);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.CHANGE_PASSWORD_RESPONSE_SUCCESS))
             .build();
@@ -126,7 +126,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
 
         sendEmailAfterUpdatedPassword(userEntity);
 
-        log.info("Successfully updated password via logged account for user: '{}'", userEntity);
+        log.info("Successfully updated password via logged account for user: '{}'.", userEntity);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.CHANGE_PASSWORD_RESPONSE_SUCCESS))
             .build();

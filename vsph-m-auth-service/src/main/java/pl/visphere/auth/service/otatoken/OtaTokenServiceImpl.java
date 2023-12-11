@@ -47,7 +47,7 @@ public class OtaTokenServiceImpl implements OtaTokenService {
             .expiredAt(expiredDate)
             .build();
 
-        log.info("Successfully generated and saved ota token: '{}'", resDto);
+        log.info("Successfully generated and saved ota token: '{}'.", resDto);
         return resDto;
     }
 

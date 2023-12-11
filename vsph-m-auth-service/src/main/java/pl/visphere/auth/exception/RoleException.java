@@ -17,7 +17,7 @@ public class RoleException {
     public static class RoleNotExistException extends AbstractRestException {
         public RoleNotExistException(AppGrantedAuthority role) {
             super(HttpStatus.NOT_FOUND, LibLocaleSet.ROLE_NOT_FOUND_EXCEPTION_MESSAGE, Map.of("role", role.getAuthority()));
-            log.error("Searching role: '{}' not found in database", role);
+            log.error("Searching role: '{}' not found in database.", role);
         }
     }
 }
