@@ -11,6 +11,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.UpdateUserProfileReqDto;
 import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 import pl.visphere.multimedia.service.image.ImageService;
 
@@ -24,6 +25,11 @@ class MultimediaKafkaListener {
     @KafkaListener(topics = "${visphere.kafka.topic.generate-default-user-profile}")
     void generateDefaultUserProfileListener(Message<DefaultUserProfileReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::generateDefaultProfile);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.update-default-user-profile}")
+    void updateDefaultUserProfileListener(Message<UpdateUserProfileReqDto> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::updateDefaultProfile);
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.generate-default-guild-profile}")

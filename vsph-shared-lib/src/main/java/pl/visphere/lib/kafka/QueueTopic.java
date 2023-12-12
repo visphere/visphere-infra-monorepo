@@ -38,6 +38,7 @@ public enum QueueTopic implements Property {
     EMAIL_DISABLED_ACCOUNT("email-disabled-account", false),
     EMAIL_DELETED_ACCOUNT("email-deleted-account", false),
     GENERATE_DEFAULT_USER_PROFILE("generate-default-user-profile"),
+    UPDATE_DEFAULT_USER_PROFILE("update-default-user-profile"),
     REPLACE_PROFILE_IMAGE_WITH_LOCKED("replace-profile-image-with-locked"),
     REPLACE_LOCKED_WITH_PROFILE_IMAGE("replace-locked-with-profile-image"),
     GENERATE_DEFAULT_GUILD_PROFILE("generate-default-guild-profile"),

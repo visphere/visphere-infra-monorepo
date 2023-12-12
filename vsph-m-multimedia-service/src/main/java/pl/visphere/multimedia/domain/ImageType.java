@@ -4,8 +4,15 @@
  */
 package pl.visphere.multimedia.domain;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum ImageType {
-    CUSTOM,
-    IDENTICON,
-    DEFAULT
+    CUSTOM("custom"),
+    IDENTICON("identicon"),
+    DEFAULT("default");
+    
+    private final String type;
 }

@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileReqDto;
-import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileResDto;
-import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
-import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.multimedia.*;
 import pl.visphere.lib.s3.*;
 import pl.visphere.multimedia.domain.ImageType;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileEntity;
@@ -21,6 +18,7 @@ import pl.visphere.multimedia.domain.guildprofile.GuildProfileEntity;
 import pl.visphere.multimedia.domain.guildprofile.GuildProfileRepository;
 import pl.visphere.multimedia.exception.AccountProfileException;
 import pl.visphere.multimedia.exception.GuildProfileException;
+import pl.visphere.multimedia.processing.drawer.IdenticonDrawer;
 import pl.visphere.multimedia.processing.drawer.InitialsDrawer;
 import pl.visphere.multimedia.processing.drawer.LockerDrawer;
 
@@ -32,6 +30,7 @@ import java.util.StringJoiner;
 public class ImageServiceImpl implements ImageService {
     private final InitialsDrawer initialsDrawer;
     private final LockerDrawer lockerDrawer;
+    private final IdenticonDrawer identiconDrawer;
     private final S3Client s3Client;
     private final S3Helper s3Helper;
 
@@ -62,8 +61,47 @@ public class ImageServiceImpl implements ImageService {
             .profileColor(randomColor)
             .build();
 
-        log.info("Successfully generated default profile image: '{}'.", resDto);
+        log.info("Successfully generated default user profile image: '{}'.", resDto);
         return resDto;
+    }
+
+    @Override
+    public ProfileImageDetailsResDto updateDefaultProfile(UpdateUserProfileReqDto reqDto) {
+        final AccountProfileEntity accountProfile = accountProfileRepository
+            .findByUserId(reqDto.userId())
+            .orElseThrow(() -> new AccountProfileException.AccountProfileNotFoundException(reqDto.userId()));
+
+        if (accountProfile.getImageType().equals(ImageType.CUSTOM)) {
+            final FilePayload filePayload = FilePayload.builder()
+                .prefix(S3ResourcePrefix.PROFILE)
+                .extension(FileExtension.PNG)
+                .build();
+
+            log.info("Detect not default image. Skipping updating.");
+            return ProfileImageDetailsResDto.builder()
+                .profileImageUuid(accountProfile.getProfileImageUuid())
+                .profileImagePath(s3Client.createFullResourcePath(S3Bucket.USERS, reqDto.userId(), filePayload,
+                    accountProfile.getProfileImageUuid()))
+                .build();
+        }
+        byte[] imageData = switch (accountProfile.getImageType()) {
+            case DEFAULT -> initialsDrawer.drawImage(reqDto.initials(), accountProfile.getProfileColor());
+            case IDENTICON -> identiconDrawer.drawImage(reqDto.username(), accountProfile.getProfileColor());
+            case CUSTOM -> new byte[0];
+        };
+        s3Client.clearObjects(S3Bucket.USERS, reqDto.userId(), S3ResourcePrefix.PROFILE);
+        final ObjectData res = s3Client
+            .putObject(S3Bucket.USERS, reqDto.userId(), createFilePayload(imageData));
+
+        accountProfile.setProfileImageUuid(res.uuid());
+
+        final AccountProfileEntity savedGuildProfile = accountProfileRepository.save(accountProfile);
+
+        log.info("Successfully updated default user profile image: '{}'.", savedGuildProfile);
+        return ProfileImageDetailsResDto.builder()
+            .profileImageUuid(res.uuid())
+            .profileImagePath(res.fullPath())
+            .build();
     }
 
     @Override
@@ -152,7 +190,6 @@ public class ImageServiceImpl implements ImageService {
                     guildProfile.getProfileImageUuid()))
                 .build();
         }
-
         final byte[] imageData = initialsDrawer.drawImage(parseInitials(reqDto), guildProfile.getProfileColor());
 
         s3Client.clearObjects(S3Bucket.SPHERES, reqDto.guildId(), S3ResourcePrefix.PROFILE);

@@ -42,6 +42,7 @@ import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.multimedia.UpdateUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.notification.PersistUserNotifSettingsReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
@@ -103,6 +104,16 @@ class AccountServiceImpl implements AccountService {
         userEntity.setLastName(StringUtils.capitalize(reqDto.getLastName()));
         userEntity.setBirthDate(parseToLocalDate(reqDto.getBirthDate()));
 
+        final UpdateUserProfileReqDto profileReqDto = UpdateUserProfileReqDto.builder()
+            .initials(new char[]{ reqDto.getFirstName().charAt(0), reqDto.getLastName().charAt(0) })
+            .userId(user.getId())
+            .username(reqDto.getUsername())
+            .build();
+
+        final ProfileImageDetailsResDto resDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.UPDATE_DEFAULT_USER_PROFILE, profileReqDto,
+                ProfileImageDetailsResDto.class);
+
         final TokenData tokenData = jwtService
             .generateAccessToken(user.getId(), reqDto.getUsername(), user.getEmailAddress());
 
@@ -112,6 +123,7 @@ class AccountServiceImpl implements AccountService {
         return UpdateAccountDetailsResDto.builder()
             .message(i18nService.getMessage(LocaleSet.UDPATE_ACCOUNT_DETAILS_RESPONSE_SUCCESS))
             .accessToken(tokenData.token())
+            .profileImagePath(resDto.profileImagePath())
             .build();
     }
 
