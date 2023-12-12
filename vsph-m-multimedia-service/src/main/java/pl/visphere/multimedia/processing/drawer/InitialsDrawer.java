@@ -37,7 +37,7 @@ public class InitialsDrawer extends AbstractImageDrawer<char[]> {
         graphics2D.setFont(new Font(imageProperties.getFontName(), Font.PLAIN, fontSize));
         graphics2D.setPaint(Color.decode(color));
         graphics2D.fillRect(0, 0, size, size);
-        graphics2D.setColor(Color.WHITE);
+        graphics2D.setColor(calcFontColor(color));
 
         final FontMetrics fontMetrics = graphics2D.getFontMetrics();
         final int xPos = (size - fontMetrics.stringWidth(initials)) / 2;
@@ -48,5 +48,17 @@ public class InitialsDrawer extends AbstractImageDrawer<char[]> {
 
         log.info("Successfully generated initials image with initials: '{}' and color: '{}'.", initials, color);
         return generateByteArrayFromBufferedImage(bufferedImage);
+    }
+
+    private Color calcFontColor(String colorHex) {
+        if (imageProperties.getColors().stream().anyMatch(c -> c.equals(colorHex))) {
+            return Color.decode(imageProperties.getDefaultFontLight());
+        }
+        final Color inputColor = Color.decode(colorHex);
+        final int r = inputColor.getRed();
+        final int g = inputColor.getGreen();
+        final int b = inputColor.getBlue();
+        final double yiq = ((r * 299) + (g * 587) + (b * 114)) / 1_000.0;
+        return Color.decode(yiq > 140 ? imageProperties.getDefaultFontDark() : imageProperties.getDefaultFontLight());
     }
 }

@@ -19,6 +19,8 @@ import java.util.List;
 @ConfigurationProperties("visphere.generator.image")
 public class ImageProperties {
     private String defaultColor;
+    private String defaultFontLight;
+    private String defaultFontDark;
     private List<String> colors;
     private String fontName;
     private String fontPath;
