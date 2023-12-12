@@ -10,6 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.file.MimeType;
 import pl.visphere.lib.i18n.I18nService;
@@ -18,6 +19,7 @@ import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.s3.*;
 import pl.visphere.lib.security.user.AuthUserDetails;
+import pl.visphere.multimedia.cache.CacheName;
 import pl.visphere.multimedia.domain.ImageType;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileEntity;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileRepository;
@@ -26,6 +28,7 @@ import pl.visphere.multimedia.exception.AccountProfileException;
 import pl.visphere.multimedia.exception.FileException;
 import pl.visphere.multimedia.file.FileHelper;
 import pl.visphere.multimedia.i18n.LocaleSet;
+import pl.visphere.multimedia.network.profileimage.dto.ProfileImageDetailsResDto;
 import pl.visphere.multimedia.processing.ImageProperties;
 import pl.visphere.multimedia.processing.drawer.IdenticonDrawer;
 import pl.visphere.multimedia.processing.drawer.ImageDrawer;
@@ -45,8 +48,22 @@ class ProfileImageServiceImpl implements ProfileImageService {
     private final SyncQueueHandler syncQueueHandler;
     private final FileHelper fileHelper;
     private final ImageProperties imageProperties;
+    private final CacheService cacheService;
 
     private final AccountProfileRepository accountProfileRepository;
+
+    @Override
+    public ProfileImageDetailsResDto getProfileImageDetails(AuthUserDetails user) {
+        final AccountProfileEntity accountProfile = cacheService
+            .getSafetyFromCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, user.getId(),
+                AccountProfileEntity.class, () -> accountProfileRepository.findByUserId(user.getId()))
+            .orElseThrow(() -> new AccountProfileException.AccountProfileNotFoundException(user.getId()));
+        final ProfileImageDetailsResDto resDto = ProfileImageDetailsResDto.builder()
+            .imageType(accountProfile.getImageType().getType())
+            .build();
+        log.info("Successfully generate profile image details: '{}'.", resDto);
+        return resDto;
+    }
 
     @Override
     @Transactional
@@ -83,6 +100,8 @@ class ProfileImageServiceImpl implements ProfileImageService {
         } catch (IOException ex) {
             throw new GenericRestException("Unable to scale and save user profile image. Cause: '{}'.", ex.getMessage());
         }
+        cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, user.getId());
+
         log.info("successfully scaled and saved user image with path: '{}'.", resourcePath);
         return MessageWithResourcePathResDto.builder()
             .message(i18nService.getMessage(LocaleSet.USER_PROFILE_CUSTOM_IMAGE_UPDATE_RESPONSE_SUCCESS))
@@ -111,6 +130,8 @@ class ProfileImageServiceImpl implements ProfileImageService {
         final ObjectData res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setImageType(ImageType.IDENTICON);
+
+        cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, user.getId());
 
         log.info("Successfully generated identicon image for username: '{}' and color: '{}'.", user.getUsername(),
             accountProfile.getProfileColor());
@@ -147,6 +168,8 @@ class ProfileImageServiceImpl implements ProfileImageService {
 
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setImageType(ImageType.DEFAULT);
+
+        cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, user.getId());
 
         log.info("Successfully removed image and generated initials profile for username: '{}' and color: '{}'.",
             user.getUsername(), accountProfile.getProfileColor());

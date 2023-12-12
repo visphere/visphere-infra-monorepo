@@ -11,12 +11,18 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.lib.security.user.LoggedUser;
 import pl.visphere.multimedia.dto.MessageWithResourcePathResDto;
+import pl.visphere.multimedia.network.profileimage.dto.ProfileImageDetailsResDto;
 
 @RestController
 @RequestMapping("/api/v1/multimedia/profile/image")
 @RequiredArgsConstructor
 class ProfileImageController {
     private final ProfileImageService userProfileService;
+
+    @GetMapping("/details")
+    ResponseEntity<ProfileImageDetailsResDto> getProfileImageDetails(@LoggedUser AuthUserDetails user) {
+        return ResponseEntity.ok(userProfileService.getProfileImageDetails(user));
+    }
 
     @PostMapping("/custom")
     ResponseEntity<MessageWithResourcePathResDto> uploadProfileImage(

@@ -4,11 +4,13 @@
  */
 package pl.visphere.multimedia.config;
 
+import org.springframework.cache.CacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 import pl.visphere.lib.AbstractBaseServiceBeans;
+import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.s3.S3Client;
 import pl.visphere.lib.s3.S3Helper;
 
@@ -29,5 +31,10 @@ class ServiceConfig extends AbstractBaseServiceBeans {
     @Bean
     RestTemplate restTemplate() {
         return new RestTemplate();
+    }
+
+    @Bean
+    CacheService cacheService(CacheManager cacheManager) {
+        return new CacheService(cacheManager);
     }
 }
