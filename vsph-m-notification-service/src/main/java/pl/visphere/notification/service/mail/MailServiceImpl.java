@@ -69,15 +69,14 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void passwordChanged(SendBaseEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateBaseVariables(reqDto);
-        sendEmail(reqDto, LocaleSet.MAIL_PASSWORD_CHANGED_TITLE, HbsTemplate.PASSWORD_CHANGED, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_PASSWORD_CHANGED_TITLE, HbsTemplate.PASSWORD_CHANGED,
+            generateBaseVariables(reqDto));
     }
 
     @Override
     public void mfaCode(SendTokenEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateTokenVariables(reqDto,
-            otaTokenProperties.getMfaEmailMinutes());
-        sendEmail(reqDto, LocaleSet.MAIL_MFA_CODE_TITLE, HbsTemplate.MFA_CODE, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_MFA_CODE_TITLE, HbsTemplate.MFA_CODE, generateTokenVariables(reqDto,
+            otaTokenProperties.getMfaEmailMinutes()));
     }
 
     @Override
@@ -89,53 +88,49 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void resetMfaState(SendBaseEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateBaseVariables(reqDto);
-        sendEmail(reqDto, LocaleSet.MAIL_RESET_MFA_STATE_TITLE, HbsTemplate.RESET_MFA_STATE, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_RESET_MFA_STATE_TITLE, HbsTemplate.RESET_MFA_STATE,
+            generateBaseVariables(reqDto));
     }
 
     @Override
     public void reqChangeEmail(SendTokenEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateTokenVariables(reqDto,
-            otaTokenProperties.getChangeEmailMinutes());
-        sendEmail(reqDto, LocaleSet.MAIL_REQ_UPDATE_EMAIL_TITLE, HbsTemplate.REQ_UPDATE_EMAIL, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_REQ_UPDATE_EMAIL_TITLE, HbsTemplate.REQ_UPDATE_EMAIL,
+            generateTokenVariables(reqDto, otaTokenProperties.getChangeEmailMinutes()));
     }
 
     @Override
     public void reqChangeSecondEmail(SendTokenEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateTokenVariables(reqDto,
-            otaTokenProperties.getChangeEmailMinutes());
         sendEmail(reqDto, LocaleSet.MAIL_REQ_UPDATE_SECOND_EMAIL_TITLE, HbsTemplate.REQ_UPDATE_SECOND_EMAIL,
-            senderVariables);
+            generateTokenVariables(reqDto, otaTokenProperties.getChangeEmailMinutes()));
     }
 
     @Override
     public void changedEmail(SendBaseEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateBaseVariables(reqDto);
-        sendEmail(reqDto, LocaleSet.MAIL_UPDATED_EMAIL_TITLE, HbsTemplate.UPDATED_EMAIL, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_UPDATED_EMAIL_TITLE, HbsTemplate.UPDATED_EMAIL, generateBaseVariables(reqDto));
     }
 
     @Override
     public void changedSecondEmail(SendBaseEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateBaseVariables(reqDto);
-        sendEmail(reqDto, LocaleSet.MAIL_UPDATED_SECOND_EMAIL_TITLE, HbsTemplate.UPDATED_SECOND_EMAIL, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_UPDATED_SECOND_EMAIL_TITLE, HbsTemplate.UPDATED_SECOND_EMAIL,
+            generateBaseVariables(reqDto));
     }
 
     @Override
     public void removedSecondEmail(SendBaseEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateBaseVariables(reqDto);
-        sendEmail(reqDto, LocaleSet.MAIL_REMOVED_SECOND_EMAIL_TITLE, HbsTemplate.REMOVED_SECOND_EMAIL, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_REMOVED_SECOND_EMAIL_TITLE, HbsTemplate.REMOVED_SECOND_EMAIL,
+            generateBaseVariables(reqDto));
     }
 
     @Override
     public void enabledAccount(SendBaseEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateBaseVariables(reqDto);
-        sendEmail(reqDto, LocaleSet.MAIL_ENABLED_ACCOUNT_TITLE, HbsTemplate.ENABLED_ACCOUNT, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_ENABLED_ACCOUNT_TITLE, HbsTemplate.ENABLED_ACCOUNT,
+            generateBaseVariables(reqDto));
     }
 
     @Override
     public void disabledAccount(SendBaseEmailReqDto reqDto) {
-        final Map<String, Object> senderVariables = generateBaseVariables(reqDto);
-        sendEmail(reqDto, LocaleSet.MAIL_DISABLED_ACCOUNT_TITLE, HbsTemplate.DISABLED_ACCOUNT, senderVariables);
+        sendEmail(reqDto, LocaleSet.MAIL_DISABLED_ACCOUNT_TITLE, HbsTemplate.DISABLED_ACCOUNT,
+            generateBaseVariables(reqDto));
     }
 
     @Override
