@@ -8,13 +8,21 @@ import com.github.mustachejava.MustacheFactory;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import pl.visphere.lib.exception.GenericRestException;
+import pl.visphere.lib.file.MimeType;
 import pl.visphere.lib.i18n.AppLocale;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.jwt.JwtService;
+import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
+import pl.visphere.lib.kafka.payload.notification.SendEmailReqDto;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
+import pl.visphere.lib.s3.*;
 import pl.visphere.notification.config.ExternalServiceConfig;
 import pl.visphere.notification.hbs.dto.FontTransporterDto;
 import pl.visphere.notification.mail.MailProperties;
@@ -25,10 +33,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,9 +49,12 @@ public class HbsProcessingService {
     private final ExternalServiceConfig externalServiceConfig;
     private final MailProperties mailProperties;
     private final JwtService jwtService;
+    private final SyncQueueHandler syncQueueHandler;
+    private final S3Client s3Client;
 
     public String parseToRawHtml(
-        HbsTemplate template, String title, Map<String, Object> variables, Locale locale, String messageUuid
+        HbsTemplate template, String title, Map<String, Object> variables, Locale locale, String messageUuid,
+        List<String> sendTo
     ) {
         final HbsLayout layout = template.getLayout();
         String outputHtml;
@@ -94,12 +102,50 @@ public class HbsProcessingService {
             }
             matcher.appendTail(builder);
 
-            outputHtml = mjmlApiService.sendRequestForParse(builder.toString());
+            outputHtml = mjmlApiService.sendRequestForParse(builder.toString(), template, sendTo, messageUuid);
         } catch (IOException ex) {
             throw new GenericRestException("Unable to process HBS template. Cause: '{}'.", ex.getMessage());
         }
         log.info("Successfully processed email template: '{}' with title: '{}'.", template.getTemplateName(), title);
         return outputHtml;
+    }
+
+    public String parseToRawHtml(
+        HbsTemplate template, String title, Map<String, Object> variables, String messageUuid, String sendTo
+    ) {
+        return parseToRawHtml(template, title, variables, LocaleContextHolder.getLocale(), messageUuid, List.of(sendTo));
+    }
+
+    public String appendBase64ImageData(SendEmailReqDto reqDto, boolean hasImage, String preParsedTemplate) {
+        final String imageUrl = getUserProfileImageUrl(reqDto, hasImage);
+        return preParsedTemplate.replaceAll("\\$\\$\\{profileImagePlaceholder\\}\\$\\$", imageUrl);
+    }
+
+    private String getUserProfileImageUrl(SendEmailReqDto reqDto, boolean hasImage) {
+        String imageUrl = StringUtils.EMPTY;
+        boolean isCustomImage = true;
+        if (!hasImage) {
+            return imageUrl;
+        }
+        if (reqDto.getIsExternalCredentialsSupplier()) {
+            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, reqDto.getUserId(), OAuth2DetailsResDto.class);
+            if (detailsResDto.profileImageSuppliedByProvider()) {
+                isCustomImage = false;
+                imageUrl = detailsResDto.profileImageUrl();
+            }
+        }
+        if (isCustomImage) {
+            final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, reqDto.getUserId(),
+                    ProfileImageDetailsResDto.class);
+            final String fileName = String.format("%s/%s-%s.%s", reqDto.getUserId(), S3ResourcePrefix.PROFILE.getPrefix(),
+                profileImageDetails.profileImageUuid(), FileExtension.PNG);
+            final FileStreamInfo imageStream = s3Client.getObjectByFullKey(S3Bucket.USERS, fileName);
+            imageUrl = "data:" + MimeType.PNG.getMime() + ";base64," + Base64.getEncoder()
+                .encodeToString(imageStream.data());
+        }
+        return imageUrl;
     }
 
     private Map<String, Object> getStringObjectMap(Locale locale) {
@@ -116,10 +162,6 @@ public class HbsProcessingService {
         commonVariables.put("s3Url", externalServiceConfig.getS3Url());
         commonVariables.put("replyMail", mailProperties.getReplyTo());
         return commonVariables;
-    }
-
-    public String parseToRawHtml(HbsTemplate template, String title, Map<String, Object> variables, String messageUuid) {
-        return parseToRawHtml(template, title, variables, LocaleContextHolder.getLocale(), messageUuid);
     }
 
     private String compileHbsTemplate(HbsFile file, Map<String, Object> variables) throws IOException {

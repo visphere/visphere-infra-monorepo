@@ -15,6 +15,9 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import pl.visphere.lib.exception.GenericRestException;
+import pl.visphere.notification.hbs.HbsTemplate;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -23,9 +26,12 @@ public class MjmlApiService {
     private final RestTemplate restTemplate;
     private final MjmlApiProperties mjmlApiProperties;
 
-    public String sendRequestForParse(String rawHtml) {
+    public String sendRequestForParse(String rawHtml, HbsTemplate template, List<String> toEmails, String messageUuid) {
         final MjmlParserReqDto reqDto = MjmlParserReqDto.builder()
             .rawData(rawHtml)
+            .hbsTemplate(template)
+            .sendToEmails(toEmails)
+            .messageUuid(messageUuid)
             .build();
 
         final MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
