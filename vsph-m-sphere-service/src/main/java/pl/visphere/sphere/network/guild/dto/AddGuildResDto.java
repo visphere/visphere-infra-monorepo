@@ -7,7 +7,7 @@ package pl.visphere.sphere.network.guild.dto;
 import lombok.Builder;
 
 @Builder
-public record CreateGuildResDto(
+public record AddGuildResDto(
     Long id,
     String profileUrl,
     String message

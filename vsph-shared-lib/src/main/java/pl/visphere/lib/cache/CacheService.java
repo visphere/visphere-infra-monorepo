@@ -31,8 +31,8 @@ public class CacheService {
             if (cached.isEmpty()) {
                 return Optional.empty();
             }
-            log.info("Persisted value in cache: '{}' with key: '{}'.", cached.get(), key);
             cache.put(key, cached.get());
+            log.info("Persisted value in cache: '{}' with key: '{}'.", cached.get(), key);
             return cached;
         }
         return Optional.empty();

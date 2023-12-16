@@ -53,7 +53,7 @@ class MultimediaKafkaListener {
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.replace-locked-with-profile-image}")
-    void replaceLockedWithProfileImage(Message<Long> payload) {
+    void replaceLockedWithProfileImageListener(Message<Long> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::replaceLockedWithProfile);
     }
 }

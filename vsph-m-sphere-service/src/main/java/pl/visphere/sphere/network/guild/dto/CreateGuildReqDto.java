@@ -19,7 +19,7 @@ public class CreateGuildReqDto {
     @Size(min = 3, max = 100, message = "vsph.sphere.jpa.guildName.size")
     private String name;
 
-    @NotBlank(message = "vsph.sphere.jpa.guildCategory.notBlank")
+    @NotNull(message = "vsph.sphere.jpa.guildCategory.notNull")
     @ValidateEnums(type = GuildCategory.class, message = "vsph.sphere.jpa.guildCategory.enum")
     private GuildCategory category;
 
