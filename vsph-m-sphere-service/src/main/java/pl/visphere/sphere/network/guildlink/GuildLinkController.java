@@ -14,8 +14,7 @@ import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.lib.security.user.LoggedUser;
 import pl.visphere.sphere.network.guildlink.dto.CreateGuildLinkReqDto;
 import pl.visphere.sphere.network.guildlink.dto.GuildLinkResDto;
-import pl.visphere.sphere.network.guildlink.dto.UpdateGuildLinkActiveReqDto;
-import pl.visphere.sphere.network.guildlink.dto.UpdateGuildLinkExpirationReqDto;
+import pl.visphere.sphere.network.guildlink.dto.UpdateGuildLinkReqDto;
 
 import java.util.List;
 
@@ -42,22 +41,13 @@ class GuildLinkController {
         return new ResponseEntity<>(guildLinkService.createGuildLink(user, reqDto, guildId), HttpStatus.CREATED);
     }
 
-    @PatchMapping("/{linkId}/expiration")
-    ResponseEntity<BaseMessageResDto> updateExpiration(
+    @PatchMapping("/{linkId}")
+    ResponseEntity<BaseMessageResDto> updateGuildLink(
         @LoggedUser AuthUserDetails user,
-        @Valid @RequestBody UpdateGuildLinkExpirationReqDto reqDto,
+        @Valid @RequestBody UpdateGuildLinkReqDto reqDto,
         @PathVariable Long linkId
     ) {
-        return ResponseEntity.ok(guildLinkService.updateExpiration(user, reqDto, linkId));
-    }
-
-    @PatchMapping("/{linkId}/active")
-    ResponseEntity<BaseMessageResDto> updateActive(
-        @LoggedUser AuthUserDetails user,
-        @Valid @RequestBody UpdateGuildLinkActiveReqDto reqDto,
-        @PathVariable Long linkId
-    ) {
-        return ResponseEntity.ok(guildLinkService.updateActive(user, reqDto, linkId));
+        return ResponseEntity.ok(guildLinkService.updateGuildLink(user, reqDto, linkId));
     }
 
     @DeleteMapping("/{linkId}")

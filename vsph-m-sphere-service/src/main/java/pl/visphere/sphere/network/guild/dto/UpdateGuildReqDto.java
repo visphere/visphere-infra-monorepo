@@ -8,13 +8,20 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import pl.visphere.lib.validator.enums.ValidateEnums;
+import pl.visphere.sphere.domain.guild.GuildCategory;
 
 @Getter
 @Setter
-public class UpdateGuildNameReqDto {
+public class UpdateGuildReqDto {
+
     @NotBlank(message = "vsph.sphere.jpa.guildName.notBlank")
     @Size(min = 3, max = 100, message = "vsph.sphere.jpa.guildName.size")
     private String name;
+
+    @NotBlank(message = "vsph.sphere.jpa.guildCategory.notBlank")
+    @ValidateEnums(type = GuildCategory.class, message = "vsph.sphere.jpa.guildCategory.enum")
+    private GuildCategory category;
 
     @Override
     public String toString() {

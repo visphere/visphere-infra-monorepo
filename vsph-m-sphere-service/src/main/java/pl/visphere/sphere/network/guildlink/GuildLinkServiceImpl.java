@@ -21,8 +21,7 @@ import pl.visphere.sphere.exception.SphereGuildLinkException;
 import pl.visphere.sphere.i18n.LocaleSet;
 import pl.visphere.sphere.network.guildlink.dto.CreateGuildLinkReqDto;
 import pl.visphere.sphere.network.guildlink.dto.GuildLinkResDto;
-import pl.visphere.sphere.network.guildlink.dto.UpdateGuildLinkActiveReqDto;
-import pl.visphere.sphere.network.guildlink.dto.UpdateGuildLinkExpirationReqDto;
+import pl.visphere.sphere.network.guildlink.dto.UpdateGuildLinkReqDto;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -78,7 +77,7 @@ class GuildLinkServiceImpl implements GuildLinkService {
 
     @Override
     @Transactional
-    public BaseMessageResDto updateExpiration(AuthUserDetails user, UpdateGuildLinkExpirationReqDto reqDto, Long linkId) {
+    public BaseMessageResDto updateGuildLink(AuthUserDetails user, UpdateGuildLinkReqDto reqDto, Long linkId) {
         final ZonedDateTime expiredAt = reqDto.getNewExpirationTime();
         if (expiredAt.isBefore(ZonedDateTime.now())) {
             throw new SphereGuildLinkException.SphereGuildLinkIncorrectTimeException(expiredAt);
@@ -87,27 +86,12 @@ class GuildLinkServiceImpl implements GuildLinkService {
             .findByIdAndGuild_OwnerId(linkId, user.getId())
             .orElseThrow(() -> new SphereGuildLinkException.SphereGuildLinkNotFoundException(linkId));
 
-        final ZonedDateTime prevExpiredTime = guildLink.getExpiredAt();
         guildLink.setExpiredAt(reqDto.getNewExpirationTime());
-
-        log.info("Successfully updated link expiration time from: '{}' to: '{}'.", expiredAt, prevExpiredTime);
-        return BaseMessageResDto.builder()
-            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LINK_UPDATED_EXPIRATION_RESPONSE_SUCCESS))
-            .build();
-    }
-
-    @Override
-    public BaseMessageResDto updateActive(AuthUserDetails user, UpdateGuildLinkActiveReqDto reqDto, Long linkId) {
-        final GuildLinkEntity guildLink = guildLinkRepository
-            .findByIdAndGuild_OwnerId(linkId, user.getId())
-            .orElseThrow(() -> new SphereGuildLinkException.SphereGuildLinkNotFoundException(linkId));
-
-        final boolean prevActive = guildLink.getActive();
         guildLink.setActive(reqDto.isActive());
 
-        log.info("Successfully updated link active state from: '{}' to: '{}'.", prevActive, reqDto.isActive());
+        log.info("Successfully updated guild link to: '{}'.", guildLink);
         return BaseMessageResDto.builder()
-            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LINK_UPDATED_ACTIVE_RESPONSE_SUCCESS))
+            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LINK_UPDATED_RESPONSE_SUCCESS))
             .build();
     }
 

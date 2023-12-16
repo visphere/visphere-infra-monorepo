@@ -68,10 +68,11 @@ public class GuildServiceImpl implements GuildService {
 
     @Override
     @Transactional
-    public UpdateGuildResDto updateGuildName(AuthUserDetails user, UpdateGuildNameReqDto reqDto, Long guildId) {
+    public UpdateGuildResDto updateGuild(AuthUserDetails user, UpdateGuildReqDto reqDto, Long guildId) {
         final GuildEntity guild = getGuild(user, guildId);
-        final String prevName = guild.getName();
+
         guild.setName(reqDto.getName());
+        guild.setCategory(reqDto.getCategory());
 
         final DefaultGuildProfileReqDto guildProfileReqDto = DefaultGuildProfileReqDto.builder()
             .guildName(guild.getName())
@@ -82,24 +83,10 @@ public class GuildServiceImpl implements GuildService {
             .sendNotNullWithBlockThread(QueueTopic.UPDATE_DEFAULT_GUILD_PROFILE, guildProfileReqDto,
                 DefaultGuildProfileResDto.class);
 
-        log.info("Successfully updated guild name from: '{}' to: '{}'.", prevName, reqDto.getName());
+        log.info("Successfully updated guild details to: '{}'.", guild);
         return UpdateGuildResDto.builder()
-            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_UPDATE_NAME_RESPONSE_SUCCESS))
+            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_UPDATE_RESPONSE_SUCCESS))
             .profileUrl(resDto.imageFullPath())
-            .build();
-    }
-
-    @Override
-    @Transactional
-    public BaseMessageResDto updateGuildCategory(AuthUserDetails user, UpdateGuildCategoryReqDto reqDto, Long guildId) {
-        final GuildEntity guild = getGuild(user, guildId);
-
-        final GuildCategory prevCategory = guild.getCategory();
-        guild.setCategory(reqDto.getCategory());
-
-        log.info("Successfully update guild category from: '{}' to: '{}'", prevCategory, reqDto.getCategory());
-        return BaseMessageResDto.builder()
-            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_UPDATE_CATEGORY_RESPONSE_SUCCESS))
             .build();
     }
 

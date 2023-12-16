@@ -37,13 +37,13 @@ class GuildController {
         return ResponseEntity.ok(guildService.updateGuildName(user, reqDto, guildId));
     }
 
-    @PatchMapping("/{guildId}/category")
-    ResponseEntity<BaseMessageResDto> updateGuildCategory(
+    @PatchMapping("/{guildId}")
+    ResponseEntity<UpdateGuildResDto> updateGuild(
         @LoggedUser AuthUserDetails user,
-        @Valid @RequestBody UpdateGuildCategoryReqDto reqDto,
+        @Valid @RequestBody UpdateGuildReqDto reqDto,
         @PathVariable Long guildId
     ) {
-        return ResponseEntity.ok(guildService.updateGuildCategory(user, reqDto, guildId));
+        return ResponseEntity.ok(guildService.updateGuild(user, reqDto, guildId));
     }
 
     @PatchMapping("/{guildId}/visibility")

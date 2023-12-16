@@ -8,16 +8,22 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.ZonedDateTime;
+
 @Getter
 @Setter
-public class UpdateGuildLinkActiveReqDto {
+public class UpdateGuildLinkReqDto {
+
+    @NotNull(message = "vsph.sphere.jpa.guildLinkExpiredAt.notNull")
+    private ZonedDateTime newExpirationTime;
+
     @NotNull(message = "vsph.sphere.jpa.guildLinkIsActive.notNull")
     private boolean isActive;
-
+    
     @Override
     public String toString() {
         return "{" +
-            "isActive=" + isActive +
+            "newExpirationTime=" + newExpirationTime +
             '}';
     }
 }

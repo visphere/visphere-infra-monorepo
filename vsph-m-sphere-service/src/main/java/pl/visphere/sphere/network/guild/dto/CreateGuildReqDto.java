@@ -15,6 +15,7 @@ import pl.visphere.sphere.domain.guild.GuildCategory;
 @Getter
 @Setter
 public class CreateGuildReqDto {
+
     @NotBlank(message = "vsph.sphere.jpa.guildName.notBlank")
     @Size(min = 3, max = 100, message = "vsph.sphere.jpa.guildName.size")
     private String name;
