@@ -59,7 +59,7 @@ public class GuildProfileEntity extends AbstractAuditableEntity implements Seria
         this.imageType = imageType;
     }
 
-    Long getGuildId() {
+    public Long getGuildId() {
         return guildId;
     }
 

@@ -47,6 +47,7 @@ public enum QueueTopic implements Property {
     GET_USER_PERSISTED_RELATED_SETTINGS("get-user-persisted-related-settings"),
     INSTANTIATE_USER_RELATED_SETTINGS("instantiate-user-related-settings"),
     PERSIST_NOTIF_USER_SETTINGS("persist-notif-user-settings"),
+    GET_GUILD_IMAGES_BY_GUILD_IDS("get-guild-images-by-guild-ids"),
     ;
 
     private final String topicKey;

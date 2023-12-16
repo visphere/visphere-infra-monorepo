@@ -14,4 +14,5 @@ public interface ImageService {
     DefaultGuildProfileResDto generateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto);
     DefaultGuildProfileResDto updateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto);
     ProfileImageDetailsResDto getProfileImageDetails(Long userId);
+    GuildImageByIdsResDto getGuildImagesByGuildIds(GuildImageByIdsReqDto reqDto);
 }

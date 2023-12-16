@@ -12,6 +12,7 @@
   <!-- datatables migrations, common for dev and docker -->
   <include file="migrations/2023-10-31_0000000_create-user-account-details.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-11-01_0000000_add-image-type-column.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-12-15_0000000_create-guild-profiles-table.xml" relativeToChangelogFile="true"/>
 
   <!-- data loaders, common for dev and docker -->
 

@@ -22,6 +22,7 @@ import pl.visphere.multimedia.processing.drawer.IdenticonDrawer;
 import pl.visphere.multimedia.processing.drawer.InitialsDrawer;
 import pl.visphere.multimedia.processing.drawer.LockerDrawer;
 
+import java.util.List;
 import java.util.StringJoiner;
 
 @Slf4j
@@ -222,6 +223,21 @@ public class ImageServiceImpl implements ImageService {
         return resDto;
     }
 
+    @Override
+    public GuildImageByIdsResDto getGuildImagesByGuildIds(GuildImageByIdsReqDto reqDto) {
+        final List<GuildProfileEntity> guilds = guildProfileRepository.findAllByGuildIdIn(reqDto.guildIds());
+        log.info("Successfully get guild profile images: '{}' by guild ids: '{}'", guilds.size(), reqDto.guildIds());
+        
+        final List<GuildImageData> resDtos = guilds.stream()
+            .map(guild -> GuildImageData.builder()
+                .imageUrl(createGuildImageUrl(guild))
+                .guildId(guild.getGuildId())
+                .build())
+            .toList();
+
+        return new GuildImageByIdsResDto(resDtos);
+    }
+
     private FilePayload createFilePayload(byte[] imageData) {
         return FilePayload.builder()
             .prefix(S3ResourcePrefix.PROFILE)
@@ -242,5 +258,14 @@ public class ImageServiceImpl implements ImageService {
             initials = new char[]{ parts[0].charAt(0) };
         }
         return initials;
+    }
+
+    private String createGuildImageUrl(GuildProfileEntity guild) {
+        final FilePayload filePayload = FilePayload.builder()
+            .prefix(S3ResourcePrefix.PROFILE)
+            .extension(FileExtension.PNG)
+            .build();
+        return s3Client.createFullResourcePath(S3Bucket.SPHERES, guild.getGuildId(), filePayload,
+            guild.getProfileImageUuid());
     }
 }

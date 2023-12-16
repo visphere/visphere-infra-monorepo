@@ -11,6 +11,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.GuildImageByIdsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.UpdateUserProfileReqDto;
 import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 import pl.visphere.multimedia.service.image.ImageService;
@@ -55,5 +56,10 @@ class MultimediaKafkaListener {
     @KafkaListener(topics = "${visphere.kafka.topic.replace-locked-with-profile-image}")
     void replaceLockedWithProfileImageListener(Message<Long> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::replaceLockedWithProfile);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.get-guild-images-by-guild-ids}")
+    void getGuildImagesByGuildIdsListener(Message<GuildImageByIdsReqDto> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::getGuildImagesByGuildIds);
     }
 }
