@@ -9,7 +9,6 @@ import lombok.Builder;
 @Builder
 public record AddGuildResDto(
     Long id,
-    String profileUrl,
     String message
 ) {
 }

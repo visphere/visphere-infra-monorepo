@@ -102,7 +102,7 @@ class ProfileImageServiceImpl implements ProfileImageService {
         }
         cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, user.getId());
 
-        log.info("successfully scaled and saved user image with path: '{}'.", resourcePath);
+        log.info("Successfully scaled and saved user image with path: '{}'.", objectData.fullPath());
         return MessageWithResourcePathResDto.builder()
             .message(i18nService.getMessage(LocaleSet.USER_PROFILE_CUSTOM_IMAGE_UPDATE_RESPONSE_SUCCESS))
             .resourcePath(resourcePath)
@@ -157,11 +157,8 @@ class ProfileImageServiceImpl implements ProfileImageService {
             userDetailsResDto.getLastName().charAt(0)
         };
 
-        final FilePayload filePayload = FilePayload.builder()
-            .prefix(S3ResourcePrefix.PROFILE)
-            .data(initialsDrawer.drawImage(initials, accountProfile.getProfileColor()))
-            .extension(imageDrawer.getFileExtension())
-            .build();
+        final FilePayload filePayload = new FilePayload(initialsDrawer
+            .drawImage(initials, accountProfile.getProfileColor()), imageDrawer.getFileExtension());
 
         s3Client.clearObjects(S3Bucket.USERS, user.getId(), S3ResourcePrefix.PROFILE);
         final ObjectData res = s3Client.putObject(S3Bucket.USERS, user.getId(), filePayload);

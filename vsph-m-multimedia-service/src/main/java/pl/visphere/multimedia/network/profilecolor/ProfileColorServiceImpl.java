@@ -22,6 +22,7 @@ import pl.visphere.multimedia.i18n.LocaleSet;
 import pl.visphere.multimedia.network.profilecolor.dto.UpdateProfileColorReqDto;
 import pl.visphere.multimedia.processing.ImageProperties;
 import pl.visphere.multimedia.processing.drawer.IdenticonDrawer;
+import pl.visphere.multimedia.processing.drawer.ImageDrawer;
 import pl.visphere.multimedia.processing.drawer.InitialsDrawer;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class ProfileColorServiceImpl implements ProfileColorService {
     private final SyncQueueHandler syncQueueHandler;
     private final I18nService i18nService;
     private final ImageProperties imageProperties;
+    private final ImageDrawer imageDrawer;
 
     private final AccountProfileRepository accountProfileRepository;
 
@@ -66,11 +68,7 @@ public class ProfileColorServiceImpl implements ProfileColorService {
             case IDENTICON -> identiconDrawer.drawImage(user.getUsername(), reqDto.getColor());
             case CUSTOM -> new byte[0];
         };
-        final FilePayload filePayload = FilePayload.builder()
-            .prefix(S3ResourcePrefix.PROFILE)
-            .data(updatedImage)
-            .extension(identiconDrawer.getFileExtension())
-            .build();
+        final FilePayload filePayload = new FilePayload(updatedImage, imageDrawer.getFileExtension());
 
         String fullPath = s3Client.createFullResourcePath(S3Bucket.USERS, user.getId(),
             filePayload, accountProfile.getProfileImageUuid());

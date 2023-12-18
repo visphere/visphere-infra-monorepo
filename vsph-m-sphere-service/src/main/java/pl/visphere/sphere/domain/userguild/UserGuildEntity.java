@@ -29,7 +29,7 @@ public class UserGuildEntity extends AbstractAuditableEntity implements Serializ
     @JoinColumn(name = "guild_id")
     private GuildEntity guild;
 
-    Long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

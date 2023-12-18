@@ -6,9 +6,9 @@ package pl.visphere.multimedia.service.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.visphere.lib.StringParser;
 import pl.visphere.lib.kafka.payload.multimedia.*;
 import pl.visphere.lib.s3.*;
 import pl.visphere.multimedia.domain.ImageType;
@@ -43,9 +43,7 @@ public class ImageServiceImpl implements ImageService {
         final String randomColor = initialsDrawer.getRandomColor();
         final byte[] imageData = initialsDrawer.drawImage(reqDto.initials(), randomColor);
 
-        final FilePayload filePayload = createFilePayload(imageData);
-        final ObjectData res = s3Client
-            .putObject(S3Bucket.USERS, reqDto.userId(), filePayload);
+        final ObjectData res = s3Client.putObject(S3Bucket.USERS, reqDto.userId(), new FilePayload(imageData));
 
         final AccountProfileEntity accountProfile = AccountProfileEntity.builder()
             .profileColor(randomColor)
@@ -91,8 +89,7 @@ public class ImageServiceImpl implements ImageService {
             case CUSTOM -> new byte[0];
         };
         s3Client.clearObjects(S3Bucket.USERS, reqDto.userId(), S3ResourcePrefix.PROFILE);
-        final ObjectData res = s3Client
-            .putObject(S3Bucket.USERS, reqDto.userId(), createFilePayload(imageData));
+        final ObjectData res = s3Client.putObject(S3Bucket.USERS, reqDto.userId(), new FilePayload(imageData));
 
         accountProfile.setProfileImageUuid(res.uuid());
 
@@ -117,9 +114,7 @@ public class ImageServiceImpl implements ImageService {
         final String key = s3Client.findObjectKey(S3Bucket.USERS, userId, S3ResourcePrefix.PROFILE);
         s3Client.moveObject(S3Bucket.USERS, S3Bucket.LOCKED_USERS, key);
 
-        final FilePayload filePayload = createFilePayload(imageData);
-        final ObjectData res = s3Client
-            .putObject(S3Bucket.USERS, userId, filePayload);
+        final ObjectData res = s3Client.putObject(S3Bucket.USERS, userId, new FilePayload(imageData));
 
         accountProfile.setProfileImageUuid(res.uuid());
         log.info("Successfully replaced profile image with locked profile: '{}'.", accountProfile);
@@ -153,10 +148,11 @@ public class ImageServiceImpl implements ImageService {
     @Override
     public DefaultGuildProfileResDto generateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto) {
         final String randomColor = initialsDrawer.getRandomColor();
-        final byte[] imageData = initialsDrawer.drawImage(parseInitials(reqDto), randomColor);
+        final byte[] imageData = initialsDrawer
+            .drawImage(StringParser.parseGuildNameInitials(reqDto.guildName()), randomColor);
 
         final ObjectData res = s3Client
-            .putObject(S3Bucket.SPHERES, reqDto.guildId(), createFilePayload(imageData));
+            .putObject(S3Bucket.SPHERES, reqDto.guildId(), new FilePayload(imageData));
 
         final GuildProfileEntity guildProfile = GuildProfileEntity.builder()
             .profileColor(randomColor)
@@ -191,11 +187,12 @@ public class ImageServiceImpl implements ImageService {
                     guildProfile.getProfileImageUuid()))
                 .build();
         }
-        final byte[] imageData = initialsDrawer.drawImage(parseInitials(reqDto), guildProfile.getProfileColor());
+        final byte[] imageData = initialsDrawer
+            .drawImage(StringParser.parseGuildNameInitials(reqDto.guildName()), guildProfile.getProfileColor());
 
         s3Client.clearObjects(S3Bucket.SPHERES, reqDto.guildId(), S3ResourcePrefix.PROFILE);
         final ObjectData res = s3Client
-            .putObject(S3Bucket.SPHERES, reqDto.guildId(), createFilePayload(imageData));
+            .putObject(S3Bucket.SPHERES, reqDto.guildId(), new FilePayload(imageData));
 
         guildProfile.setProfileImageUuid(res.uuid());
 
@@ -227,45 +224,15 @@ public class ImageServiceImpl implements ImageService {
     public GuildImageByIdsResDto getGuildImagesByGuildIds(GuildImageByIdsReqDto reqDto) {
         final List<GuildProfileEntity> guilds = guildProfileRepository.findAllByGuildIdIn(reqDto.guildIds());
         log.info("Successfully get guild profile images: '{}' by guild ids: '{}'", guilds.size(), reqDto.guildIds());
-        
+
         final List<GuildImageData> resDtos = guilds.stream()
             .map(guild -> GuildImageData.builder()
-                .imageUrl(createGuildImageUrl(guild))
+                .imageUrl(s3Client.createFullResourcePath(S3Bucket.SPHERES, guild.getGuildId(), new FilePayload(),
+                    guild.getProfileImageUuid()))
                 .guildId(guild.getGuildId())
                 .build())
             .toList();
 
         return new GuildImageByIdsResDto(resDtos);
-    }
-
-    private FilePayload createFilePayload(byte[] imageData) {
-        return FilePayload.builder()
-            .prefix(S3ResourcePrefix.PROFILE)
-            .data(imageData)
-            .extension(FileExtension.PNG)
-            .build();
-    }
-
-    private char[] parseInitials(DefaultGuildProfileReqDto reqDto) {
-        final String[] parts = reqDto.guildName().split(StringUtils.SPACE);
-        final char[] initials;
-        if (parts.length > 1) {
-            initials = new char[2];
-            for (int i = 0; i < 2; i++) {
-                initials[i] = parts[i].charAt(0);
-            }
-        } else {
-            initials = new char[]{ parts[0].charAt(0) };
-        }
-        return initials;
-    }
-
-    private String createGuildImageUrl(GuildProfileEntity guild) {
-        final FilePayload filePayload = FilePayload.builder()
-            .prefix(S3ResourcePrefix.PROFILE)
-            .extension(FileExtension.PNG)
-            .build();
-        return s3Client.createFullResourcePath(S3Bucket.SPHERES, guild.getGuildId(), filePayload,
-            guild.getProfileImageUuid());
     }
 }
