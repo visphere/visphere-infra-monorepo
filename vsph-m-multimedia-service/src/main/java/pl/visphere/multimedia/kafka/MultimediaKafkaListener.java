@@ -58,6 +58,11 @@ class MultimediaKafkaListener {
         syncListenerHandler.parseAndSendResponse(payload, imageService::replaceLockedWithProfile);
     }
 
+    @KafkaListener(topics = "${visphere.kafka.topic.get-guild-profile-image-details}")
+    void getGuildProfileImageDetailsListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::getGuildProfileImageDetails);
+    }
+
     @KafkaListener(topics = "${visphere.kafka.topic.get-guild-images-by-guild-ids}")
     void getGuildImagesByGuildIdsListener(Message<GuildImageByIdsReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::getGuildImagesByGuildIds);

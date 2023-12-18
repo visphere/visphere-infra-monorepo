@@ -221,6 +221,22 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public ProfileImageDetailsResDto getGuildProfileImageDetails(Long guildId) {
+        final GuildProfileEntity guildProfile = guildProfileRepository
+            .findByGuildId(guildId)
+            .orElseThrow(() -> new GuildProfileException.GuildProfileNotFoundException(guildId));
+
+        final ProfileImageDetailsResDto resDto = ProfileImageDetailsResDto.builder()
+            .profileColor(guildProfile.getProfileColor())
+            .profileImageUuid(guildProfile.getProfileImageUuid())
+            .profileImagePath(s3Helper.prepareUserProfilePath(guildId, guildProfile.getProfileImageUuid()))
+            .build();
+
+        log.info("Successfully get guild profile details: '{}'.", resDto);
+        return resDto;
+    }
+
+    @Override
     public GuildImageByIdsResDto getGuildImagesByGuildIds(GuildImageByIdsReqDto reqDto) {
         final List<GuildProfileEntity> guilds = guildProfileRepository.findAllByGuildIdIn(reqDto.guildIds());
         log.info("Successfully get guild profile images: '{}' by guild ids: '{}'", guilds.size(), reqDto.guildIds());
