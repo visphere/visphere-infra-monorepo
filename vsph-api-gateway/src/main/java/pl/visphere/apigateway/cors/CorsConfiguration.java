@@ -37,7 +37,9 @@ class CorsConfiguration {
             .addPolicy("/oauth2/**")
             .addPolicy("/api/v1/oauth2/user/**", List.of(GET, PATCH, POST))
             .addPolicy("/api/v1/settings/user/**", List.of(GET, PATCH))
-            .addPolicy("/api/v1/sphere/guild/**", List.of(POST, PATCH))
+            .addPolicy("/api/v1/sphere/guild/**", List.of(GET, POST, PATCH, DELETE))
+            .addPolicy("/api/v1/sphere/text-channel/**", List.of(GET, POST, PATCH, DELETE))
+            .addPolicy("/api/v1/sphere/participant/**", List.of(GET, DELETE))
             .addPolicy("/api/v1/sphere/link/**", List.of(GET, POST, PATCH, DELETE))
             .createFilter();
     }
