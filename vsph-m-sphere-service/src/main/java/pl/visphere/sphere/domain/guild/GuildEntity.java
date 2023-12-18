@@ -4,17 +4,17 @@
  */
 package pl.visphere.sphere.domain.guild;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
 import pl.visphere.lib.AbstractAuditableEntity;
+import pl.visphere.sphere.domain.textchannel.TextChannelEntity;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "guilds")
@@ -33,6 +33,9 @@ public class GuildEntity extends AbstractAuditableEntity implements Serializable
     private Boolean isPrivate;
 
     private Long ownerId;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "guild")
+    private Set<TextChannelEntity> textChannels = new HashSet<>();
 
     public String getName() {
         return name;
@@ -58,12 +61,25 @@ public class GuildEntity extends AbstractAuditableEntity implements Serializable
         isPrivate = aPrivate;
     }
 
-    Long getOwnerId() {
+    public Long getOwnerId() {
         return ownerId;
     }
 
     void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
+    }
+
+    Set<TextChannelEntity> getTextChannels() {
+        return textChannels;
+    }
+
+    void setTextChannels(Set<TextChannelEntity> textChannels) {
+        this.textChannels = textChannels;
+    }
+
+    public void persistTextChannel(TextChannelEntity textChannel) {
+        textChannels.add(textChannel);
+        textChannel.setGuild(this);
     }
 
     @Override
