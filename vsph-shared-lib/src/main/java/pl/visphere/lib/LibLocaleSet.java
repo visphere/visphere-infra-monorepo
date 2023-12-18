@@ -30,6 +30,7 @@ public enum LibLocaleSet implements LocaleExtendableSet {
     OAUTH2_USER_NOT_FOUND_EXCEPTION_MESSAGE("vsph.lib.exc.oauth2UserNotFound"),
     OAUTH2_IMMUTABLE_VALUE_EXCEPTION_MESSAGE("vsph.lib.exc.oauth2ImmutableValue"),
     USER_ACCOUNT_DISABLED_EXCEPTION_MESSAGE("vsph.lib.exc.userAccountDisabled"),
+    ACCOUNT_LOCKED_PLACEHOLDER("vsph.lib.i18n.accountLockedPlaceholder"),
     ;
 
     private final String holder;
