@@ -18,7 +18,15 @@ public class SphereGuildException {
             super(HttpStatus.NOT_FOUND, LocaleSet.SPHERE_GUILD_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE, Map.of(
                 "guildId", guildId
             ));
-            log.error("Searching sphere guild for id: '{}' not found in database.", guildId);
+            log.error("Searching sphere guild for ID: '{}' not found in database or user has not access.", guildId);
+        }
+    }
+
+    @Slf4j
+    public static class SphereGuildHasNoOwnerException extends AbstractRestException {
+        public SphereGuildHasNoOwnerException(Long guildId) {
+            super(HttpStatus.NOT_FOUND, LocaleSet.SPHERE_GUILD_BY_HAS_NO_OWNER_EXCEPTION_MESSAGE);
+            log.error("Searching sphere guild owner by guild ID: '{}' not found in database.", guildId);
         }
     }
 }
