@@ -13,5 +13,6 @@
   <include file="migrations/2023-11-04_0000000_add-guild-and-guild-links-tables.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-12-13_0000000_add-user-guild-table.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-12-17_0000000_add-text-channels-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-12-18_0000000_add-banned-column.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

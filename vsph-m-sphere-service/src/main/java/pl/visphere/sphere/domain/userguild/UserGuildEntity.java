@@ -25,6 +25,9 @@ public class UserGuildEntity extends AbstractAuditableEntity implements Serializ
 
     private Long userId;
 
+    @Column(insertable = false)
+    private Boolean banned;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "guild_id")
     private GuildEntity guild;
@@ -37,11 +40,19 @@ public class UserGuildEntity extends AbstractAuditableEntity implements Serializ
         this.userId = userId;
     }
 
+    Boolean getBanned() {
+        return banned;
+    }
+
+    public void setBanned(Boolean banned) {
+        this.banned = banned;
+    }
+
     public GuildEntity getGuild() {
         return guild;
     }
 
-    void setGuild(GuildEntity guild) {
+    public void setGuild(GuildEntity guild) {
         this.guild = guild;
     }
 
@@ -49,7 +60,7 @@ public class UserGuildEntity extends AbstractAuditableEntity implements Serializ
     public String toString() {
         return "{" +
             "userId=" + userId +
-            ", guild=" + guild +
+            ", banned=" + banned +
             '}';
     }
 }
