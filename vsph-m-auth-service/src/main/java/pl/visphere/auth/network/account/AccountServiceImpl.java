@@ -72,6 +72,7 @@ class AccountServiceImpl implements AccountService {
     private final MfaProxyService mfaProxyService;
     private final CacheService cacheService;
     private final JwtService jwtService;
+    private final UserService userService;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;

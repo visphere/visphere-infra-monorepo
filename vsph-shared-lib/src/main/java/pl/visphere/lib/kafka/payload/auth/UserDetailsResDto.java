@@ -9,6 +9,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -17,5 +19,7 @@ public class UserDetailsResDto {
     private String firstName;
     private String lastName;
     private String username;
+    private LocalDate joinDate;
     private boolean isActivated;
+    private boolean isLocked;
 }

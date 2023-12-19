@@ -77,6 +77,8 @@ public class UserServiceImpl implements UserService {
 
         final UserDetailsResDto resDto = modelMapper.map(user, UserDetailsResDto.class);
         resDto.setActivated(user.getIsActivated());
+        resDto.setJoinDate(createJoinDate(user));
+        resDto.setLocked(user.getIsDisabled());
 
         log.info("Successfully find user and map to details: '{}'.", resDto);
         return resDto;
@@ -230,11 +232,15 @@ public class UserServiceImpl implements UserService {
             .accessToken(access.token())
             .refreshToken(refrehToken)
             .isDisabled(user.getIsDisabled())
-            .joinDate(user.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate())
+            .joinDate(createJoinDate(user))
             .build();
     }
 
     private LoginOAuth2UserDetailsResDto generateTokens(UserEntity user) {
         return generateTokens(user, user.getFirstName(), user.getLastName());
+    }
+
+    private LocalDate createJoinDate(UserEntity user) {
+        return user.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate();
     }
 }
