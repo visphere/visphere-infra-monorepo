@@ -14,4 +14,5 @@ public class RegexConstant {
     public static final String PASSWORD_REQ = "^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,80}$";
     public static final String BIRTH_DATE_REQ = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/\\d{4}$";
     public static final String COLOR_HEX = "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$";
+    public static final String TEXT_CHANNEL = "^[a-z\\d-ąćęłńóśźż]+$";
 }
