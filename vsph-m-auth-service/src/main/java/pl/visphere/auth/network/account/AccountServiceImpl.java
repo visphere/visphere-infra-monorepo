@@ -31,6 +31,7 @@ import pl.visphere.auth.network.account.dto.*;
 import pl.visphere.auth.service.mfa.MfaProxyService;
 import pl.visphere.auth.service.otatoken.OtaTokenService;
 import pl.visphere.auth.service.otatoken.dto.GenerateOtaResDto;
+import pl.visphere.auth.service.user.UserService;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.exception.app.UserException;
@@ -40,6 +41,7 @@ import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
+import pl.visphere.lib.kafka.payload.auth.CredentialsConfirmationReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.multimedia.UpdateUserProfileReqDto;
@@ -300,19 +302,12 @@ class AccountServiceImpl implements AccountService {
             .findById(user.getId())
             .orElseThrow(() -> new UserException.UserNotExistException(user.getUsername()));
 
-        final MfaUserEntity mfaUser = userEntity.getMfaUser();
-        final boolean checkedPassword = passwordEncoder.matches(reqDto.getPassword(), userEntity.getPassword());
-        final String mfaToken = reqDto.getMfaCode();
-
-        if ((mfaUser == null || !mfaUser.getMfaIsSetup())) {
-            if (!checkedPassword && !userEntity.getExternalCredProvider()) {
-                throw new AccountException.IncorrectPasswordException(user.getUsername());
-            }
-            return userEntity;
-        }
-        if (mfaProxyService.isOtpNotValid(mfaUser.getMfaSecret(), mfaToken) || !checkedPassword) {
-            throw new AccountException.IncorrectPasswordOrMfaCodeException(user.getUsername(), mfaToken);
-        }
+        final CredentialsConfirmationReqDto confirmationReqDto = CredentialsConfirmationReqDto.builder()
+            .userId(user.getId())
+            .password(reqDto.getPassword())
+            .mfaCode(reqDto.getMfaCode())
+            .build();
+        userService.checkUserCredentials(confirmationReqDto);
         return userEntity;
     }
 

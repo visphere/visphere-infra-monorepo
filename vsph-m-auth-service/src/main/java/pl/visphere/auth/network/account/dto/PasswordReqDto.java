@@ -15,7 +15,7 @@ public class PasswordReqDto {
     @NotNull(message = "vsph.lib.jpa.password.notNull")
     private String password;
 
-    @NotNull(message = "vsph.auth.jpa.mfaCode.notNull")
+    @NotNull(message = "vsph.lib.jpa.mfaCode.notNull")
     private String mfaCode;
 
     @Override

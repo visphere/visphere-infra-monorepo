@@ -50,6 +50,7 @@ public enum QueueTopic implements Property {
     GET_GUILD_IMAGES_BY_GUILD_IDS("get-guild-images-by-guild-ids"),
     GET_GUILD_PROFILE_IMAGE_DETAILS("get-guild-profile-image-details"),
     GET_GUILD_DETAILS("get-guild-details"),
+    CHECK_USER_CREDENTIALS("check-user-crendetials"),
     ;
 
     private final String topicKey;

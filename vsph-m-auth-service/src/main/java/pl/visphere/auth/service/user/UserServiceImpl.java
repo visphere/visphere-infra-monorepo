@@ -9,15 +9,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.visphere.auth.domain.mfauser.MfaUserEntity;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenRepository;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.auth.domain.role.RoleRepository;
 import pl.visphere.auth.domain.user.UserEntity;
 import pl.visphere.auth.domain.user.UserRepository;
+import pl.visphere.auth.exception.AccountException;
 import pl.visphere.auth.exception.RoleException;
+import pl.visphere.auth.service.mfa.MfaProxyService;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
@@ -41,6 +45,8 @@ public class UserServiceImpl implements UserService {
     private final ModelMapper modelMapper;
     private final JwtService jwtService;
     private final SyncQueueHandler syncQueueHandler;
+    private final PasswordEncoder passwordEncoder;
+    private final MfaProxyService mfaProxyService;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -180,6 +186,25 @@ public class UserServiceImpl implements UserService {
 
         log.info("Successfully log in OAuth2 user: '{}' details for external credentials provider.", user);
         return resDto;
+    }
+
+    @Override
+    public void checkUserCredentials(CredentialsConfirmationReqDto reqDto) {
+        final UserEntity userEntity = userRepository
+            .findById(reqDto.userId())
+            .orElseThrow(() -> new UserException.UserNotExistException(reqDto.userId()));
+
+        final MfaUserEntity mfaUser = userEntity.getMfaUser();
+        final boolean checkedPassword = passwordEncoder.matches(reqDto.password(), userEntity.getPassword());
+        final String mfaToken = reqDto.mfaCode();
+
+        if ((mfaUser == null || !mfaUser.getMfaIsSetup())) {
+            if (!checkedPassword && !userEntity.getExternalCredProvider()) {
+                throw new AccountException.IncorrectPasswordException(userEntity.getUsername());
+            }
+        } else if (mfaProxyService.isOtpNotValid(mfaUser.getMfaSecret(), mfaToken) || !checkedPassword) {
+            throw new AccountException.IncorrectPasswordOrMfaCodeException(userEntity.getUsername(), mfaToken);
+        }
     }
 
     private LoginOAuth2UserDetailsResDto generateTokens(UserEntity user, String firstName, String lastName) {
