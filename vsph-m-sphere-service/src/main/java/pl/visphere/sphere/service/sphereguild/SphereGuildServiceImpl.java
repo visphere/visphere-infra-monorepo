@@ -13,6 +13,7 @@ import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
 import pl.visphere.sphere.exception.SphereGuildException;
 
+import java.time.ZoneId;
 import java.util.Objects;
 
 @Slf4j
@@ -34,6 +35,7 @@ public class SphereGuildServiceImpl implements SphereGuildService {
         final GuildDetailsResDto resDto = GuildDetailsResDto.builder()
             .name(guild.getName())
             .ownerId(guild.getOwnerId())
+            .createdDate(guild.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate())
             .build();
 
         log.info("Successfully fetched guild with ID: '{}' and parse to details: '{}'.", guildId, resDto);
