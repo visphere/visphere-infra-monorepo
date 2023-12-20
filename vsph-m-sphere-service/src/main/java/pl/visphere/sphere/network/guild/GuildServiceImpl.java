@@ -45,7 +45,7 @@ public class GuildServiceImpl implements GuildService {
     @Override
     public GuildDetailsResDto getGuildDetails(long guildId, AuthUserDetails user) {
         final UserGuildEntity userGuild = userGuildRepository
-            .findByUserIdAndGuild_IdAndBannedIsFalse(user.getId(), guildId)
+            .findByUserIdAndGuild_Id(user.getId(), guildId)
             .orElseThrow(() -> new UserGuildException.UserIsNotGuildParticipantException(user.getId(), guildId));
 
         final GuildEntity guild = userGuild.getGuild();
@@ -103,7 +103,7 @@ public class GuildServiceImpl implements GuildService {
 
     @Override
     public List<UserGuildResDto> getAllGuildsForUser(AuthUserDetails user) {
-        final List<UserGuildEntity> guildIds = userGuildRepository.findAllByUserIdAndBannedIsFalse(user.getId());
+        final List<UserGuildEntity> guildIds = userGuildRepository.findAllByUserId(user.getId());
         final List<GuildEntity> guilds = guildIds.stream().map(UserGuildEntity::getGuild).toList();
 
         final GuildImageByIdsResDto guildImagesRes = syncQueueHandler

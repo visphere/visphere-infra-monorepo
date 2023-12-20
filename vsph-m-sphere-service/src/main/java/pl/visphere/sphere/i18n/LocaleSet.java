@@ -33,6 +33,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     SPHERE_TEXT_CHANNEL_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereTextChannelByIdNotFound"),
     SPHERE_TEXT_CHANNEL_DUPLICATE_NAME_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereTextChannelDuplicateName"),
     USER_IS_NOT_GUILD_PARTICIPANT_EXCEPTION_MESSAGE("vsph.sphere.exc.userIsNotGuildParticipant"),
+    USER_IS_NOT_BANNED_EXCEPTION_MESSAGE("vsph.sphere.exc.userIsNotBanned"),
     DELETE_GUIL_OWNER_EXCEPTION_MESSAGE("vsph.sphere.exc.deleteGuildOwner"),
     ;
 

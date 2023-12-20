@@ -18,10 +18,13 @@ import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
+import pl.visphere.sphere.domain.banneduser.BannedUserEntity;
+import pl.visphere.sphere.domain.banneduser.BannedUserRepository;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
 import pl.visphere.sphere.domain.userguild.UserGuildEntity;
 import pl.visphere.sphere.domain.userguild.UserGuildRepository;
+import pl.visphere.sphere.exception.BannedUserException;
 import pl.visphere.sphere.exception.SphereGuildException;
 import pl.visphere.sphere.exception.UserGuildException;
 import pl.visphere.sphere.i18n.LocaleSet;
@@ -44,6 +47,7 @@ class ParticipantServiceImpl implements ParticipantService {
 
     private final GuildRepository guildRepository;
     private final UserGuildRepository userGuildRepository;
+    private final BannedUserRepository bannedUserRepository;
 
     @Override
     public GuildParticipantsResDto getAllGuildParticipants(long guildId, AuthUserDetails user) {
@@ -51,7 +55,7 @@ class ParticipantServiceImpl implements ParticipantService {
             .findById(guildId)
             .orElseThrow(() -> new SphereGuildException.SphereGuildNotFoundException(guildId));
 
-        final List<UserGuildEntity> usersGuild = userGuildRepository.findAllByGuild_IdAndBannedIsFalse(guildId);
+        final List<UserGuildEntity> usersGuild = userGuildRepository.findAllByGuild_Id(guildId);
         final List<GuildParticipant> guildMembers = new ArrayList<>(usersGuild.size());
 
         for (final UserGuildEntity userGuild : usersGuild) {
@@ -103,7 +107,7 @@ class ParticipantServiceImpl implements ParticipantService {
             throw new UserException.UserNotExistException(userId);
         }
         final UserGuildEntity userGuild = userGuildRepository
-            .findByUserIdAndGuild_IdAndBannedIsFalse(userId, guildId)
+            .findByUserIdAndGuild_Id(userId, guildId)
             .orElseThrow(() -> new UserGuildException.UserIsNotGuildParticipantException(userId, guildId));
 
         final UserDetailsResDto userDetailsResDto = syncQueueHandler
@@ -141,11 +145,11 @@ class ParticipantServiceImpl implements ParticipantService {
 
     @Override
     public List<BannerMemberDetailsResDto> getAllBannedParticipants(long guildId, AuthUserDetails user) {
-        final List<UserGuildEntity> bannedUsers = userGuildRepository
-            .findAllByGuild_IdAndGuild_OwnerIdAndBannedIsTrue(guildId, user.getId());
+        final List<BannedUserEntity> bannedUsers = bannedUserRepository
+            .findAllByGuild_IdAndGuild_OwnerId(guildId, user.getId());
 
         final List<BannerMemberDetailsResDto> bannedGuildMembers = new ArrayList<>(bannedUsers.size());
-        for (final UserGuildEntity bannedUser : bannedUsers) {
+        for (final BannedUserEntity bannedUser : bannedUsers) {
             final UserDetailsResDto userDetailsResDto = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.USER_DETAILS, bannedUser.getUserId(), UserDetailsResDto.class);
 
@@ -176,7 +180,7 @@ class ParticipantServiceImpl implements ParticipantService {
     @Transactional
     public BaseMessageResDto leaveGuild(long guildId, boolean deleteAllMessages, AuthUserDetails user) {
         final UserGuildEntity userGuild = userGuildRepository
-            .findByUserIdAndGuild_IdAndBannedIsFalse(user.getId(), guildId)
+            .findByUserIdAndGuild_Id(user.getId(), guildId)
             .orElseThrow(() -> new UserGuildException.UserIsNotGuildParticipantException(user.getId(), guildId));
 
         if (userGuild.getGuild().getOwnerId().equals(user.getId())) {
@@ -199,7 +203,7 @@ class ParticipantServiceImpl implements ParticipantService {
         final GuildEntity guild = findGuildByOwnerId(guildId, user);
 
         final UserGuildEntity userGuild = userGuildRepository
-            .findByUserIdAndGuild_IdAndBannedIsFalse(userId, guild.getId())
+            .findByUserIdAndGuild_Id(userId, guild.getId())
             .orElseThrow(() -> new UserGuildException.UserIsNotGuildParticipantException(user.getId(), guildId));
 
         if (userGuild.getGuild().getOwnerId().equals(userId)) {
@@ -220,11 +224,12 @@ class ParticipantServiceImpl implements ParticipantService {
     @Transactional
     public BaseMessageResDto unbanFromGuild(long guildId, long userId, AuthUserDetails user) {
         final GuildEntity guild = findGuildByOwnerId(guildId, user);
-        final UserGuildEntity bannedUserGuild = userGuildRepository
-            .findByUserIdAndGuild_IdAndBannedIsTrue(userId, guild.getId())
-            .orElseThrow(() -> new UserGuildException.UserIsNotGuildParticipantException(user.getId(), guildId));
+        final BannedUserEntity bannedUser = bannedUserRepository
+            .findByUserIdAndGuild_Id(userId, guild.getId())
+            .orElseThrow(() -> new BannedUserException.UserIsNotBannedException(user.getId(), guildId));
 
-        bannedUserGuild.setBanned(false);
+        bannedUser.setGuild(null);
+        bannedUserRepository.delete(bannedUser);
 
         log.info("Successfully unban member with ID: '{}' form guild with ID: '{}'", userId, guildId);
         return BaseMessageResDto.builder()
@@ -237,10 +242,18 @@ class ParticipantServiceImpl implements ParticipantService {
     public BaseMessageResDto banFromGuild(long guildId, long userId, boolean deleteAllMessages, AuthUserDetails user) {
         final GuildEntity guild = findGuildByOwnerId(guildId, user);
         final UserGuildEntity bannedUserGuild = userGuildRepository
-            .findByUserIdAndGuild_IdAndBannedIsFalse(userId, guild.getId())
+            .findByUserIdAndGuild_Id(userId, guild.getId())
             .orElseThrow(() -> new UserGuildException.UserIsNotGuildParticipantException(user.getId(), guildId));
 
-        bannedUserGuild.setBanned(true);
+        bannedUserGuild.setGuild(null);
+        userGuildRepository.delete(bannedUserGuild);
+
+        final BannedUserEntity bannedUser = BannedUserEntity.builder()
+            .userId(userId)
+            .guild(guild)
+            .build();
+        bannedUserRepository.save(bannedUser);
+
         if (deleteAllMessages) {
             // TODO: delete all messages from chat microservice
         }

@@ -2,7 +2,7 @@
  * Copyright (c) 2023 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.sphere.domain.userguild;
+package pl.visphere.sphere.domain.banneduser;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -15,11 +15,11 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "users_guilds")
+@Table(name = "banned_users")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserGuildEntity extends AbstractAuditableEntity implements Serializable {
+public class BannedUserEntity extends AbstractAuditableEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -37,7 +37,7 @@ public class UserGuildEntity extends AbstractAuditableEntity implements Serializ
         this.userId = userId;
     }
 
-    public GuildEntity getGuild() {
+    GuildEntity getGuild() {
         return guild;
     }
 
@@ -47,7 +47,7 @@ public class UserGuildEntity extends AbstractAuditableEntity implements Serializ
 
     @Override
     public String toString() {
-        return "UserGuildEntity{" +
+        return "BannedUserEntity{" +
             "userId=" + userId +
             ", guildId=" + guild.getId() +
             '}';
