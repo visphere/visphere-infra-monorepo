@@ -12,10 +12,10 @@ import lombok.Setter;
 @Setter
 public class UpdateGuildVisibilityReqDto {
     @NotNull(message = "vsph.sphere.jpa.guildIsPrivate.notNull")
-    private boolean isPrivate;
+    private Boolean isPrivate;
 
     @NotNull(message = "vsph.sphere.jpa.guildUnactiveAllPreviousLinks.notNull")
-    private boolean unactiveAllPreviousLinks;
+    private Boolean unactiveAllPreviousLinks;
 
     @Override
     public String toString() {

@@ -28,7 +28,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     SPHERE_GUILD_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildByIdNotFound"),
     SPHERE_GUILD_BY_HAS_NO_OWNER_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildHasNoOwner"),
     SPHERE_GUILD_LINK_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildLinkByIdNotFound"),
-    SPHERE_GUILD_LINK_INCORRECT_TIME_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildLinkIncorrectTime");
+    SPHERE_GUILD_LINK_INCORRECT_TIME_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildLinkIncorrectTime"),
     SPHERE_TEXT_CHANNEL_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereTextChannelByIdNotFound"),
     SPHERE_TEXT_CHANNEL_DUPLICATE_NAME_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereTextChannelDuplicateName"),
     USER_IS_NOT_GUILD_PARTICIPANT_EXCEPTION_MESSAGE("vsph.sphere.exc.userIsNotGuildParticipant"),

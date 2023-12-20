@@ -5,6 +5,7 @@
 package pl.visphere.sphere.network.guild.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +20,7 @@ public class UpdateGuildReqDto {
     @Size(min = 3, max = 100, message = "vsph.sphere.jpa.guildName.size")
     private String name;
 
-    @NotBlank(message = "vsph.sphere.jpa.guildCategory.notBlank")
+    @NotNull(message = "vsph.sphere.jpa.guildCategory.notNull")
     @ValidateEnums(type = GuildCategory.class, message = "vsph.sphere.jpa.guildCategory.enum")
     private GuildCategory category;
 
