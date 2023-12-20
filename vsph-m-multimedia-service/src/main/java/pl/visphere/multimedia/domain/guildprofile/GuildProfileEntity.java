@@ -39,7 +39,7 @@ public class GuildProfileEntity extends AbstractAuditableEntity implements Seria
         return profileColor;
     }
 
-    void setProfileColor(String profileColor) {
+    public void setProfileColor(String profileColor) {
         this.profileColor = profileColor;
     }
 
@@ -55,7 +55,7 @@ public class GuildProfileEntity extends AbstractAuditableEntity implements Seria
         return imageType;
     }
 
-    void setImageType(ImageType imageType) {
+    public void setImageType(ImageType imageType) {
         this.imageType = imageType;
     }
 

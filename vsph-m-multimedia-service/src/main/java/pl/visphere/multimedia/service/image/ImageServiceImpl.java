@@ -9,8 +9,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.StringParser;
+import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.kafka.payload.multimedia.*;
 import pl.visphere.lib.s3.*;
+import pl.visphere.multimedia.cache.CacheName;
 import pl.visphere.multimedia.domain.ImageType;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileEntity;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileRepository;
@@ -34,6 +36,7 @@ public class ImageServiceImpl implements ImageService {
     private final IdenticonDrawer identiconDrawer;
     private final S3Client s3Client;
     private final S3Helper s3Helper;
+    private final CacheService cacheService;
 
     private final AccountProfileRepository accountProfileRepository;
     private final GuildProfileRepository guildProfileRepository;
@@ -65,6 +68,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @Transactional
     public ProfileImageDetailsResDto updateDefaultProfile(UpdateUserProfileReqDto reqDto) {
         final AccountProfileEntity accountProfile = accountProfileRepository
             .findByUserId(reqDto.userId())
@@ -93,9 +97,8 @@ public class ImageServiceImpl implements ImageService {
 
         accountProfile.setProfileImageUuid(res.uuid());
 
-        final AccountProfileEntity savedGuildProfile = accountProfileRepository.save(accountProfile);
-
-        log.info("Successfully updated default user profile image: '{}'.", savedGuildProfile);
+        cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, reqDto.userId());
+        log.info("Successfully updated default user profile image: '{}'.", res);
         return ProfileImageDetailsResDto.builder()
             .profileImageUuid(res.uuid())
             .profileImagePath(res.fullPath())
@@ -115,8 +118,9 @@ public class ImageServiceImpl implements ImageService {
         s3Client.moveObject(S3Bucket.USERS, S3Bucket.LOCKED_USERS, key);
 
         final ObjectData res = s3Client.putObject(S3Bucket.USERS, userId, new FilePayload(imageData));
-
         accountProfile.setProfileImageUuid(res.uuid());
+
+        cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, userId);
         log.info("Successfully replaced profile image with locked profile: '{}'.", accountProfile);
     }
 
@@ -142,6 +146,8 @@ public class ImageServiceImpl implements ImageService {
         s3Client.moveObject(S3Bucket.LOCKED_USERS, S3Bucket.USERS, key);
 
         accountProfile.setProfileImageUuid(res.uuid());
+
+        cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, userId);
         log.info("Successfully revert locked profile with previous user setting: '{}'.", accountProfile);
     }
 
@@ -162,6 +168,7 @@ public class ImageServiceImpl implements ImageService {
             .build();
 
         final GuildProfileEntity savedGuildProfile = guildProfileRepository.save(guildProfile);
+        cacheService.deleteCache(CacheName.GUILD_PROFILE_ENTITY_GUILD_ID, guildProfile.getGuildId());
 
         log.info("Successfully generated default guild profile image: '{}'.", savedGuildProfile);
         return DefaultGuildProfileResDto.builder()
@@ -170,6 +177,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @Transactional
     public DefaultGuildProfileResDto updateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto) {
         final GuildProfileEntity guildProfile = guildProfileRepository
             .findByGuildId(reqDto.guildId())
@@ -195,10 +203,9 @@ public class ImageServiceImpl implements ImageService {
             .putObject(S3Bucket.SPHERES, reqDto.guildId(), new FilePayload(imageData));
 
         guildProfile.setProfileImageUuid(res.uuid());
+        cacheService.deleteCache(CacheName.GUILD_PROFILE_ENTITY_GUILD_ID, guildProfile.getGuildId());
 
-        final GuildProfileEntity savedGuildProfile = guildProfileRepository.save(guildProfile);
-
-        log.info("Successfully updated default guild profile image: '{}'.", savedGuildProfile);
+        log.info("Successfully updated default guild profile image: '{}'.", res);
         return DefaultGuildProfileResDto.builder()
             .imageFullPath(res.fullPath())
             .build();
@@ -229,7 +236,7 @@ public class ImageServiceImpl implements ImageService {
         final ProfileImageDetailsResDto resDto = ProfileImageDetailsResDto.builder()
             .profileColor(guildProfile.getProfileColor())
             .profileImageUuid(guildProfile.getProfileImageUuid())
-            .profileImagePath(s3Helper.prepareUserProfilePath(guildId, guildProfile.getProfileImageUuid()))
+            .profileImagePath(s3Helper.prepareGuildProfilePath(guildId, guildProfile.getProfileImageUuid()))
             .build();
 
         log.info("Successfully get guild profile details: '{}'.", resDto);

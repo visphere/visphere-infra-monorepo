@@ -13,4 +13,5 @@ import java.util.List;
 public interface ProfileColorService {
     List<String> getColors();
     MessageWithResourcePathResDto updateProfileColor(UpdateProfileColorReqDto reqDto, AuthUserDetails user);
+    MessageWithResourcePathResDto updateGuildProfileColor(long guildId, UpdateProfileColorReqDto reqDto, AuthUserDetails user);
 }

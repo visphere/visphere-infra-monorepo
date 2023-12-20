@@ -33,4 +33,13 @@ public class ProfileColorController {
     ) {
         return ResponseEntity.ok(profileColorService.updateProfileColor(reqDto, user));
     }
+
+    @PatchMapping("/guild/{guildId}")
+    ResponseEntity<MessageWithResourcePathResDto> updateGuildColor(
+        @PathVariable long guildId,
+        @Valid @RequestBody UpdateProfileColorReqDto reqDto,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(profileColorService.updateGuildProfileColor(guildId, reqDto, user));
+    }
 }

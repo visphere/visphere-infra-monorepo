@@ -12,6 +12,7 @@ import pl.visphere.lib.cache.AppCache;
 @RequiredArgsConstructor
 public enum CacheName implements AppCache {
     ACCOUNT_PROFILE_ENTITY_USER_ID("account_profile_entity_user_id"),
+    GUILD_PROFILE_ENTITY_GUILD_ID("guild_profile_entity_guild_id"),
     ;
 
     private final String name;

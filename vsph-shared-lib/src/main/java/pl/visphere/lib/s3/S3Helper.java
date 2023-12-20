@@ -14,9 +14,17 @@ public class S3Helper {
     private final Environment environment;
 
     public String prepareUserProfilePath(Long id, String uuid) {
+        return prepareProfilePath(S3Bucket.USERS, id, uuid);
+    }
+
+    public String prepareGuildProfilePath(Long id, String uuid) {
+        return prepareProfilePath(S3Bucket.SPHERES, id, uuid);
+    }
+
+    public String prepareProfilePath(S3Bucket bucket, Long id, String uuid) {
         return new StringJoiner("/")
             .add(CdnProperty.CDN_BASE_URL.getValue(environment))
-            .add(S3Bucket.USERS.getName())
+            .add(bucket.getName())
             .add(String.valueOf(id))
             .add(S3ResourcePrefix.PROFILE.getPrefix() + "-" + uuid + "." + FileExtension.PNG.getExt())
             .toString();

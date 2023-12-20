@@ -6,9 +6,12 @@ package pl.visphere.lib.kafka.payload.sphere;
 
 import lombok.Builder;
 
+import java.time.LocalDate;
+
 @Builder
 public record GuildDetailsResDto(
     String name,
-    Long ownerId
+    Long ownerId,
+    LocalDate createdDate
 ) {
 }
