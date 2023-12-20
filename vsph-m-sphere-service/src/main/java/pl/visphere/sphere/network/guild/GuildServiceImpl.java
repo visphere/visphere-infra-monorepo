@@ -6,24 +6,30 @@ package pl.visphere.sphere.network.guild;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.CaseUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.visphere.lib.AbstractAuditableEntity;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
-import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileReqDto;
-import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileResDto;
+import pl.visphere.lib.kafka.payload.auth.CredentialsConfirmationReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.*;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.sphere.domain.guild.GuildCategory;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
 import pl.visphere.sphere.domain.guildlink.GuildLinkRepository;
+import pl.visphere.sphere.domain.userguild.UserGuildEntity;
+import pl.visphere.sphere.domain.userguild.UserGuildRepository;
 import pl.visphere.sphere.exception.SphereGuildException;
+import pl.visphere.sphere.exception.UserGuildException;
 import pl.visphere.sphere.i18n.LocaleSet;
 import pl.visphere.sphere.network.guild.dto.*;
 
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -34,16 +40,117 @@ public class GuildServiceImpl implements GuildService {
 
     private final GuildRepository guildRepository;
     private final GuildLinkRepository guildLinkRepository;
+    private final UserGuildRepository userGuildRepository;
 
     @Override
-    public CreateGuildResDto createGuild(AuthUserDetails user, CreateGuildReqDto reqDto) {
+    public GuildDetailsResDto getGuildDetails(long guildId, AuthUserDetails user) {
+        final UserGuildEntity userGuild = userGuildRepository
+            .findByUserIdAndGuild_IdAndBannedIsFalse(user.getId(), guildId)
+            .orElseThrow(() -> new UserGuildException.UserIsNotGuildParticipantException(user.getId(), guildId));
+
+        final GuildEntity guild = userGuild.getGuild();
+
+        final ProfileImageDetailsResDto profileImageDetailsResDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GET_GUILD_PROFILE_IMAGE_DETAILS, guildId,
+                ProfileImageDetailsResDto.class);
+
+        final GuildDetailsResDto resDto = GuildDetailsResDto.builder()
+            .id(guild.getId())
+            .name(guild.getName())
+            .category(guild.getCategory().name())
+            .profileColor(profileImageDetailsResDto.profileColor())
+            .profileImageUrl(profileImageDetailsResDto.profileImagePath())
+            .isPrivate(guild.getPrivate())
+            .isLoggedUserIsOwner(guild.getOwnerId().equals(user.getId()))
+            .build();
+
+        log.info("Successfully parse details: '{}' with guild ID: '{}'", resDto, guildId);
+        return resDto;
+    }
+
+    @Override
+    public GuildOwnerDetailsResDto getGuildOwnerDetails(long guildId, AuthUserDetails user) {
+        final GuildEntity guild = guildRepository
+            .findByIdAndOwnerId(guildId, user.getId())
+            .orElseThrow(() -> new SphereGuildException.SphereGuildNotFoundException(guildId));
+
+        final GuildOwnerDetailsResDto resDto = GuildOwnerDetailsResDto.builder()
+            .id(guild.getId())
+            .name(guild.getName())
+            .build();
+
+        log.info("Successfully found sphere guild with ID: '{}' and parse owner details: '{}'.", guildId, resDto);
+        return resDto;
+    }
+
+    @Override
+    public GuildOwnerOverviewResDto getGuildOwnerOverview(long guildId, AuthUserDetails user) {
+        final GuildEntity guild = guildRepository
+            .findByIdAndOwnerId(guildId, user.getId())
+            .orElseThrow(() -> new SphereGuildException.SphereGuildNotFoundException(guildId));
+
+        final GuildOwnerOverviewResDto resDto = GuildOwnerOverviewResDto.builder()
+            .id(guild.getId())
+            .name(guild.getName())
+            .category(guild.getCategory().name())
+            .isPrivate(guild.getPrivate())
+            .categories(getGuildCategories())
+            .build();
+
+        log.info("Successfully found sphere guild with ID: '{}' and parse owner overview: '{}'.", guildId, resDto);
+        return resDto;
+    }
+
+    @Override
+    public List<UserGuildResDto> getAllGuildsForUser(AuthUserDetails user) {
+        final List<UserGuildEntity> guildIds = userGuildRepository.findAllByUserIdAndBannedIsFalse(user.getId());
+        final List<GuildEntity> guilds = guildIds.stream().map(UserGuildEntity::getGuild).toList();
+
+        final GuildImageByIdsResDto guildImagesRes = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GET_GUILD_IMAGES_BY_GUILD_IDS,
+                new GuildImageByIdsReqDto(guilds.stream().map(AbstractAuditableEntity::getId).toList()),
+                GuildImageByIdsResDto.class);
+
+        final List<UserGuildResDto> resDtos = new ArrayList<>(guilds.size());
+        for (final GuildEntity guild : guilds) {
+            final GuildImageData image = guildImagesRes.guildImages().stream()
+                .filter(guildImage -> Objects.equals(guildImage.guildId(), guild.getId()))
+                .findFirst()
+                .orElse(new GuildImageData(guild.getId(), StringUtils.EMPTY));
+
+            final UserGuildResDto resDto = UserGuildResDto.builder()
+                .id(guild.getId())
+                .name(guild.getName())
+                .profileUrl(image.imageUrl())
+                .build();
+            resDtos.add(resDto);
+        }
+        log.info("Succesfully found: '{}' guilds and parsed to user: '{}'", resDtos.size(), resDtos);
+        return resDtos;
+    }
+
+    @Override
+    public List<GuildCategoryResDto> getGuildCategories() {
+        return Arrays.stream(GuildCategory.values())
+            .map(category -> new GuildCategoryResDto(CaseUtils.toCamelCase(category.name(), false, '_'), category.name()))
+            .toList();
+    }
+
+    @Override
+    public CreateGuildResDto createGuild(CreateGuildReqDto reqDto, AuthUserDetails user) {
         final GuildEntity guild = GuildEntity.builder()
             .name(reqDto.getName())
             .category(reqDto.getCategory())
+            .isPrivate(reqDto.isPrivate())
             .ownerId(user.getId())
             .build();
-
         final GuildEntity savedGuild = guildRepository.save(guild);
+
+        final UserGuildEntity userGuild = UserGuildEntity.builder()
+            .userId(user.getId())
+            .guild(savedGuild)
+            .build();
+        userGuildRepository.save(userGuild);
 
         final DefaultGuildProfileReqDto guildProfileReqDto = DefaultGuildProfileReqDto.builder()
             .guildName(savedGuild.getName())
@@ -68,46 +175,68 @@ public class GuildServiceImpl implements GuildService {
 
     @Override
     @Transactional
-    public UpdateGuildResDto updateGuild(AuthUserDetails user, UpdateGuildReqDto reqDto, Long guildId) {
+    public BaseMessageResDto updateGuild(long guildId, UpdateGuildReqDto reqDto, AuthUserDetails user) {
         final GuildEntity guild = getGuild(user, guildId);
+
+        final DefaultGuildProfileReqDto guildProfileReqDto = DefaultGuildProfileReqDto.builder()
+            .guildId(guild.getId())
+            .guildName(reqDto.getName())
+            .build();
+
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.UPDATE_DEFAULT_GUILD_PROFILE, guildProfileReqDto);
 
         guild.setName(reqDto.getName());
         guild.setCategory(reqDto.getCategory());
 
-        final DefaultGuildProfileReqDto guildProfileReqDto = DefaultGuildProfileReqDto.builder()
-            .guildName(guild.getName())
-            .guildId(guild.getId())
-            .build();
-
-        final DefaultGuildProfileResDto resDto = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.UPDATE_DEFAULT_GUILD_PROFILE, guildProfileReqDto,
-                DefaultGuildProfileResDto.class);
-
         log.info("Successfully updated guild details to: '{}'.", guild);
-        return UpdateGuildResDto.builder()
+        return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_UPDATE_RESPONSE_SUCCESS))
-            .profileUrl(resDto.imageFullPath())
             .build();
     }
 
     @Override
     @Transactional
-    public BaseMessageResDto updateGuildVisibility(AuthUserDetails user, UpdateGuildVisibilityReqDto reqDto, Long guildId) {
+    public BaseMessageResDto updateGuildVisibility(long guildId, UpdateGuildVisibilityReqDto reqDto, AuthUserDetails user) {
         final GuildEntity guild = getGuild(user, guildId);
         LocaleSet outputMessage = LocaleSet.SPHERE_GUILD_UPDATE_VISIBILITY_RESPONSE_SUCCESS;
 
         final boolean prevIsPrivate = guild.getPrivate();
-        guild.setPrivate(reqDto.isPrivate());
+        guild.setPrivate(reqDto.getIsPrivate());
 
-        if (reqDto.isUnactiveAllPreviousLinks()) {
+        if (reqDto.getUnactiveAllPreviousLinks()) {
             guildLinkRepository.removeAllByGuild_Id(guildId);
             outputMessage = LocaleSet.SPHERE_GUILD_UPDATE_VISIBILITY_WITH_REMOVE_LINKS_RESPONSE_SUCCESS;
             log.info("Successfully removed all connected join sphere links from guild: '{}'.", guild);
         }
 
-        log.info("Successfully update guild private mode from: '{}' to: '{}'.", prevIsPrivate, reqDto.isPrivate());
+        log.info("Successfully update guild private mode from: '{}' to: '{}'.", prevIsPrivate, reqDto.getIsPrivate());
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(outputMessage))
+            .build();
+    }
+
+    @Override
+    @Transactional
+    public BaseMessageResDto deleteGuild(long guildId, PasswordReqDto reqDto, AuthUserDetails user) {
+        final CredentialsConfirmationReqDto confirmationReqDto = CredentialsConfirmationReqDto.builder()
+            .userId(user.getId())
+            .password(reqDto.getPassword())
+            .mfaCode(reqDto.getMfaCode())
+            .build();
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.CHECK_USER_CREDENTIALS, confirmationReqDto);
+
+        if (!guildRepository.existsByIdAndOwnerId(guildId, user.getId())) {
+            throw new SphereGuildException.SphereGuildNotFoundException(guildId);
+        }
+        userGuildRepository.deleteAllByGuild_Id(guildId);
+        guildRepository.deleteById(guildId);
+
+        // TODO: delete sphere image via multimedia microservice
+        // TODO: delete all messages for all text channels from deleting guild
+
+        log.info("Successfully delete guild with ID: '{}'.", guildId);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_DELETED_RESPONSE_SUCCESS))
             .build();
     }
 
