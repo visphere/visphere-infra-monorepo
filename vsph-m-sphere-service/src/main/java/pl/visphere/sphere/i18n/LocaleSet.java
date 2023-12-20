@@ -15,6 +15,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     SPHERE_GUILD_UPDATE_RESPONSE_SUCCESS("vsph.i18n.sphereGuildUpdate.res.success"),
     SPHERE_GUILD_UPDATE_VISIBILITY_RESPONSE_SUCCESS("vsph.i18n.sphereGuildUpdateVisibility.res.success"),
     SPHERE_GUILD_UPDATE_VISIBILITY_WITH_REMOVE_LINKS_RESPONSE_SUCCESS("vsph.i18n.sphereGuildUpdateVisibilityWithRemovedLinks.res.success"),
+    SPHERE_GUILD_DELETED_RESPONSE_SUCCESS("vsph.i18n.sphereGuildDeleted.res.success"),
     SPHERE_GUILD_LINK_CREATED_RESPONSE_SUCCESS("vsph.i18n.sphereGuildLinkCreated.res.success"),
     SPHERE_GUILD_LINK_UPDATED_RESPONSE_SUCCESS("vsph.i18n.sphereGuildLinkUpdated.res.success"),
     SPHERE_GUILD_LINK_DELETED_RESPONSE_SUCCESS("vsph.i18n.sphereGuildLinkDeleted.res.success"),
