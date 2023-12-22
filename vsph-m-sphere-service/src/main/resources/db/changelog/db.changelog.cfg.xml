@@ -15,5 +15,8 @@
   <include file="migrations/2023-12-17_0000000_add-text-channels-table.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-12-18_0000000_add-banned-column.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-12-20_0000000_create-banned-users-table.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-12-21_0000000_add-name-field-to-guild-links.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-12-21_0000001_add-usages-count-column.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-12-22_0000000_change-expired-at-nullable.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

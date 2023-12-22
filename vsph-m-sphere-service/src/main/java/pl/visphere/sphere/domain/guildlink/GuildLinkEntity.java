@@ -4,10 +4,7 @@
  */
 package pl.visphere.sphere.domain.guildlink;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -27,15 +24,28 @@ public class GuildLinkEntity extends AbstractAuditableEntity implements Serializ
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private String name;
+
     private String token;
 
     private ZonedDateTime expiredAt;
 
     private Boolean isActive;
 
+    @Column(insertable = false)
+    private Long usagesCount;
+
     @ManyToOne
     @JoinColumn(name = "guild_id")
     private GuildEntity guild;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getToken() {
         return token;
@@ -61,6 +71,14 @@ public class GuildLinkEntity extends AbstractAuditableEntity implements Serializ
         isActive = active;
     }
 
+    public Long getUsagesCount() {
+        return usagesCount;
+    }
+
+    public void setUsagesCount(Long usagesCount) {
+        this.usagesCount = usagesCount;
+    }
+
     GuildEntity getGuild() {
         return guild;
     }
@@ -72,10 +90,11 @@ public class GuildLinkEntity extends AbstractAuditableEntity implements Serializ
     @Override
     public String toString() {
         return "{" +
-            "token=" + token +
+            "name=" + name +
+            ", token=" + token +
             ", expiredAt=" + expiredAt +
             ", isActive=" + isActive +
-            ", guild=" + guild +
+            ", usagesCount=" + usagesCount +
             '}';
     }
 }
