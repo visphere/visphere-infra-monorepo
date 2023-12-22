@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import pl.visphere.lib.exception.AbstractRestException;
 import pl.visphere.sphere.i18n.LocaleSet;
 
-import java.time.ZonedDateTime;
 import java.util.Map;
 
 public class SphereGuildLinkException {
@@ -20,15 +19,6 @@ public class SphereGuildLinkException {
                 "linkId", linkId
             ));
             log.error("Searching sphere guild for id: '{}' not found in database.", linkId);
-        }
-    }
-
-    @Slf4j
-    public static class SphereGuildLinkIncorrectTimeException extends AbstractRestException {
-        public SphereGuildLinkIncorrectTimeException(ZonedDateTime time) {
-            super(HttpStatus.BAD_REQUEST, LocaleSet.SPHERE_GUILD_LINK_INCORRECT_TIME_EXCEPTION_MESSAGE);
-            log.error("Attempt to set link expiration time before current date. Time: '{}', current: '{}'.", time,
-                ZonedDateTime.now());
         }
     }
 }

@@ -22,7 +22,7 @@ public class UserGuildException {
     @Slf4j
     public static class DeleteGuildOwnerException extends AbstractRestException {
         public DeleteGuildOwnerException(Long guildId, Long ownerId) {
-            super(HttpStatus.BAD_REQUEST, LocaleSet.DELETE_GUIL_OWNER_EXCEPTION_MESSAGE);
+            super(HttpStatus.BAD_REQUEST, LocaleSet.DELETE_GUILD_OWNER_EXCEPTION_MESSAGE);
             log.error("Attempt to delete guild owner with guid ID: '{}' and owner ID: '{}'.",
                 guildId, ownerId);
         }

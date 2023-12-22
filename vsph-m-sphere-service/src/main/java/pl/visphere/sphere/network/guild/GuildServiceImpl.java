@@ -204,7 +204,7 @@ public class GuildServiceImpl implements GuildService {
         guild.setPrivate(reqDto.getIsPrivate());
 
         if (reqDto.getUnactiveAllPreviousLinks()) {
-            guildLinkRepository.removeAllByGuild_Id(guildId);
+            guildLinkRepository.deleteAllByGuild_Id(guildId);
             outputMessage = LocaleSet.SPHERE_GUILD_UPDATE_VISIBILITY_WITH_REMOVE_LINKS_RESPONSE_SUCCESS;
             log.info("Successfully removed all connected join sphere links from guild: '{}'.", guild);
         }
