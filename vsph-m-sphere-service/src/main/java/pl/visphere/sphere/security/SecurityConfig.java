@@ -34,6 +34,7 @@ class SecurityConfig {
     private final SyncQueueHandler syncQueueHandler;
 
     private final String[] unsecuredMatchers = {
+        "/api/v1/sphere/link/expirations/timestamps/all"
     };
 
     @Bean

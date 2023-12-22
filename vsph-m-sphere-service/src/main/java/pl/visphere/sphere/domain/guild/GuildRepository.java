@@ -12,5 +12,7 @@ import java.util.Optional;
 @Repository
 public interface GuildRepository extends JpaRepository<GuildEntity, Long> {
     Optional<GuildEntity> findByIdAndOwnerId(Long id, Long ownerId);
+    Optional<GuildEntity> findByIdAndOwnerIdAndIsPrivateIsTrue(Long id, Long ownerId);
+    Optional<GuildEntity> findByIdAndIsPrivateIsFalse(Long id);
     boolean existsByIdAndOwnerId(Long id, Long ownerId);
 }

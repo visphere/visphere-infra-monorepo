@@ -12,9 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.lib.security.user.LoggedUser;
-import pl.visphere.sphere.network.guildlink.dto.CreateGuildLinkReqDto;
-import pl.visphere.sphere.network.guildlink.dto.GuildLinkResDto;
-import pl.visphere.sphere.network.guildlink.dto.UpdateGuildLinkReqDto;
+import pl.visphere.sphere.network.guildlink.dto.*;
 
 import java.util.List;
 
@@ -24,37 +22,59 @@ import java.util.List;
 class GuildLinkController {
     private final GuildLinkService guildLinkService;
 
-    @GetMapping("/guild/{guildId}")
-    ResponseEntity<List<GuildLinkResDto>> getAllLinksFromGuild(
-        @LoggedUser AuthUserDetails user,
-        @PathVariable Long guildId
+    @GetMapping("/guild/{guildId}/all")
+    ResponseEntity<AllGuildJoinLinksResDto> getAllLinksFromGuild(
+        @PathVariable long guildId,
+        @LoggedUser AuthUserDetails user
     ) {
-        return ResponseEntity.ok(guildLinkService.getAllLinksFromGuild(user, guildId));
+        return ResponseEntity.ok(guildLinkService.getAllLinksFromGuild(guildId, user));
+    }
+
+    @GetMapping("/expirations/timestamps/all")
+    ResponseEntity<List<ExpireTimestamp>> getAllExpiredTimestamps() {
+        return ResponseEntity.ok(guildLinkService.getAllExpiredTimestamps());
+    }
+
+    @GetMapping("/{linkId}")
+    ResponseEntity<GuildLinkDetailsResDto> getGuildLinkDetails(
+        @PathVariable long linkId,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(guildLinkService.getGuildLinkDetails(linkId, user));
     }
 
     @PostMapping("/guild/{guildId}")
     ResponseEntity<BaseMessageResDto> createGuildLink(
-        @LoggedUser AuthUserDetails user,
+        @PathVariable long guildId,
         @Valid @RequestBody CreateGuildLinkReqDto reqDto,
-        @PathVariable Long guildId
+        @LoggedUser AuthUserDetails user
     ) {
-        return new ResponseEntity<>(guildLinkService.createGuildLink(user, reqDto, guildId), HttpStatus.CREATED);
+        return new ResponseEntity<>(guildLinkService.createGuildLink(guildId, reqDto, user), HttpStatus.CREATED);
     }
 
     @PatchMapping("/{linkId}")
     ResponseEntity<BaseMessageResDto> updateGuildLink(
-        @LoggedUser AuthUserDetails user,
+        @PathVariable long linkId,
         @Valid @RequestBody UpdateGuildLinkReqDto reqDto,
-        @PathVariable Long linkId
+        @LoggedUser AuthUserDetails user
     ) {
-        return ResponseEntity.ok(guildLinkService.updateGuildLink(user, reqDto, linkId));
+        return ResponseEntity.ok(guildLinkService.updateGuildLink(linkId, reqDto, user));
+    }
+
+    @PatchMapping("/{linkId}/activity")
+    ResponseEntity<BaseMessageResDto> updateGuildLinkActivity(
+        @PathVariable long linkId,
+        @RequestParam boolean active,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(guildLinkService.updateGuildLinkActiveState(linkId, active, user));
     }
 
     @DeleteMapping("/{linkId}")
     ResponseEntity<BaseMessageResDto> deleteGuildLink(
-        @LoggedUser AuthUserDetails user,
-        @PathVariable Long linkId
+        @PathVariable long linkId,
+        @LoggedUser AuthUserDetails user
     ) {
-        return ResponseEntity.ok(guildLinkService.deleteGuildLink(user, linkId));
+        return ResponseEntity.ok(guildLinkService.deleteGuildLink(linkId, user));
     }
 }

@@ -6,15 +6,16 @@ package pl.visphere.sphere.network.guildlink;
 
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
-import pl.visphere.sphere.network.guildlink.dto.CreateGuildLinkReqDto;
-import pl.visphere.sphere.network.guildlink.dto.GuildLinkResDto;
-import pl.visphere.sphere.network.guildlink.dto.UpdateGuildLinkReqDto;
+import pl.visphere.sphere.network.guildlink.dto.*;
 
 import java.util.List;
 
 interface GuildLinkService {
-    List<GuildLinkResDto> getAllLinksFromGuild(AuthUserDetails user, Long guildId);
-    BaseMessageResDto createGuildLink(AuthUserDetails user, CreateGuildLinkReqDto reqDto, Long guildId);
-    BaseMessageResDto updateGuildLink(AuthUserDetails user, UpdateGuildLinkReqDto reqDto, Long linkId);
-    BaseMessageResDto deleteGuildLink(AuthUserDetails user, Long linkId);
+    AllGuildJoinLinksResDto getAllLinksFromGuild(long guildId, AuthUserDetails user);
+    List<ExpireTimestamp> getAllExpiredTimestamps();
+    GuildLinkDetailsResDto getGuildLinkDetails(long linkId, AuthUserDetails user);
+    BaseMessageResDto createGuildLink(long guildId, CreateGuildLinkReqDto reqDto, AuthUserDetails user);
+    BaseMessageResDto updateGuildLink(long linkId, UpdateGuildLinkReqDto reqDto, AuthUserDetails user);
+    BaseMessageResDto updateGuildLinkActiveState(long linkId, boolean active, AuthUserDetails user);
+    BaseMessageResDto deleteGuildLink(long linkId, AuthUserDetails user);
 }

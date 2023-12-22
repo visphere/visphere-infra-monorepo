@@ -4,26 +4,23 @@
  */
 package pl.visphere.sphere.network.guildlink.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.ZonedDateTime;
 
 @Getter
 @Setter
 public class UpdateGuildLinkReqDto {
 
-    @NotNull(message = "vsph.sphere.jpa.guildLinkExpiredAt.notNull")
-    private ZonedDateTime newExpirationTime;
+    @NotBlank(message = "vsph.sphere.jpa.guildLinkName.notBlank")
+    @Size(min = 3, max = 100, message = "vsph.sphere.jpa.guildLinkName.size")
+    private String name;
 
-    @NotNull(message = "vsph.sphere.jpa.guildLinkIsActive.notNull")
-    private boolean isActive;
-    
     @Override
     public String toString() {
         return "{" +
-            "newExpirationTime=" + newExpirationTime +
+            "name=" + name +
             '}';
     }
 }
