@@ -41,4 +41,12 @@ public class SphereGuildServiceImpl implements SphereGuildService {
         log.info("Successfully fetched guild with ID: '{}' and parse to details: '{}'.", guildId, resDto);
         return resDto;
     }
+
+    @Override
+    public boolean checkUserSphereGuilds(Long userId) {
+        final int userGuilds = guildRepository.countAllByOwnerId(userId);
+        log.info("Successfully found user with ID: '{}' account with some Sphere guilds correlatios: '{}'.",
+            userId, userGuilds);
+        return userGuilds != 0;
+    }
 }

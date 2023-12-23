@@ -21,7 +21,12 @@ public class SphereKafkaListener {
     private final SphereGuildService sphereGuildService;
 
     @KafkaListener(topics = "${visphere.kafka.topic.get-guild-details}")
-    void sendForActivateAccountListener(Message<GuildDetailsReqDto> reqDto) {
-        syncListenerHandler.parseAndSendResponse(reqDto, sphereGuildService::getGuildDetails);
+    void getGuildDetailsListener(Message<GuildDetailsReqDto> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, sphereGuildService::getGuildDetails);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.check-user-sphere-guilds}")
+    void checkUserSphereGuildsListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, sphereGuildService::checkUserSphereGuilds);
     }
 }

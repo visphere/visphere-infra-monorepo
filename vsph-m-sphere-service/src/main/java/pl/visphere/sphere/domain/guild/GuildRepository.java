@@ -15,4 +15,5 @@ public interface GuildRepository extends JpaRepository<GuildEntity, Long> {
     Optional<GuildEntity> findByIdAndOwnerIdAndIsPrivateIsTrue(Long id, Long ownerId);
     Optional<GuildEntity> findByIdAndIsPrivateIsFalse(Long id);
     boolean existsByIdAndOwnerId(Long id, Long ownerId);
+    int countAllByOwnerId(Long ownerId);
 }

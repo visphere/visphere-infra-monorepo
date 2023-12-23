@@ -15,5 +15,6 @@ public interface UserGuildRepository extends JpaRepository<UserGuildEntity, Long
     List<UserGuildEntity> findAllByUserId(Long userId);
     List<UserGuildEntity> findAllByGuild_Id(Long guildId);
     Optional<UserGuildEntity> findByUserIdAndGuild_Id(Long userId, Long guildId);
+    int countAllByGuild_Id(Long guildId);
     boolean existsByUserIdAndGuild_Id(Long userId, Long guildId);
 }

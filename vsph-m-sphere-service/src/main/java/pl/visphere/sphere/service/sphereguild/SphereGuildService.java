@@ -9,4 +9,5 @@ import pl.visphere.lib.kafka.payload.sphere.GuildDetailsResDto;
 
 public interface SphereGuildService {
     GuildDetailsResDto getGuildDetails(GuildDetailsReqDto reqDto);
+    boolean checkUserSphereGuilds(Long userId);
 }
