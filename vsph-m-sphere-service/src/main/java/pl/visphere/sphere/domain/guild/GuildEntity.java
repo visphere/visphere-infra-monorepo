@@ -19,9 +19,6 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
-
 @Entity
 @Table(name = "guilds")
 @Builder
@@ -40,16 +37,16 @@ public class GuildEntity extends AbstractAuditableEntity implements Serializable
 
     private Long ownerId;
 
-    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "guild")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "guild")
     private Set<TextChannelEntity> textChannels = new HashSet<>();
 
-    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "guild")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "guild")
     private Set<UserGuildEntity> userGuilds = new HashSet<>();
 
-    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "guild")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "guild")
     private Set<GuildLinkEntity> guildLinks = new HashSet<>();
 
-    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "guild")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "guild")
     private Set<BannedUserEntity> bannedUsers = new HashSet<>();
 
     public String getName() {

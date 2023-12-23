@@ -18,6 +18,7 @@ import pl.visphere.lib.kafka.payload.auth.LoginOAuth2UserDetailsResDto;
 import pl.visphere.lib.kafka.payload.auth.UpdateOAuth2UserDetailsReqDto;
 import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
@@ -93,11 +94,12 @@ class UserServiceImpl implements UserService {
 
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
         resDto.setProfileUrl(oAuth2User.getProfileImageUrl());
-        resDto.setProfileColor(profileResDto.profileColor());
+        resDto.setProfileColor(profileResDto.getProfileColor());
         resDto.setSettings(new UserSettingsResDto());
         resDto.setIsDisabled(loginResDto.isDisabled());
         resDto.setJoinDate(loginResDto.getJoinDate());
         resDto.setCredentialsSupplier(oAuth2User.getSupplier().getSupplierName());
+        resDto.setImageFromExternalProvider(oAuth2User.getProviderImageSelected());
 
         final SendBaseEmailReqDto emailReqDto = SendBaseEmailReqDto.builder()
             .userId(oAuth2User.getUserId())
@@ -119,9 +121,13 @@ class UserServiceImpl implements UserService {
         final LoginOAuth2UserDetailsResDto loginResDto = syncQueueHandler.sendNotNullWithBlockThread(
             QueueTopic.LOGIN_OAUTH2_USER, oAuth2User.getUserId(), LoginOAuth2UserDetailsResDto.class);
 
+        final ProfileImageDetailsReqDto reqDto = ProfileImageDetailsReqDto.builder()
+            .userId(oAuth2User.getUserId())
+            .isExternalCredentialsSupplier(true)
+            .build();
+
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, oAuth2User.getUserId(),
-                ProfileImageDetailsResDto.class);
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, reqDto, ProfileImageDetailsResDto.class);
 
         final UserSettingsResDto settingsResDto = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, oAuth2User.getUserId(),
@@ -130,14 +136,15 @@ class UserServiceImpl implements UserService {
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
         final String imageUrl = oAuth2User.getProviderImageSelected()
             ? oAuth2User.getProfileImageUrl()
-            : profileImageDetails.profileImagePath();
+            : profileImageDetails.getProfileImagePath();
 
         resDto.setSettings(settingsResDto);
         resDto.setProfileUrl(imageUrl);
-        resDto.setProfileColor(profileImageDetails.profileColor());
+        resDto.setProfileColor(profileImageDetails.getProfileColor());
         resDto.setIsDisabled(loginResDto.isDisabled());
         resDto.setJoinDate(loginResDto.getJoinDate());
         resDto.setCredentialsSupplier(oAuth2User.getSupplier().getSupplierName());
+        resDto.setImageFromExternalProvider(oAuth2User.getProviderImageSelected());
 
         log.info("Successfully login OAuth2 user with data: '{}'.", resDto);
         return resDto;

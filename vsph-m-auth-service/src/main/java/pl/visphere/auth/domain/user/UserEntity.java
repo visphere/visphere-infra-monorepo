@@ -21,9 +21,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
-
 @Entity
 @Table(name = "users")
 @Builder
@@ -63,16 +60,16 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
     )
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<BlackListJwtEntity> blackListJwts = new HashSet<>();
 
-    @OneToOne(cascade = { PERSIST, MERGE }, mappedBy = "user")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private MfaUserEntity mfaUser;
 
-    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<OtaTokenEntity> otaTokens = new HashSet<>();
 
-    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "user")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Set<RefreshTokenEntity> refreshTokens = new HashSet<>();
 
     public String getUsername() {

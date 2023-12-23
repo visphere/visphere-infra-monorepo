@@ -4,7 +4,10 @@
  */
 package pl.visphere.sphere.domain.textchannel;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -25,7 +28,7 @@ public class TextChannelEntity extends AbstractAuditableEntity implements Serial
 
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "guild_id")
     private GuildEntity guild;
 

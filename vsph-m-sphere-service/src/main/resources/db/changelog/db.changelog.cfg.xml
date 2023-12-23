@@ -18,5 +18,6 @@
   <include file="migrations/2023-12-21_0000000_add-name-field-to-guild-links.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-12-21_0000001_add-usages-count-column.xml" relativeToChangelogFile="true"/>
   <include file="migrations/2023-12-22_0000000_change-expired-at-nullable.xml" relativeToChangelogFile="true"/>
+  <include file="migrations/2023-12-23_0000000_modify-foreign-contraints.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

@@ -14,9 +14,6 @@ import pl.visphere.lib.AbstractAuditableEntity;
 import java.io.Serial;
 import java.io.Serializable;
 
-import static jakarta.persistence.CascadeType.MERGE;
-import static jakarta.persistence.CascadeType.PERSIST;
-
 @Entity
 @Table(name = "mfa_users")
 @Builder
@@ -31,7 +28,7 @@ public class MfaUserEntity extends AbstractAuditableEntity implements Serializab
 
     private String mfaSecret;
 
-    @OneToOne(cascade = { MERGE, PERSIST })
+    @OneToOne
     @JoinColumn(name = "user_id")
     private UserEntity user;
 
