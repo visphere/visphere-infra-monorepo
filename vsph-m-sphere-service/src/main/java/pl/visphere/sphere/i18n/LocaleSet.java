@@ -28,7 +28,9 @@ public enum LocaleSet implements LocaleExtendableSet {
     SPHERE_GUILD_KICK_RESPONSE_SUCCESS("vsph.i18n.sphereGuildKick.res.success"),
     SPHERE_GUILD_BAN_RESPONSE_SUCCESS("vsph.i18n.sphereGuildBan.res.success"),
     SPHERE_GUILD_UNBAN_RESPONSE_SUCCESS("vsph.i18n.sphereGuildUnban.res.success"),
+    SPHERE_GUILD_LINK_JOIN_RESPONSE_SUCCESS("vsph.i18n.sphereGuildLinkJoin.res.success"),
     SPHERE_GUILD_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildByIdNotFound"),
+    SPHERE_GUILD_BY_CODE_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildByCodeNotFound"),
     SPHERE_GUILD_BY_HAS_NO_OWNER_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildHasNoOwner"),
     SPHERE_GUILD_LINK_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildLinkByIdNotFound"),
     SPHERE_TEXT_CHANNEL_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereTextChannelByIdNotFound"),
@@ -36,6 +38,8 @@ public enum LocaleSet implements LocaleExtendableSet {
     USER_IS_NOT_GUILD_PARTICIPANT_EXCEPTION_MESSAGE("vsph.sphere.exc.userIsNotGuildParticipant"),
     USER_IS_NOT_BANNED_EXCEPTION_MESSAGE("vsph.sphere.exc.userIsNotBanned"),
     DELETE_GUILD_OWNER_EXCEPTION_MESSAGE("vsph.sphere.exc.deleteGuildOwner"),
+    ALREADY_IS_ON_SPHERE_EXCEPTION_MESSAGE("vsph.sphere.exc.alreadyIsOnSphere"),
+    SPHERE_JOIN_LINK_IS_EXPIRED_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereJoinLinkIsExpired"),
     ;
 
     private final String holder;

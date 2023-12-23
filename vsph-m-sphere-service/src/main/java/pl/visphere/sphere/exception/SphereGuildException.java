@@ -23,6 +23,14 @@ public class SphereGuildException {
     }
 
     @Slf4j
+    public static class SphereGuildByCodeNotFoundException extends AbstractRestException {
+        public SphereGuildByCodeNotFoundException() {
+            super(HttpStatus.NOT_FOUND, LocaleSet.SPHERE_GUILD_BY_CODE_NOT_FOUND_EXCEPTION_MESSAGE);
+            log.error("Searching sphere guild for join code not found in database or user has not access.");
+        }
+    }
+
+    @Slf4j
     public static class SphereGuildHasNoOwnerException extends AbstractRestException {
         public SphereGuildHasNoOwnerException(Long guildId) {
             super(HttpStatus.NOT_FOUND, LocaleSet.SPHERE_GUILD_BY_HAS_NO_OWNER_EXCEPTION_MESSAGE);

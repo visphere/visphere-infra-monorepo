@@ -14,4 +14,5 @@ import java.util.Optional;
 public interface BannedUserRepository extends JpaRepository<BannedUserEntity, Long> {
     List<BannedUserEntity> findAllByGuild_IdAndGuild_OwnerId(Long guildId, Long ownerId);
     Optional<BannedUserEntity> findByUserIdAndGuild_Id(Long userId, Long guildId);
+    boolean existsByGuild_IdAndUserId(Long guildId, Long userId);
 }
