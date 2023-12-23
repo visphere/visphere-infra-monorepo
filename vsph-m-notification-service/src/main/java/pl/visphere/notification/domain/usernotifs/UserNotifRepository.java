@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface UserNotifRepository extends JpaRepository<UserNotifEntity, Long> {
     Optional<UserNotifEntity> findByUserId(Long userId);
     boolean existsByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

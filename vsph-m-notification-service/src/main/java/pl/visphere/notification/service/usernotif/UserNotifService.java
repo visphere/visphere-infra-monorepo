@@ -8,4 +8,5 @@ import pl.visphere.lib.kafka.payload.notification.PersistUserNotifSettingsReqDto
 
 public interface UserNotifService {
     void persistUserNotifSettings(PersistUserNotifSettingsReqDto reqDto);
+    void deleteNotifUserSettings(Long userId);
 }

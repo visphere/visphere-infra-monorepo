@@ -21,7 +21,12 @@ public class NotificationKafkaListener {
     private final UserNotifService userNotifService;
 
     @KafkaListener(topics = "${visphere.kafka.topic.persist-notif-user-settings}")
-    void sendForActivateAccountListener(Message<PersistUserNotifSettingsReqDto> reqDto) {
-        syncListenerHandler.parseAndSendResponse(reqDto, userNotifService::persistUserNotifSettings);
+    void sendForActivateAccountListener(Message<PersistUserNotifSettingsReqDto> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, userNotifService::persistUserNotifSettings);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.delete-notif-user-settings}")
+    void deleteNotifUserSettingsListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, userNotifService::deleteNotifUserSettings);
     }
 }
