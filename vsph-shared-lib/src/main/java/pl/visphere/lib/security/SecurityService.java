@@ -20,6 +20,8 @@ import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.resolver.AccessDeniedResolver;
 import pl.visphere.lib.resolver.AuthResolver;
 
+import java.util.List;
+
 public class SecurityService {
     private final MiddlewareExceptionFilter middlewareExceptionFilter;
     private final AuthResolver authResolver;
@@ -45,7 +47,7 @@ public class SecurityService {
     }
 
     public HttpSecurity configureStatelessSecurity(
-        HttpSecurity httpSecurity, String matcher, SecurityExtender callback
+        HttpSecurity httpSecurity, List<String> matchers, SecurityExtender callback
     ) throws Exception {
         final HttpSecurity security = httpSecurity
             .sessionManagement(options -> options.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -57,7 +59,7 @@ public class SecurityService {
                 .authenticationEntryPoint(authResolver)
                 .accessDeniedHandler(accessDeniedResolver)
             )
-            .securityMatcher(matcher)
+            .securityMatcher(matchers.toArray(String[]::new))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(unsecuredMatchers).permitAll()
                 .anyRequest().authenticated()
@@ -65,6 +67,12 @@ public class SecurityService {
         final HttpSecurity callbackSecurity = callback.extend(security);
         callbackSecurity.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return callbackSecurity;
+    }
+
+    public HttpSecurity configureStatelessSecurity(
+        HttpSecurity httpSecurity, String matcher, SecurityExtender callback
+    ) throws Exception {
+        return configureStatelessSecurity(httpSecurity, List.of(matcher), callback);
     }
 
     public HttpSecurity configureStatelessSecurity(HttpSecurity httpSecurity, String matcher) throws Exception {

@@ -30,6 +30,8 @@ import pl.visphere.oauth2.core.resolver.OAuth2SuccessResolver;
 import pl.visphere.oauth2.core.user.service.OAuth2UserServiceImpl;
 import pl.visphere.oauth2.core.user.service.OidcUserServiceImpl;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -57,7 +59,7 @@ class SecurityConfig {
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return securityService()
-            .configureStatelessSecurity(httpSecurity, "/**", security -> security
+            .configureStatelessSecurity(httpSecurity, List.of("/oauth2/**", "/api/v1/oauth2/**"), security -> security
                 .oauth2Login(oAuth2LoginConfigurer -> oAuth2LoginConfigurer
                     .authorizationEndpoint(authorizationEndpointConfig -> authorizationEndpointConfig
                         .authorizationRequestRepository(oAuth2Repository)

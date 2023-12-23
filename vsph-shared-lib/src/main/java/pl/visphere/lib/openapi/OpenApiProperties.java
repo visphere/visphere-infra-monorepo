@@ -18,6 +18,6 @@ public enum OpenApiProperties implements Property {
 
     @Override
     public String getValue(Environment environment) {
-        return environment.getProperty("visphere.openapi.service" + key);
+        return environment.getProperty("visphere.openapi.service." + key);
     }
 }
