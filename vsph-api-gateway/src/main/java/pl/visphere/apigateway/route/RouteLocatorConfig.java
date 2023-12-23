@@ -18,7 +18,7 @@ class RouteLocatorConfig {
     @Bean
     RouteLocator routeLocator(RouteLocatorBuilder builder) {
         return builder.routes()
-            .route(route -> createOpenApiRoute(route, "vsph-m-auth-service"))
+            .route(route -> createOpenApiRoute(route, "vsph-m-user-service"))
             .route(route -> createOpenApiRoute(route, "vsph-m-misc-service"))
             .route(route -> createOpenApiRoute(route, "vsph-m-multimedia-service"))
             .route(route -> createOpenApiRoute(route, "vsph-m-notification-service"))

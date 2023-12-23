@@ -25,7 +25,7 @@
     <module>vsph-discovery-server</module>
     <module>vsph-shared-lib</module>
     <module>vsph-config-server</module>
-    <module>vsph-m-auth-service</module>
+    <module>vsph-m-user-service</module>
     <module>vsph-m-misc-service</module>
     <module>vsph-m-notification-service</module>
     <module>vsph-m-multimedia-service</module>

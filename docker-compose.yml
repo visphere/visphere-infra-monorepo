@@ -248,10 +248,10 @@ services:
     networks:
       - visphere-infra-network
 
-  vsph-m-auth-service:
+  vsph-m-user-service:
     extends:
-      file: ./vsph-m-auth-service/docker-compose.yml
-      service: vsph-m-auth-service-template
+      file: ./vsph-m-user-service/docker-compose.yml
+      service: vsph-m-user-service-template
     depends_on:
       - vsph-config-server
       - vsph-discovery-server

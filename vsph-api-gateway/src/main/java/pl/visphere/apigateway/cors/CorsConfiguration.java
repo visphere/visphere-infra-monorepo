@@ -23,12 +23,12 @@ class CorsConfiguration {
     @Bean
     CorsWebFilter corsWebFilter() {
         return new CorsPolicyBuilder(corsProperties.getAllowedOrigins())
-            .addPolicy("/api/v1/auth/account/**", List.of(GET, POST, PATCH, DELETE))
-            .addPolicy("/api/v1/auth/check/**", List.of(GET, PATCH))
-            .addPolicy("/api/v1/auth/email/**", List.of(POST, PATCH, DELETE))
-            .addPolicy("/api/v1/auth/identity/**", List.of(POST, PATCH, DELETE))
-            .addPolicy("/api/v1/auth/password/renew/**", List.of(POST, PATCH))
-            .addPolicy("/api/v1/auth/mfa/**", List.of(POST, PATCH))
+            .addPolicy("/api/v1/user/account/**", List.of(GET, POST, PATCH, DELETE))
+            .addPolicy("/api/v1/user/check/**", List.of(GET, PATCH))
+            .addPolicy("/api/v1/user/email/**", List.of(POST, PATCH, DELETE))
+            .addPolicy("/api/v1/user/identity/**", List.of(POST, PATCH, DELETE))
+            .addPolicy("/api/v1/user/password/renew/**", List.of(POST, PATCH))
+            .addPolicy("/api/v1/user/mfa/**", List.of(POST, PATCH))
             .addPolicy("/api/v1/misc/captcha/**", List.of(POST))
             .addPolicy("/api/v1/multimedia/profile/color/**", List.of(GET, PATCH))
             .addPolicy("/api/v1/multimedia/profile/image/**", List.of(GET, POST, DELETE))
