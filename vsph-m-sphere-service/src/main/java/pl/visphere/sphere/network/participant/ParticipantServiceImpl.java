@@ -141,7 +141,7 @@ class ParticipantServiceImpl implements ParticipantService {
             .id(userId)
             .fullName(fullName)
             .username(username)
-            .joinDate(userDetailsResDto.isLocked() ? null : userDetailsResDto.getJoinDate())
+            .joinDate(userDetailsResDto.getJoinDate())
             .memberSinceDate(userGuild.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate())
             .profileColor(profileImageDetails.getProfileColor())
             .profileImageUrl(profileImageDetails.getProfileImagePath())
