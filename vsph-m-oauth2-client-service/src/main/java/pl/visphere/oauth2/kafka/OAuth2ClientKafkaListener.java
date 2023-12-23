@@ -20,7 +20,12 @@ class OAuth2ClientKafkaListener {
     private final OAuth2Service oAuth2Service;
 
     @KafkaListener(topics = "${visphere.kafka.topic.get-oauth2-details}")
-    void getOAuth2DetailsListener(Message<Long> userId) {
-        syncListenerHandler.parseAndSendResponse(userId, oAuth2Service::getOAuthDetails);
+    void getOAuth2DetailsListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, oAuth2Service::getOAuthDetails);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.delete-oauth2-user-data}")
+    void deleteOAuth2UserDataListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, oAuth2Service::deleteOAuth2UserData);
     }
 }

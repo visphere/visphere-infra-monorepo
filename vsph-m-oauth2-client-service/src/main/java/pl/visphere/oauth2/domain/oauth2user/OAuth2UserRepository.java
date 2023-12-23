@@ -14,4 +14,5 @@ import java.util.Optional;
 public interface OAuth2UserRepository extends JpaRepository<OAuth2UserEntity, Long> {
     Optional<OAuth2UserEntity> findByProviderIdAndSupplier(String providerId, OAuth2Supplier supplier);
     Optional<OAuth2UserEntity> findByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

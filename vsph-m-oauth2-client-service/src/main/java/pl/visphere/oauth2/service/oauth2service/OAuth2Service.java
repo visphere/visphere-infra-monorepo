@@ -8,4 +8,5 @@ import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
 
 public interface OAuth2Service {
     OAuth2DetailsResDto getOAuthDetails(Long userId);
+    void deleteOAuth2UserData(Long userId);
 }

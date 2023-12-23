@@ -105,4 +105,11 @@ public class OAuth2ServiceImpl implements OAuth2Service, OAuth2UserLoader {
         log.info("Successfully get and process OAuth2 user account details: '{}'.", resDto);
         return resDto;
     }
+
+    @Override
+    @Transactional
+    public void deleteOAuth2UserData(Long userId) {
+        oAuth2UserRepository.deleteByUserId(userId);
+        log.info("Successfully deleted OAuth2 user correlation for user with ID: '{}'.", userId);
+    }
 }
