@@ -61,4 +61,12 @@ public class AccountException {
             log.error("Attempt to disable already disabled account for user: '{}'.", username);
         }
     }
+
+    @Slf4j
+    public static class UnableToDeleteAccountWithGuildsException extends AbstractRestException {
+        public UnableToDeleteAccountWithGuildsException(Long userId) {
+            super(HttpStatus.BAD_REQUEST, LocaleSet.UNABLE_TO_DELETE_ACCOUNT_WITH_GUILDS_EXCEPTION_MESSAGE);
+            log.error("Attempt to delete account with ID: '{}' with some Sphere(s).", userId);
+        }
+    }
 }

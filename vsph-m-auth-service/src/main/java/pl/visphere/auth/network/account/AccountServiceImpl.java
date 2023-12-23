@@ -285,11 +285,33 @@ class AccountServiceImpl implements AccountService {
             .build();
     }
 
-    private UserEntity getUserProxyFromCache(AuthUserDetails user) {
-        return cacheService
-            .getSafetyFromCache(CacheName.USER_ENTITY_USER_ID, user.getId(), UserEntity.class,
-                () -> userRepository.findById(user.getId()))
-            .orElseThrow(() -> new UserException.UserNotExistException(user.getId()));
+    @Override
+    @Transactional
+    public BaseMessageResDto delete(PasswordReqDto reqDto, AuthUserDetails user) {
+        final UserEntity userEntity = findUserAndCheckPasswordForLocal(reqDto, user);
+
+        final boolean hasSomeGuilds = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.CHECK_USER_SPHERE_GUILDS, userEntity.getId(), Boolean.class);
+        if (hasSomeGuilds) {
+            throw new AccountException.UnableToDeleteAccountWithGuildsException(userEntity.getId());
+        }
+        if (userEntity.getExternalCredProvider()) {
+            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_OAUTH2_USER_DATA, userEntity.getId());
+        }
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_SETTINGS_DATA, userEntity.getId());
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_NOTIF_USER_SETTINGS, userEntity.getId());
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_IMAGE_DATA, userEntity.getId());
+
+        refreshTokenRepository.deleteAllByUser_Id(user.getId());
+        userRepository.delete(userEntity);
+
+        asyncQueueHandler.sendAsyncWithNonBlockingThread(QueueTopic.EMAIL_DELETED_ACCOUNT,
+            accountMapper.mapToSendBaseEmailReq(userEntity));
+
+        log.info("Successfully deleted user account: '{}' with all related data.", userEntity);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.DELETED_ACCOUNT_RESPONSE_SUCCESS))
+            .build();
     }
 
     private LocalDate parseToLocalDate(String birthDate) {

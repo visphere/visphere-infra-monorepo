@@ -27,6 +27,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     INVALID_OLD_PASSWORD_EXCEPTION_MESSAGE("vsph.auth.exc.invalidOldPassword"),
     ACCOUNT_ALREADY_ENABLED_EXCEPTION_MESSAGE("vsph.auth.exc.accountAlreadyEnabled"),
     ACCOUNT_ALREADY_DISABLED_EXCEPTION_MESSAGE("vsph.auth.exc.accountAlreadyDisabled"),
+    UNABLE_TO_DELETE_ACCOUNT_WITH_GUILDS_EXCEPTION_MESSAGE("vsph.auth.exc.unableToDeleteAccountWithGuilds"),
     CREATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.createAccount.res.success"),
     ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.activateAccount.res.success"),
     RESEND_ACTIVATE_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.resendActivateAccount.res.success"),
@@ -43,6 +44,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     UDPATE_ACCOUNT_DETAILS_RESPONSE_SUCCESS("vsph.i18n.updatedAccountDetails.res.success"),
     DISABLED_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.disabledAccount.res.success"),
     ENABLED_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.enabledAccount.res.success"),
+    DELETED_ACCOUNT_RESPONSE_SUCCESS("vsph.i18n.deletedAccount.res.success"),
     ;
 
     private final String holder;

@@ -61,4 +61,12 @@ class AccountController {
     ResponseEntity<BaseMessageResDto> enable(HttpServletRequest req) {
         return ResponseEntity.ok(accountService.enable(req));
     }
+
+    @DeleteMapping("/delete")
+    ResponseEntity<BaseMessageResDto> delete(
+        @Valid @RequestBody PasswordReqDto reqDto,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(accountService.delete(reqDto, user));
+    }
 }
