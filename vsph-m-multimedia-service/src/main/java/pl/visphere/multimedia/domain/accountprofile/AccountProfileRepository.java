@@ -12,4 +12,5 @@ import java.util.Optional;
 @Repository
 public interface AccountProfileRepository extends JpaRepository<AccountProfileEntity, Long> {
     Optional<AccountProfileEntity> findByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

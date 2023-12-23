@@ -64,4 +64,14 @@ class MultimediaKafkaListener {
     void getGuildImagesByGuildIdsListener(Message<GuildImageByIdsReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::getGuildImagesByGuildIds);
     }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.delete-user-image-data}")
+    void deleteUserImageDataListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::deleteUserImageData);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.delete-guild-image-data}")
+    void deleteGuildImageDataListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::deleteGuildImageData);
+    }
 }

@@ -14,4 +14,5 @@ import java.util.Optional;
 public interface GuildProfileRepository extends JpaRepository<GuildProfileEntity, Long> {
     Optional<GuildProfileEntity> findByGuildId(Long guildId);
     List<GuildProfileEntity> findAllByGuildIdIn(List<Long> guildIds);
+    void deleteByGuildId(Long guildId);
 }

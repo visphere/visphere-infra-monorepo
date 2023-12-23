@@ -278,4 +278,20 @@ public class ImageServiceImpl implements ImageService {
 
         return new GuildImageByIdsResDto(resDtos);
     }
+
+    @Override
+    @Transactional
+    public void deleteUserImageData(Long userId) {
+        accountProfileRepository.deleteByUserId(userId);
+        s3Client.clearObjects(S3Bucket.USERS, userId, S3ResourcePrefix.PROFILE);
+        log.info("Successfully deleted user with ID: '{}' image data details and resources.", userId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteGuildImageData(Long guildId) {
+        guildProfileRepository.deleteByGuildId(guildId);
+        s3Client.clearObjects(S3Bucket.SPHERES, guildId, S3ResourcePrefix.PROFILE);
+        log.info("Successfully deleted Sphere guild with ID: '{}' image data details and resources.", guildId);
+    }
 }
