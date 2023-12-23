@@ -18,7 +18,7 @@ import pl.visphere.lib.validator.password.ValidateMatchingPasswords;
 @ValidateMatchingPasswords(message = "vsph.lib.jpa.passwords.notMatch")
 public class ChangeViaAccountReqDto implements PasswordValidatorModel {
 
-    @NotBlank(message = "vsph.auth.jpa.oldPassword.notBlank")
+    @NotBlank(message = "vsph.user.jpa.oldPassword.notBlank")
     private String oldPassword;
 
     @NotBlank(message = "vsph.lib.jpa.password.notBlank")

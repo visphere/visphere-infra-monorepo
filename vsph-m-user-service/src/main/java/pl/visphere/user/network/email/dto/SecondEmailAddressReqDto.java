@@ -14,9 +14,9 @@ import lombok.Setter;
 @Setter
 public class SecondEmailAddressReqDto implements EmailAddressDto {
 
-    @NotBlank(message = "vsph.auth.jpa.secondEmailAddress.notBlank")
-    @Size(max = 100, message = "vsph.auth.jpa.secondEmailAddress.size")
-    @Email(message = "vsph.auth.jpa.secondEmailAddress.email")
+    @NotBlank(message = "vsph.user.jpa.secondEmailAddress.notBlank")
+    @Size(max = 100, message = "vsph.user.jpa.secondEmailAddress.size")
+    @Email(message = "vsph.user.jpa.secondEmailAddress.email")
     private String emailAddress;
 
     @Override

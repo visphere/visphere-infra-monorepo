@@ -13,11 +13,11 @@ import org.hibernate.validator.constraints.UUID;
 @Setter
 public class RefreshReqDto {
 
-    @NotBlank(message = "vsph.auth.jpa.expiredAccessToken.notBlank")
+    @NotBlank(message = "vsph.user.jpa.expiredAccessToken.notBlank")
     private String expiredAccessToken;
 
-    @NotBlank(message = "vsph.auth.jpa.refreshToken.notBlank")
-    @UUID(message = "vsph.auth.jpa.refreshToken.uuid")
+    @NotBlank(message = "vsph.user.jpa.refreshToken.notBlank")
+    @UUID(message = "vsph.user.jpa.refreshToken.uuid")
     private String refreshToken;
 
     @Override

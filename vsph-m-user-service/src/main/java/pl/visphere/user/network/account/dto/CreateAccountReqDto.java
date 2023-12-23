@@ -45,15 +45,15 @@ public class CreateAccountReqDto implements PasswordValidatorModel {
     @Size(min = 2, max = 80, message = "vsph.lib.jpa.lastName.size")
     private String lastName;
 
-    @NotNull(message = "vsph.auth.jpa.secondEmailAddress.notNull")
-    @Size(max = 100, message = "vsph.auth.jpa.secondEmailAddress.size")
-    @Email(message = "vsph.auth.jpa.secondEmailAddress.email")
+    @NotNull(message = "vsph.user.jpa.secondEmailAddress.notNull")
+    @Size(max = 100, message = "vsph.user.jpa.secondEmailAddress.size")
+    @Email(message = "vsph.user.jpa.secondEmailAddress.email")
     private String secondEmailAddress;
 
     @NotNull(message = "vsph.lib.jpa.allowNotifs.notNull")
     private Boolean allowNotifs;
 
-    @NotNull(message = "vsph.auth.jpa.enableMfa.notNull")
+    @NotNull(message = "vsph.user.jpa.enableMfa.notNull")
     private Boolean enabledMfa;
 
     @Override

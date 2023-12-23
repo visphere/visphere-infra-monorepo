@@ -17,8 +17,8 @@ import pl.visphere.lib.RegexConstant;
 @Setter
 public class MyAccountReqDto {
 
-    @NotBlank(message = "vsph.auth.jpa.accountId.notBlank")
-    @UUID(message = "vsph.auth.jpa.accountId.uuid")
+    @NotBlank(message = "vsph.user.jpa.accountId.notBlank")
+    @UUID(message = "vsph.user.jpa.accountId.uuid")
     private String accountId;
 
     @NotBlank(message = "vsph.lib.jpa.usernameOrEmailAddress.notBlank")
@@ -26,7 +26,7 @@ public class MyAccountReqDto {
     @Pattern(regexp = RegexConstant.USERNAME_OR_EMAIL_REQ, message = "vsph.lib.jpa.usernameOrEmailAddress.pattern")
     private String usernameOrEmailAddress;
 
-    @NotNull(message = "vsph.auth.jpa.isVerified.notNull")
+    @NotNull(message = "vsph.user.jpa.isVerified.notNull")
     private Boolean verified;
 
     @Override
