@@ -76,10 +76,10 @@ public class SyncQueueHandler {
             record.headers().add(new RecordHeader(LOCALE_HEADER, SerializationUtils.serialize(currentLocale)));
 
             final RequestReplyFuture<String, Object, Object> future = replyingKafkaTemplate.sendAndReceive(record);
-            final ConsumerRecord<String, Object> response = future.get(10, TimeUnit.SECONDS);
+            final ConsumerRecord<String, Object> response = future.get(3, TimeUnit.MINUTES);
             final KafkaNullableResponseWrapper resp = (KafkaNullableResponseWrapper) response.value();
 
-            log.debug("End sync kafka call into '{}' with response: '{}'.", decodedTopic, resp);
+            log.info("End sync kafka call into '{}' with response: '{}'.", decodedTopic, resp);
 
             ResponseObject responseObject = ResponseObject.IS_NULL;
             R payload = null;

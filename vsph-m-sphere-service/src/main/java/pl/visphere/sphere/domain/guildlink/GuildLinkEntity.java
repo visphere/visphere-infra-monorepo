@@ -79,11 +79,11 @@ public class GuildLinkEntity extends AbstractAuditableEntity implements Serializ
         this.usagesCount = usagesCount;
     }
 
-    GuildEntity getGuild() {
+    public GuildEntity getGuild() {
         return guild;
     }
 
-    void setGuild(GuildEntity guild) {
+    public void setGuild(GuildEntity guild) {
         this.guild = guild;
     }
 

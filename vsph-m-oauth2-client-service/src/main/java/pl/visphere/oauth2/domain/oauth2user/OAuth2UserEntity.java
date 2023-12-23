@@ -63,7 +63,7 @@ public class OAuth2UserEntity extends AbstractAuditableEntity implements Seriali
         return providerImageSelected;
     }
 
-    void setProviderImageSelected(Boolean providerImageSelected) {
+    public void setProviderImageSelected(Boolean providerImageSelected) {
         this.providerImageSelected = providerImageSelected;
     }
 

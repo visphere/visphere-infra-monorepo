@@ -25,7 +25,7 @@ public class CreateGuildReqDto {
     private GuildCategory category;
 
     @NotNull(message = "vsph.sphere.jpa.guildIsPrivate.notNull")
-    private boolean isPrivate;
+    private Boolean isPrivate;
 
     @Override
     public String toString() {

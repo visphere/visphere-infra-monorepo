@@ -27,7 +27,7 @@ public class UserNotifServiceImpl implements UserNotifService {
             .isMailNotifsEnabled(reqDto.isEmailNotifsEnabled())
             .build();
         userNotifRepository.save(userNotif);
-        
+
         log.info("Successfully persisted user notification settings.");
     }
 }

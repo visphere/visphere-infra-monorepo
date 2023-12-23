@@ -19,7 +19,7 @@ import pl.visphere.notification.service.usernotif.UserNotifService;
 public class NotificationKafkaListener {
     private final SyncListenerHandler syncListenerHandler;
     private final UserNotifService userNotifService;
-    
+
     @KafkaListener(topics = "${visphere.kafka.topic.persist-notif-user-settings}")
     void sendForActivateAccountListener(Message<PersistUserNotifSettingsReqDto> reqDto) {
         syncListenerHandler.parseAndSendResponse(reqDto, userNotifService::persistUserNotifSettings);
