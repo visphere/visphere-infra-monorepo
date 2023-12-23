@@ -17,6 +17,7 @@ import pl.visphere.lib.file.MimeType;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsReqDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
@@ -213,6 +214,14 @@ class ProfileImageServiceImpl implements ProfileImageService {
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setImageType(ImageType.DEFAULT);
 
+        String profileImagePath = res.fullPath();
+        if (userDetailsResDto.isExternalCredentialsSupplier()) {
+            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
+            if (detailsResDto.profileImageSuppliedByProvider()) {
+                profileImagePath = detailsResDto.profileImageUrl();
+            }
+        }
         cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, user.getId());
 
         log.info("Successfully removed image and generated initials profile for username: '{}' and color: '{}'.",
@@ -220,7 +229,7 @@ class ProfileImageServiceImpl implements ProfileImageService {
 
         return MessageWithResourcePathResDto.builder()
             .message(i18nService.getMessage(LocaleSet.USER_PROFILE_CUSTOM_IMAGE_DELETE_RESPONSE_SUCCESS))
-            .resourcePath(res.fullPath())
+            .resourcePath(profileImagePath)
             .build();
     }
 

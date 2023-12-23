@@ -13,7 +13,7 @@ public interface ImageService {
     void replaceLockedWithProfile(Long userId);
     DefaultGuildProfileResDto generateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto);
     DefaultGuildProfileResDto updateDefaultGuildProfile(DefaultGuildProfileReqDto reqDto);
-    ProfileImageDetailsResDto getProfileImageDetails(Long userId);
+    ProfileImageDetailsResDto getProfileImageDetails(ProfileImageDetailsReqDto reqDto);
     ProfileImageDetailsResDto getGuildProfileImageDetails(Long guildId);
     GuildImageByIdsResDto getGuildImagesByGuildIds(GuildImageByIdsReqDto reqDto);
 }

@@ -39,6 +39,7 @@ import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendStateEmailReqDto;
@@ -220,8 +221,14 @@ class MfaServiceImpl implements MfaService {
     }
 
     private LoginResDto createLoginResponse(UserEntity user) {
+        final ProfileImageDetailsReqDto imageDetailsReqDto = ProfileImageDetailsReqDto.builder()
+            .userId(user.getId())
+            .isExternalCredentialsSupplier(user.getExternalCredProvider())
+            .build();
+
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, imageDetailsReqDto,
+                ProfileImageDetailsResDto.class);
 
         final TokenData access = jwtService.generateAccessToken(user.getId(), user.getUsername(), user.getEmailAddress());
 
@@ -240,7 +247,7 @@ class MfaServiceImpl implements MfaService {
             user.persistRefreshToken(refreshTokenEntity);
             refreshToken = refresh.token();
         }
-        return new LoginResDto(profileImageDetails.profileImagePath(), profileImageDetails.profileColor(), user,
-            access.token(), refreshToken, settingsResDto);
+        return new LoginResDto(profileImageDetails, user, access.token(), refreshToken, settingsResDto,
+            !profileImageDetails.isCustomImage());
     }
 }

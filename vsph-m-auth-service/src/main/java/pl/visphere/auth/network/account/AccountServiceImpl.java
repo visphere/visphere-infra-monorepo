@@ -17,7 +17,6 @@ import pl.visphere.auth.cache.CacheName;
 import pl.visphere.auth.domain.mfauser.MfaUserEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
-import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenRepository;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.auth.domain.role.RoleRepository;
@@ -125,7 +124,7 @@ class AccountServiceImpl implements AccountService {
         return UpdateAccountDetailsResDto.builder()
             .message(i18nService.getMessage(LocaleSet.UDPATE_ACCOUNT_DETAILS_RESPONSE_SUCCESS))
             .accessToken(tokenData.token())
-            .profileImagePath(resDto.profileImagePath())
+            .profileImagePath(resDto.getProfileImagePath())
             .build();
     }
 
@@ -309,11 +308,5 @@ class AccountServiceImpl implements AccountService {
             .build();
         userService.checkUserCredentials(confirmationReqDto);
         return userEntity;
-    }
-
-    private void logoutFromAll(UserEntity user) {
-        final List<RefreshTokenEntity> refreshTokenEntity = refreshTokenRepository
-            .findAllByUser_Id(user.getId());
-        refreshTokenRepository.deleteAll(refreshTokenEntity);
     }
 }

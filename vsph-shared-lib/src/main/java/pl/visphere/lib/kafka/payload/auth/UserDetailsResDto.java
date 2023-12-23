@@ -22,4 +22,5 @@ public class UserDetailsResDto {
     private LocalDate joinDate;
     private boolean isActivated;
     private boolean isLocked;
+    private boolean isExternalCredentialsSupplier;
 }

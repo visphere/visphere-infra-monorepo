@@ -10,7 +10,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.StringParser;
 import pl.visphere.lib.cache.CacheService;
+import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.*;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.s3.*;
 import pl.visphere.multimedia.cache.CacheName;
 import pl.visphere.multimedia.domain.ImageType;
@@ -37,6 +40,7 @@ public class ImageServiceImpl implements ImageService {
     private final S3Client s3Client;
     private final S3Helper s3Helper;
     private final CacheService cacheService;
+    private final SyncQueueHandler syncQueueHandler;
 
     private final AccountProfileRepository accountProfileRepository;
     private final GuildProfileRepository guildProfileRepository;
@@ -212,15 +216,31 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public ProfileImageDetailsResDto getProfileImageDetails(Long userId) {
+    public ProfileImageDetailsResDto getProfileImageDetails(ProfileImageDetailsReqDto reqDto) {
         final AccountProfileEntity accountProfile = accountProfileRepository
-            .findByUserId(userId)
-            .orElseThrow(() -> new AccountProfileException.AccountProfileNotFoundException(userId));
+            .findByUserId(reqDto.userId())
+            .orElseThrow(() -> new AccountProfileException.AccountProfileNotFoundException(reqDto.userId()));
 
+        String supplier = "local";
+        boolean isCustomImage = true;
+        String profileImagePath = s3Helper
+            .prepareUserProfilePath(reqDto.userId(), accountProfile.getProfileImageUuid());
+
+        if (reqDto.isExternalCredentialsSupplier()) {
+            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, reqDto.userId(), OAuth2DetailsResDto.class);
+            if (detailsResDto.profileImageSuppliedByProvider()) {
+                profileImagePath = detailsResDto.profileImageUrl();
+                isCustomImage = false;
+            }
+            supplier = detailsResDto.supplier();
+        }
         final ProfileImageDetailsResDto resDto = ProfileImageDetailsResDto.builder()
             .profileColor(accountProfile.getProfileColor())
             .profileImageUuid(accountProfile.getProfileImageUuid())
-            .profileImagePath(s3Helper.prepareUserProfilePath(userId, accountProfile.getProfileImageUuid()))
+            .profileImagePath(profileImagePath)
+            .credentialsSupplier(supplier)
+            .isCustomImage(isCustomImage)
             .build();
 
         log.info("Successfully get account profile details: '{}'.", resDto);

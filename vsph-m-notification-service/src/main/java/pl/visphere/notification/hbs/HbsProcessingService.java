@@ -18,9 +18,9 @@ import pl.visphere.lib.i18n.AppLocale;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.notification.SendEmailReqDto;
-import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.s3.*;
 import pl.visphere.notification.config.ExternalServiceConfig;
@@ -118,29 +118,30 @@ public class HbsProcessingService {
 
     public String appendBase64ImageData(SendEmailReqDto reqDto, boolean hasImage, String preParsedTemplate) {
         final String imageUrl = getUserProfileImageUrl(reqDto, hasImage);
-        return preParsedTemplate.replaceAll("\\$\\$\\{profileImagePlaceholder\\}\\$\\$", imageUrl);
+        return preParsedTemplate.replaceAll("\\$\\$\\{profileImagePlaceholder}\\$\\$", imageUrl);
     }
 
     private String getUserProfileImageUrl(SendEmailReqDto reqDto, boolean hasImage) {
-        String imageUrl = StringUtils.EMPTY;
-        boolean isCustomImage = true;
         if (!hasImage) {
-            return imageUrl;
+            return StringUtils.EMPTY;
         }
-        if (reqDto.getIsExternalCredentialsSupplier()) {
-            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
-                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, reqDto.getUserId(), OAuth2DetailsResDto.class);
-            if (detailsResDto.profileImageSuppliedByProvider()) {
-                isCustomImage = false;
-                imageUrl = detailsResDto.profileImageUrl();
-            }
-        }
-        if (isCustomImage) {
-            final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-                .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, reqDto.getUserId(),
-                    ProfileImageDetailsResDto.class);
-            final String fileName = String.format("%s/%s-%s.%s", reqDto.getUserId(), S3ResourcePrefix.PROFILE.getPrefix(),
-                profileImageDetails.profileImageUuid(), FileExtension.PNG);
+        final ProfileImageDetailsReqDto imageDetailsReqDto = ProfileImageDetailsReqDto.builder()
+            .userId(reqDto.getUserId())
+            .isExternalCredentialsSupplier(reqDto.getIsExternalCredentialsSupplier())
+            .build();
+
+        final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, imageDetailsReqDto,
+                ProfileImageDetailsResDto.class);
+
+        String imageUrl = profileImageDetails.getProfileImagePath();
+        if (profileImageDetails.isCustomImage()) {
+            final String fileName = String.format("%s/%s-%s.%s",
+                reqDto.getUserId(),
+                S3ResourcePrefix.PROFILE.getPrefix(),
+                profileImageDetails.getProfileImageUuid(),
+                FileExtension.PNG);
+
             final FileStreamInfo imageStream = s3Client.getObjectByFullKey(S3Bucket.USERS, fileName);
             imageUrl = "data:" + MimeType.PNG.getMime() + ";base64," + Base64.getEncoder()
                 .encodeToString(imageStream.data());

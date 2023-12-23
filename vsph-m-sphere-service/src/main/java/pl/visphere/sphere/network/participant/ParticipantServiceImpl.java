@@ -15,6 +15,7 @@ import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.auth.UserDetailsResDto;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
@@ -62,8 +63,13 @@ class ParticipantServiceImpl implements ParticipantService {
             final UserDetailsResDto userDetailsResDto = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.USER_DETAILS, userGuild.getUserId(), UserDetailsResDto.class);
 
+            final ProfileImageDetailsReqDto profileImageDetailsReqDto = ProfileImageDetailsReqDto.builder()
+                .userId(userGuild.getUserId())
+                .isExternalCredentialsSupplier(userDetailsResDto.isExternalCredentialsSupplier())
+                .build();
+
             final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler.sendNotNullWithBlockThread(
-                QueueTopic.PROFILE_IMAGE_DETAILS, userGuild.getUserId(), ProfileImageDetailsResDto.class);
+                QueueTopic.PROFILE_IMAGE_DETAILS, profileImageDetailsReqDto, ProfileImageDetailsResDto.class);
 
             String fullName = createFullName(userDetailsResDto);
             if (userDetailsResDto.isLocked()) {
@@ -72,7 +78,7 @@ class ParticipantServiceImpl implements ParticipantService {
             final GuildParticipant member = GuildParticipant.builder()
                 .id(userGuild.getUserId())
                 .fullName(fullName)
-                .profileImageUrl(profileImageDetails.profileImagePath())
+                .profileImageUrl(profileImageDetails.getProfileImagePath())
                 .build();
 
             guildMembers.add(member);
@@ -113,8 +119,13 @@ class ParticipantServiceImpl implements ParticipantService {
         final UserDetailsResDto userDetailsResDto = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.USER_DETAILS, userId, UserDetailsResDto.class);
 
+        final ProfileImageDetailsReqDto profileImageDetailsReqDto = ProfileImageDetailsReqDto.builder()
+            .userId(userGuild.getUserId())
+            .isExternalCredentialsSupplier(userDetailsResDto.isExternalCredentialsSupplier())
+            .build();
+
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler.sendNotNullWithBlockThread(
-            QueueTopic.PROFILE_IMAGE_DETAILS, userId, ProfileImageDetailsResDto.class);
+            QueueTopic.PROFILE_IMAGE_DETAILS, profileImageDetailsReqDto, ProfileImageDetailsResDto.class);
 
         final ProfileImageDetailsResDto guildProfileImageDetails = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.GET_GUILD_PROFILE_IMAGE_DETAILS, guildId,
@@ -132,10 +143,10 @@ class ParticipantServiceImpl implements ParticipantService {
             .username(username)
             .joinDate(userDetailsResDto.isLocked() ? null : userDetailsResDto.getJoinDate())
             .memberSinceDate(userGuild.getCreatedAt().atZone(ZoneId.systemDefault()).toLocalDate())
-            .profileColor(profileImageDetails.profileColor())
-            .profileImageUrl(profileImageDetails.profileImagePath())
+            .profileColor(profileImageDetails.getProfileColor())
+            .profileImageUrl(profileImageDetails.getProfileImagePath())
             .isOwner(Objects.equals(userId, guild.getOwnerId()))
-            .guildProfileImageUrl(guildProfileImageDetails.profileImagePath())
+            .guildProfileImageUrl(guildProfileImageDetails.getProfileImagePath())
             .isLoggedUser(Objects.equals(userId, user.getId()))
             .build();
 
@@ -153,8 +164,13 @@ class ParticipantServiceImpl implements ParticipantService {
             final UserDetailsResDto userDetailsResDto = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.USER_DETAILS, bannedUser.getUserId(), UserDetailsResDto.class);
 
+            final ProfileImageDetailsReqDto profileImageDetailsReqDto = ProfileImageDetailsReqDto.builder()
+                .userId(bannedUser.getUserId())
+                .isExternalCredentialsSupplier(userDetailsResDto.isExternalCredentialsSupplier())
+                .build();
+
             final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler.sendNotNullWithBlockThread(
-                QueueTopic.PROFILE_IMAGE_DETAILS, bannedUser.getUserId(), ProfileImageDetailsResDto.class);
+                QueueTopic.PROFILE_IMAGE_DETAILS, profileImageDetailsReqDto, ProfileImageDetailsResDto.class);
 
             String fullName = createFullName(userDetailsResDto);
             String username = userDetailsResDto.getUsername();
@@ -166,8 +182,8 @@ class ParticipantServiceImpl implements ParticipantService {
                 .id(bannedUser.getUserId())
                 .fullName(fullName)
                 .username(username)
-                .profileColor(profileImageDetails.profileColor())
-                .profileImageUrl(profileImageDetails.profileImagePath())
+                .profileColor(profileImageDetails.getProfileColor())
+                .profileImageUrl(profileImageDetails.getProfileImagePath())
                 .build();
 
             bannedGuildMembers.add(resDto);

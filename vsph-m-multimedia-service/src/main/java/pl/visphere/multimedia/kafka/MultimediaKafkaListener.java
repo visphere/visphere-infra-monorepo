@@ -9,10 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
-import pl.visphere.lib.kafka.payload.multimedia.DefaultGuildProfileReqDto;
-import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
-import pl.visphere.lib.kafka.payload.multimedia.GuildImageByIdsReqDto;
-import pl.visphere.lib.kafka.payload.multimedia.UpdateUserProfileReqDto;
+import pl.visphere.lib.kafka.payload.multimedia.*;
 import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 import pl.visphere.multimedia.service.image.ImageService;
 
@@ -44,7 +41,7 @@ class MultimediaKafkaListener {
     }
 
     @KafkaListener(topics = "${visphere.kafka.topic.profile-image-details}")
-    void getProfileImageDetailsListener(Message<Long> payload) {
+    void getProfileImageDetailsListener(Message<ProfileImageDetailsReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::getProfileImageDetails);
     }
 

@@ -7,6 +7,7 @@ package pl.visphere.auth.network;
 import lombok.Builder;
 import org.apache.commons.lang3.StringUtils;
 import pl.visphere.auth.domain.user.UserEntity;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 
 import java.time.LocalDate;
@@ -22,6 +23,7 @@ public record LoginResDto(
     String accessToken,
     String refreshToken,
     String credentialsSupplier,
+    boolean imageFromExternalProvider,
     boolean isDisabled,
     boolean isActivated,
     boolean isMfaEnabled,
@@ -30,18 +32,19 @@ public record LoginResDto(
     UserSettingsResDto settings
 ) {
     public LoginResDto(
-        String profileImagePath, String profileColor, UserEntity user, String token, String refreshToken,
-        UserSettingsResDto resDto
+        ProfileImageDetailsResDto profileImageDetails, UserEntity user, String token, String refreshToken,
+        UserSettingsResDto resDto, boolean imageFromExternalProvider
     ) {
         this(
             user.getFirstName() + StringUtils.SPACE + user.getLastName(),
             user.getUsername(),
             user.getEmailAddress(),
-            profileImagePath,
-            profileColor,
+            profileImageDetails.getProfileImagePath(),
+            profileImageDetails.getProfileColor(),
             token,
             refreshToken,
-            "local",
+            profileImageDetails.getCredentialsSupplier(),
+            imageFromExternalProvider,
             user.getIsDisabled(),
             user.getIsActivated(),
             user.getMfaUser() != null,

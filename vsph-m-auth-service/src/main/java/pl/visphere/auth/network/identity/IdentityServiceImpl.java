@@ -34,6 +34,7 @@ import pl.visphere.lib.jwt.JwtException;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
@@ -81,23 +82,24 @@ class IdentityServiceImpl implements IdentityService {
                 user.persistRefreshToken(refreshTokenEntity);
             }
         }
-
-        String userProfileUrl = StringUtils.EMPTY;
-        String userProfileColor = StringUtils.EMPTY;
+        ProfileImageDetailsResDto profileImageDetails = new ProfileImageDetailsResDto();
         UserSettingsResDto settingsResDto = new UserSettingsResDto();
 
         if (user.getIsActivated()) {
-            final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-                .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(),
-                    ProfileImageDetailsResDto.class);
-            userProfileUrl = profileImageDetails.profileImagePath();
-            userProfileColor = profileImageDetails.profileColor();
+            final ProfileImageDetailsReqDto imageDetailsReqDto = ProfileImageDetailsReqDto.builder()
+                .userId(user.getId())
+                .isExternalCredentialsSupplier(user.getExternalCredProvider())
+                .build();
+
+            profileImageDetails = syncQueueHandler.sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS,
+                imageDetailsReqDto, ProfileImageDetailsResDto.class);
+
             settingsResDto = syncQueueHandler
                 .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
                     UserSettingsResDto.class);
         }
-        final LoginResDto resDto = new LoginResDto(userProfileUrl, userProfileColor, user, token, refreshToken,
-            settingsResDto);
+        final LoginResDto resDto = new LoginResDto(profileImageDetails, user, token, refreshToken, settingsResDto,
+            !profileImageDetails.isCustomImage());
 
         log.info("Successfully login via username and password for user: '{}'.", resDto);
         return resDto;
@@ -114,22 +116,14 @@ class IdentityServiceImpl implements IdentityService {
         if (user.getIsDisabled()) {
             throw new UserException.UserAccountDisabledException(user.getUsername());
         }
-        boolean hasCustomImage = true;
-        String profileImagePath = StringUtils.EMPTY;
+        final ProfileImageDetailsReqDto imageDetailsReqDto = ProfileImageDetailsReqDto.builder()
+            .userId(user.getId())
+            .isExternalCredentialsSupplier(user.getExternalCredProvider())
+            .build();
 
-        if (user.getExternalCredProvider()) {
-            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
-                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
-
-            hasCustomImage = !detailsResDto.profileImageSuppliedByProvider();
-            profileImagePath = detailsResDto.profileImageUrl();
-        }
         final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler.sendNotNullWithBlockThread(
-            QueueTopic.PROFILE_IMAGE_DETAILS, user.getId(), ProfileImageDetailsResDto.class);
+            QueueTopic.PROFILE_IMAGE_DETAILS, imageDetailsReqDto, ProfileImageDetailsResDto.class);
 
-        if (hasCustomImage) {
-            profileImagePath = profileImageDetails.profileImagePath();
-        }
         final RefreshTokenEntity refreshTokenEntity = refreshTokenRepository
             .findByRefreshTokenAndUserId(refreshToken, user.getId())
             .orElseThrow(() -> new RefrehTokenException.RefreshTokenExpiredException(refreshToken));
@@ -138,8 +132,8 @@ class IdentityServiceImpl implements IdentityService {
             .sendNotNullWithBlockThread(QueueTopic.GET_USER_PERSISTED_RELATED_SETTINGS, user.getId(),
                 UserSettingsResDto.class);
 
-        final LoginResDto resDto = new LoginResDto(profileImagePath, profileImageDetails.profileColor(),
-            user, accessToken, refreshTokenEntity.getRefreshToken(), settingsResDto);
+        final LoginResDto resDto = new LoginResDto(profileImageDetails, user, accessToken,
+            refreshTokenEntity.getRefreshToken(), settingsResDto, !profileImageDetails.isCustomImage());
 
         log.info("Successfully login via access token for user: '{}'.", resDto);
         return resDto;

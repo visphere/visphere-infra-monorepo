@@ -15,6 +15,7 @@ import pl.visphere.auth.network.check.dto.CheckAlreadyExistResDto;
 import pl.visphere.auth.network.check.dto.MyAccountReqDto;
 import pl.visphere.auth.network.check.dto.MyAccountResDto;
 import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
@@ -78,10 +79,15 @@ public class CheckServiceImpl implements CheckService {
                 if (foundUser.isEmpty()) {
                     continue;
                 }
+                final ProfileImageDetailsReqDto imageDetailsReqDto = ProfileImageDetailsReqDto.builder()
+                    .userId(foundUser.get().getId())
+                    .isExternalCredentialsSupplier(foundUser.get().getExternalCredProvider())
+                    .build();
+
                 final ProfileImageDetailsResDto profileImageDetails = syncQueueHandler
-                    .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, foundUser.get().getId(),
+                    .sendNotNullWithBlockThread(QueueTopic.PROFILE_IMAGE_DETAILS, imageDetailsReqDto,
                         ProfileImageDetailsResDto.class);
-                thumbnailUrl = profileImageDetails.profileImagePath();
+                thumbnailUrl = profileImageDetails.getProfileImagePath();
             }
             resDto.setThumbnailUrl(thumbnailUrl);
             resDtos.add(resDto);
