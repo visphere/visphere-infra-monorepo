@@ -51,6 +51,12 @@ public enum QueueTopic implements Property {
     GET_GUILD_PROFILE_IMAGE_DETAILS("get-guild-profile-image-details"),
     GET_GUILD_DETAILS("get-guild-details"),
     CHECK_USER_CREDENTIALS("check-user-crendetials"),
+    CHECK_USER_SPHERE_GUILDS("check-user-sphere-guilds"),
+    DELETE_USER_IMAGE_DATA("delete-user-image-data"),
+    DELETE_GUILD_IMAGE_DATA("delete-guild-image-data"),
+    DELETE_OAUTH2_USER_DATA("delete-oauth2-user-data"),
+    DELETE_USER_SETTINGS_DATA("delete-user-settings-data"),
+    DELETE_NOTIF_USER_SETTINGS("delete-notif-user-settings"),
     ;
 
     private final String topicKey;
