@@ -16,5 +16,4 @@ public interface UserGuildRepository extends JpaRepository<UserGuildEntity, Long
     List<UserGuildEntity> findAllByGuild_Id(Long guildId);
     Optional<UserGuildEntity> findByUserIdAndGuild_Id(Long userId, Long guildId);
     boolean existsByUserIdAndGuild_Id(Long userId, Long guildId);
-    void deleteAllByGuild_Id(Long guildId);
 }

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
 import pl.visphere.auth.domain.otatoken.OtaTokenRepository;
 import pl.visphere.auth.domain.user.UserEntity;
@@ -26,6 +27,7 @@ public class OtaTokenServiceImpl implements OtaTokenService {
     private final OtaTokenRepository otaTokenRepository;
 
     @Override
+    @Transactional
     public GenerateOtaResDto generate(UserEntity user, OtaToken type) {
         String token;
         do {
@@ -36,11 +38,10 @@ public class OtaTokenServiceImpl implements OtaTokenService {
         final OtaTokenEntity otaToken = OtaTokenEntity.builder()
             .token(token)
             .type(type)
-            .user(user)
             .expiredAt(expiredDate)
             .build();
 
-        otaTokenRepository.save(otaToken);
+        user.persistOtaToken(otaToken);
 
         final GenerateOtaResDto resDto = GenerateOtaResDto.builder()
             .token(token)

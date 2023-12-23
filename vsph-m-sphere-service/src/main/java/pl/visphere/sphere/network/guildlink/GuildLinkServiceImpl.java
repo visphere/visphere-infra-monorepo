@@ -88,6 +88,7 @@ class GuildLinkServiceImpl implements GuildLinkService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto createGuildLink(long guildId, CreateGuildLinkReqDto reqDto, AuthUserDetails user) {
         final GuildEntity guild = guildRepository
             .findByIdAndOwnerIdAndIsPrivateIsTrue(guildId, user.getId())
@@ -108,12 +109,10 @@ class GuildLinkServiceImpl implements GuildLinkService {
             .token(token)
             .expiredAt(expirationDate)
             .isActive(true)
-            .guild(guild)
             .build();
+        guild.persistGuildLink(guildLink);
 
-        final GuildLinkEntity savedGuildLink = guildLinkRepository.save(guildLink);
-
-        log.info("Successfully created new guild link: '{}'.", savedGuildLink);
+        log.info("Successfully created new guild link: '{}'.", guildLink);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LINK_CREATED_RESPONSE_SUCCESS))
             .build();

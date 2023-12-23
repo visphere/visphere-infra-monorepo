@@ -14,8 +14,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.auth.domain.blacklistjwt.BlackListJwtEntity;
-import pl.visphere.auth.domain.blacklistjwt.BlackListJwtRepository;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenRepository;
 import pl.visphere.auth.domain.user.UserEntity;
@@ -35,7 +35,6 @@ import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
-import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
@@ -52,10 +51,10 @@ class IdentityServiceImpl implements IdentityService {
     private final AuthenticationManager authenticationManager;
 
     private final UserRepository userRepository;
-    private final BlackListJwtRepository blackListJwtRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
+    @Transactional
     public LoginResDto loginViaPassword(LoginPasswordReqDto reqDto) {
         final var authToken = new UsernamePasswordAuthenticationToken(reqDto.getUsernameOrEmailAddress(),
             reqDto.getPassword());
@@ -77,10 +76,9 @@ class IdentityServiceImpl implements IdentityService {
                 final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                     .refreshToken(generateRefreshToken.token())
                     .expiringAt(jwtService.convertToZonedDateTime(generateRefreshToken.expiredAt()))
-                    .user(user)
                     .build();
                 refreshToken = generateRefreshToken.token();
-                refreshTokenRepository.save(refreshTokenEntity);
+                user.persistRefreshToken(refreshTokenEntity);
             }
         }
 
@@ -172,6 +170,7 @@ class IdentityServiceImpl implements IdentityService {
     }
 
     @Override
+    @Transactional
     public BaseMessageResDto logout(HttpServletRequest req, AuthUserDetails userDetails) {
         final String accessToken = jwtService.extractFromReq(req);
         final String refreshToken = jwtService.extractRefreshFromReq(req);
@@ -186,14 +185,9 @@ class IdentityServiceImpl implements IdentityService {
             .orElseThrow(() -> new UserException.UserNotExistException(userDetails.getId()));
 
         final BlackListJwtEntity blackListJwt = new BlackListJwtEntity(accessToken, expiredAt);
-        blackListJwt.setUser(user);
-        blackListJwtRepository.save(blackListJwt);
+        user.persistBlackListJwt(blackListJwt);
 
-        final RefreshTokenEntity refreshTokenEntity = refreshTokenRepository
-            .findByRefreshTokenAndUserId(refreshToken, user.getId())
-            .orElseThrow(() -> new RefrehTokenException.RefreshTokenNotFoundException(refreshToken));
-
-        refreshTokenRepository.delete(refreshTokenEntity);
+        refreshTokenRepository.deleteByRefreshTokenAndUser_Id(refreshToken, user.getId());
         SecurityContextHolder.clearContext();
 
         log.info("Successfully logged out user: '{}'.", user);

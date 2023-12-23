@@ -250,9 +250,8 @@ class ParticipantServiceImpl implements ParticipantService {
 
         final BannedUserEntity bannedUser = BannedUserEntity.builder()
             .userId(userId)
-            .guild(guild)
             .build();
-        bannedUserRepository.save(bannedUser);
+        guild.persistBannedUser(bannedUser);
 
         if (deleteAllMessages) {
             // TODO: delete all messages from chat microservice

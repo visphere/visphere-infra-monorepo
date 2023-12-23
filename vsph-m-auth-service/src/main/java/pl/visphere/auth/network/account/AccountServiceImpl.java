@@ -56,7 +56,6 @@ import pl.visphere.lib.security.user.AuthUserDetails;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -243,7 +242,7 @@ class AccountServiceImpl implements AccountService {
         if (userEntity.getIsDisabled()) {
             throw new AccountException.AccountAlreadyDisabledException(user.getUsername());
         }
-        logoutFromAll(userEntity);
+        refreshTokenRepository.deleteAllByUser_Id(user.getId());
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.REPLACE_PROFILE_IMAGE_WITH_LOCKED, user.getId());
 
         userEntity.setIsDisabled(true);

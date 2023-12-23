@@ -137,20 +137,22 @@ public class GuildServiceImpl implements GuildService {
     }
 
     @Override
+    @Transactional
     public CreateGuildResDto createGuild(CreateGuildReqDto reqDto, AuthUserDetails user) {
+        final UserGuildEntity userGuild = UserGuildEntity.builder()
+            .userId(user.getId())
+            .build();
+
         final GuildEntity guild = GuildEntity.builder()
             .name(reqDto.getName())
             .category(reqDto.getCategory())
-            .isPrivate(reqDto.isPrivate())
+            .isPrivate(reqDto.getIsPrivate())
             .ownerId(user.getId())
+            .userGuilds(new HashSet<>())
             .build();
-        final GuildEntity savedGuild = guildRepository.save(guild);
+        guild.persistUserGuild(userGuild);
 
-        final UserGuildEntity userGuild = UserGuildEntity.builder()
-            .userId(user.getId())
-            .guild(savedGuild)
-            .build();
-        userGuildRepository.save(userGuild);
+        final GuildEntity savedGuild = guildRepository.save(guild);
 
         final DefaultGuildProfileReqDto guildProfileReqDto = DefaultGuildProfileReqDto.builder()
             .guildName(savedGuild.getName())
@@ -228,10 +230,10 @@ public class GuildServiceImpl implements GuildService {
         if (!guildRepository.existsByIdAndOwnerId(guildId, user.getId())) {
             throw new SphereGuildException.SphereGuildNotFoundException(guildId);
         }
-        userGuildRepository.deleteAllByGuild_Id(guildId);
         guildRepository.deleteById(guildId);
 
-        // TODO: delete sphere image via multimedia microservice
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_GUILD_IMAGE_DATA, guildId);
+
         // TODO: delete all messages for all text channels from deleting guild
 
         log.info("Successfully delete guild with ID: '{}'.", guildId);

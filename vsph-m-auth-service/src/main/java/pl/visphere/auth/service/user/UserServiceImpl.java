@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.auth.domain.mfauser.MfaUserEntity;
 import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
-import pl.visphere.auth.domain.refreshtoken.RefreshTokenRepository;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.auth.domain.role.RoleRepository;
 import pl.visphere.auth.domain.user.UserEntity;
@@ -50,7 +49,6 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public CheckUserResDto checkUser(String usernameOrEmailAddress) {
@@ -79,6 +77,7 @@ public class UserServiceImpl implements UserService {
         resDto.setActivated(user.getIsActivated());
         resDto.setJoinDate(createJoinDate(user));
         resDto.setLocked(user.getIsDisabled());
+        resDto.setExternalCredentialsSupplier(user.getExternalCredProvider());
 
         log.info("Successfully find user and map to details: '{}'.", resDto);
         return resDto;
@@ -176,6 +175,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public LoginOAuth2UserDetailsResDto loginOAuth2User(Long userId) {
         final UserEntity user = userRepository
             .findByIdAndExternalCredProviderIsTrue(userId)
@@ -219,9 +219,8 @@ public class UserServiceImpl implements UserService {
             final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                 .refreshToken(refresh.token())
                 .expiringAt(jwtService.convertToZonedDateTime(refresh.expiredAt()))
-                .user(user)
                 .build();
-            refreshTokenRepository.save(refreshTokenEntity);
+            user.persistRefreshToken(refreshTokenEntity);
             refrehToken = refresh.token();
         }
         log.info("Successfully persisted refresh token for user: '{}'.", user);

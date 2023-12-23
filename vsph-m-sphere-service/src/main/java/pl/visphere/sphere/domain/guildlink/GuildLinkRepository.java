@@ -7,7 +7,6 @@ package pl.visphere.sphere.domain.guildlink;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,7 +14,7 @@ import java.util.Optional;
 public interface GuildLinkRepository extends JpaRepository<GuildLinkEntity, Long> {
     List<GuildLinkEntity> findAllByGuild_IdAndGuild_OwnerIdAndGuild_IsPrivateIsTrue(Long guildId, Long ownerId);
     Optional<GuildLinkEntity> findByIdAndGuild_OwnerIdAndGuild_IsPrivateIsTrue(Long linkId, Long ownerId);
-    Optional<GuildLinkEntity> findByTokenAndGuild_IsPrivateIsTrueAndExpiredAtAfterAndIsActiveIsTrue(String token, ZonedDateTime now);
+    Optional<GuildLinkEntity> findByTokenAndGuild_IsPrivateIsTrueAndIsActiveIsTrue(String token);
     boolean existsByToken(String token);
     void deleteAllByGuild_Id(Long guildId);
 }

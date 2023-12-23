@@ -8,7 +8,10 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import pl.visphere.auth.domain.blacklistjwt.BlackListJwtEntity;
 import pl.visphere.auth.domain.mfauser.MfaUserEntity;
+import pl.visphere.auth.domain.otatoken.OtaTokenEntity;
+import pl.visphere.auth.domain.refreshtoken.RefreshTokenEntity;
 import pl.visphere.auth.domain.role.RoleEntity;
 import pl.visphere.lib.AbstractAuditableEntity;
 
@@ -17,6 +20,9 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+
+import static jakarta.persistence.CascadeType.MERGE;
+import static jakarta.persistence.CascadeType.PERSIST;
 
 @Entity
 @Table(name = "users")
@@ -57,8 +63,17 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
     )
     private Set<RoleEntity> roles = new HashSet<>();
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "user")
+    private Set<BlackListJwtEntity> blackListJwts = new HashSet<>();
+
+    @OneToOne(cascade = { PERSIST, MERGE }, mappedBy = "user")
     private MfaUserEntity mfaUser;
+
+    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "user")
+    private Set<OtaTokenEntity> otaTokens = new HashSet<>();
+
+    @OneToMany(cascade = { PERSIST, MERGE }, mappedBy = "user")
+    private Set<RefreshTokenEntity> refreshTokens = new HashSet<>();
 
     public String getUsername() {
         return username;
@@ -160,9 +175,48 @@ public class UserEntity extends AbstractAuditableEntity implements Serializable 
         this.mfaUser = mfaUser;
     }
 
+    Set<BlackListJwtEntity> getBlackListJwts() {
+        return blackListJwts;
+    }
+
+    void setBlackListJwts(Set<BlackListJwtEntity> blackListJwts) {
+        this.blackListJwts = blackListJwts;
+    }
+
+    Set<OtaTokenEntity> getOtaTokens() {
+        return otaTokens;
+    }
+
+    void setOtaTokens(Set<OtaTokenEntity> otaTokens) {
+        this.otaTokens = otaTokens;
+    }
+
+    Set<RefreshTokenEntity> getRefreshTokens() {
+        return refreshTokens;
+    }
+
+    void setRefreshTokens(Set<RefreshTokenEntity> refreshTokens) {
+        this.refreshTokens = refreshTokens;
+    }
+
+    public void persistBlackListJwt(BlackListJwtEntity blackListJwt) {
+        blackListJwts.add(blackListJwt);
+        blackListJwt.setUser(this);
+    }
+
     public void persistMfaUser(MfaUserEntity mfaUser) {
         this.mfaUser = mfaUser;
         mfaUser.setUser(this);
+    }
+
+    public void persistOtaToken(OtaTokenEntity otaToken) {
+        otaTokens.add(otaToken);
+        otaToken.setUser(this);
+    }
+
+    public void persistRefreshToken(RefreshTokenEntity refreshToken) {
+        refreshTokens.add(refreshToken);
+        refreshToken.setUser(this);
     }
 
     @Override

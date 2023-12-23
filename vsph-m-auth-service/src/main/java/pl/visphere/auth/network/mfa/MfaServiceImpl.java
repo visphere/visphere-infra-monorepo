@@ -236,9 +236,8 @@ class MfaServiceImpl implements MfaService {
             final RefreshTokenEntity refreshTokenEntity = RefreshTokenEntity.builder()
                 .refreshToken(refresh.token())
                 .expiringAt(jwtService.convertToZonedDateTime(refresh.expiredAt()))
-                .user(user)
                 .build();
-            refreshTokenRepository.save(refreshTokenEntity);
+            user.persistRefreshToken(refreshTokenEntity);
             refreshToken = refresh.token();
         }
         return new LoginResDto(profileImageDetails.profileImagePath(), profileImageDetails.profileColor(), user,
