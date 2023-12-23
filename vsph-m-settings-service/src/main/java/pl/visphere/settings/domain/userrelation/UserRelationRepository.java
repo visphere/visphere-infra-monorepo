@@ -13,4 +13,5 @@ import java.util.Optional;
 public interface UserRelationRepository extends JpaRepository<UserRelationModel, Long> {
     Optional<UserRelationModel> findByUserId(Long userId);
     boolean existsByUserId(Long userId);
+    void deleteByUserId(Long userId);
 }

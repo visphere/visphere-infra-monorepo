@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
@@ -48,5 +49,12 @@ class RelatedSettingsServiceImpl implements RelatedSettingsService {
 
         userRelationRepository.save(userRelationModel);
         log.info("Successfully instantiated user relation model entity: '{}'.", userRelationModel);
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserSettingsData(Long userId) {
+        userRelationRepository.deleteByUserId(userId);
+        log.info("Successfully deleted correlated settings with user with ID: '{}'.", userId);
     }
 }

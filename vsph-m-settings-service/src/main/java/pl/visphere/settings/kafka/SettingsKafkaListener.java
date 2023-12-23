@@ -28,4 +28,9 @@ class SettingsKafkaListener {
     void instantiateUserRelatedSettingsListener(Message<Long> payload) {
         syncListenerHandler.parseAndSendResponse(payload, relatedSettingsService::instantiateUserRelatedSettings);
     }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.delete-user-settings-data}")
+    void deleteUserSettingsDataListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, relatedSettingsService::deleteUserSettingsData);
+    }
 }

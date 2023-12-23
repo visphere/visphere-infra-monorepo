@@ -9,4 +9,5 @@ import pl.visphere.lib.kafka.payload.settings.UserSettingsResDto;
 public interface RelatedSettingsService {
     UserSettingsResDto getPersistedUserRelatedSettings(Long userId);
     void instantiateUserRelatedSettings(Long userId);
+    void deleteUserSettingsData(Long userId);
 }
