@@ -20,6 +20,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
+import pl.visphere.lib.security.SecurityBeanProvider;
 import pl.visphere.lib.security.SecurityService;
 import pl.visphere.lib.security.StatelessAuthenticationProvider;
 import pl.visphere.lib.security.user.StatelesslessUserDetailsService;
@@ -30,12 +31,10 @@ import pl.visphere.oauth2.core.resolver.OAuth2SuccessResolver;
 import pl.visphere.oauth2.core.user.service.OAuth2UserServiceImpl;
 import pl.visphere.oauth2.core.user.service.OidcUserServiceImpl;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-class SecurityConfig {
+class SecurityConfig implements SecurityBeanProvider {
     private final LocaleResolver localeResolver;
     private final I18nService i18nService;
     private final HandlerExceptionResolver handlerExceptionResolver;
@@ -51,15 +50,26 @@ class SecurityConfig {
     private final OAuth2FailureResolver oAuth2FailureResolver;
     private final OAuth2Properties oAuth2Properties;
 
-    private final String[] unsecuredMatchers = {
-        "/oauth2/**",
-        "/api/v1/oauth2/user/**",
-    };
+    @Override
+    public String[] securityEntrypointMatchers() {
+        return new String[]{
+            "/oauth2/**",
+            "/api/v1/oauth2/**"
+        };
+    }
+
+    @Override
+    public String[] unsecureMatchers() {
+        return new String[]{
+            "/oauth2/**",
+            "/api/v1/oauth2/user/**",
+        };
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return securityService()
-            .configureStatelessSecurity(httpSecurity, List.of("/oauth2/**", "/api/v1/oauth2/**"), security -> security
+            .configureStatelessSecurity(httpSecurity, security -> security
                 .oauth2Login(oAuth2LoginConfigurer -> oAuth2LoginConfigurer
                     .authorizationEndpoint(authorizationEndpointConfig -> authorizationEndpointConfig
                         .authorizationRequestRepository(oAuth2Repository)
@@ -83,7 +93,7 @@ class SecurityConfig {
     @Bean
     SecurityService securityService() {
         return new SecurityService(handlerExceptionResolver, i18nService, localeResolver, jwtService,
-            statelesslessUserDetailsService, syncQueueHandler, unsecuredMatchers);
+            statelesslessUserDetailsService, syncQueueHandler, this);
     }
 
     @Bean

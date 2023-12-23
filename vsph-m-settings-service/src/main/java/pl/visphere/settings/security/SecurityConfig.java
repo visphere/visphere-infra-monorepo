@@ -18,6 +18,7 @@ import org.springframework.web.servlet.LocaleResolver;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
+import pl.visphere.lib.security.SecurityBeanProvider;
 import pl.visphere.lib.security.SecurityService;
 import pl.visphere.lib.security.StatelessAuthenticationProvider;
 import pl.visphere.lib.security.user.StatelesslessUserDetailsService;
@@ -25,7 +26,7 @@ import pl.visphere.lib.security.user.StatelesslessUserDetailsService;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-class SecurityConfig {
+class SecurityConfig implements SecurityBeanProvider {
     private final LocaleResolver localeResolver;
     private final I18nService i18nService;
     private final HandlerExceptionResolver handlerExceptionResolver;
@@ -33,20 +34,24 @@ class SecurityConfig {
     private final StatelesslessUserDetailsService statelesslessUserDetailsService;
     private final SyncQueueHandler syncQueueHandler;
 
-    private final String[] unsecuredMatchers = {
-    };
+    @Override
+    public String[] securityEntrypointMatchers() {
+        return new String[]{
+            "api/v1/settings/**"
+        };
+    }
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return securityService()
-            .configureStatelessSecurity(httpSecurity, "api/v1/settings/**")
+            .configureStatelessSecurity(httpSecurity)
             .build();
     }
 
     @Bean
     SecurityService securityService() {
         return new SecurityService(handlerExceptionResolver, i18nService, localeResolver, jwtService,
-            statelesslessUserDetailsService, syncQueueHandler, unsecuredMatchers);
+            statelesslessUserDetailsService, syncQueueHandler, this);
     }
 
     @Bean
@@ -58,4 +63,6 @@ class SecurityConfig {
         return new StatelessAuthenticationProvider(messageSource, passwordEncoder, statelesslessUserDetailsService)
             .createManager();
     }
+
+
 }
