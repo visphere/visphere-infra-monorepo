@@ -4,7 +4,7 @@
  */
 package pl.visphere.user.service.user;
 
-import pl.visphere.lib.kafka.payload.auth.*;
+import pl.visphere.lib.kafka.payload.user.*;
 
 public interface UserService {
     CheckUserResDto checkUser(String username);
