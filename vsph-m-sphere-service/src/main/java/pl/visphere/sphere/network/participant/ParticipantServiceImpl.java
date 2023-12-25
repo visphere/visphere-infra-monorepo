@@ -30,6 +30,7 @@ import pl.visphere.sphere.exception.BannedUserException;
 import pl.visphere.sphere.exception.SphereGuildException;
 import pl.visphere.sphere.exception.UserGuildException;
 import pl.visphere.sphere.i18n.LocaleSet;
+import pl.visphere.sphere.network.guild.dto.PasswordReqDto;
 import pl.visphere.sphere.network.participant.dto.BannerMemberDetailsResDto;
 import pl.visphere.sphere.network.participant.dto.GuildParticipant;
 import pl.visphere.sphere.network.participant.dto.GuildParticipantDetailsResDto;
@@ -276,6 +277,31 @@ class ParticipantServiceImpl implements ParticipantService {
         log.info("Successfully ban member with ID: '{}' form guild with ID: '{}'", userId, guildId);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_BAN_RESPONSE_SUCCESS))
+            .build();
+    }
+
+    @Override
+    @Transactional
+    public BaseMessageResDto delegateGuildProprietyToUser(
+        long guildId, long userId, PasswordReqDto reqDto, AuthUserDetails user
+    ) {
+        final CredentialsConfirmationReqDto confirmationReqDto = CredentialsConfirmationReqDto.builder()
+            .userId(user.getId())
+            .password(reqDto.getPassword())
+            .mfaCode(reqDto.getMfaCode())
+            .build();
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.CHECK_USER_CREDENTIALS, confirmationReqDto);
+
+        final GuildEntity guild = findGuildByOwnerId(guildId, user);
+        if (!userGuildRepository.existsByUserIdAndGuild_Id(userId, guild.getId())) {
+            throw new UserGuildException.UserIsNotGuildParticipantException(user.getId(), guildId);
+        }
+        guild.setOwnerId(userId);
+
+        log.info("Successfully delegated propriety for guild wit ID: '{}' from user with ID: '{}' to ID: '{}'.",
+            guildId, userId, user);
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_DELEGATE_PROPRIETY_TO_USER_RESPONSE_SUCCESS))
             .build();
     }
 

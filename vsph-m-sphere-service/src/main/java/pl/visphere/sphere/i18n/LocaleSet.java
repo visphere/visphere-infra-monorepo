@@ -29,6 +29,7 @@ public enum LocaleSet implements LocaleExtendableSet {
     SPHERE_GUILD_BAN_RESPONSE_SUCCESS("vsph.i18n.sphereGuildBan.res.success"),
     SPHERE_GUILD_UNBAN_RESPONSE_SUCCESS("vsph.i18n.sphereGuildUnban.res.success"),
     SPHERE_GUILD_LINK_JOIN_RESPONSE_SUCCESS("vsph.i18n.sphereGuildLinkJoin.res.success"),
+    SPHERE_GUILD_DELEGATE_PROPRIETY_TO_USER_RESPONSE_SUCCESS("vsph.i18n.delegateProprietyToUser.res.success"),
     SPHERE_GUILD_BY_ID_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildByIdNotFound"),
     SPHERE_GUILD_BY_CODE_NOT_FOUND_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildByCodeNotFound"),
     SPHERE_GUILD_BY_HAS_NO_OWNER_EXCEPTION_MESSAGE("vsph.sphere.exc.sphereGuildHasNoOwner"),

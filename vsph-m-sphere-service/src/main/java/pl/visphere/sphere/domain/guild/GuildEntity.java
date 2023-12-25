@@ -77,7 +77,7 @@ public class GuildEntity extends AbstractAuditableEntity implements Serializable
         return ownerId;
     }
 
-    void setOwnerId(Long ownerId) {
+    public void setOwnerId(Long ownerId) {
         this.ownerId = ownerId;
     }
 

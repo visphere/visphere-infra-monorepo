@@ -4,12 +4,14 @@
  */
 package pl.visphere.sphere.network.participant;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.lib.security.user.LoggedUser;
+import pl.visphere.sphere.network.guild.dto.PasswordReqDto;
 import pl.visphere.sphere.network.participant.dto.BannerMemberDetailsResDto;
 import pl.visphere.sphere.network.participant.dto.GuildParticipantDetailsResDto;
 import pl.visphere.sphere.network.participant.dto.GuildParticipantsResDto;
@@ -83,5 +85,15 @@ public class ParticipantController {
         @LoggedUser AuthUserDetails user
     ) {
         return ResponseEntity.ok(participantService.banFromGuild(guildId, userId, deleteAllMessages, user));
+    }
+
+    @PatchMapping("/guild/{guildId}/delegate/user/{userId}")
+    ResponseEntity<BaseMessageResDto> delegateGuildProprietyToUser(
+        @PathVariable long guildId,
+        @PathVariable long userId,
+        @Valid @RequestBody PasswordReqDto reqDto,
+        @LoggedUser AuthUserDetails user
+    ) {
+        return ResponseEntity.ok(participantService.delegateGuildProprietyToUser(guildId, userId, reqDto, user));
     }
 }

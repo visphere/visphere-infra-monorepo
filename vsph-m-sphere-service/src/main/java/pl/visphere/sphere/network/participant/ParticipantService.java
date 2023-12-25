@@ -6,6 +6,7 @@ package pl.visphere.sphere.network.participant;
 
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
+import pl.visphere.sphere.network.guild.dto.PasswordReqDto;
 import pl.visphere.sphere.network.participant.dto.BannerMemberDetailsResDto;
 import pl.visphere.sphere.network.participant.dto.GuildParticipantDetailsResDto;
 import pl.visphere.sphere.network.participant.dto.GuildParticipantsResDto;
@@ -20,4 +21,5 @@ interface ParticipantService {
     BaseMessageResDto kickFromGuild(long guildId, long userId, boolean deleteAllMessages, AuthUserDetails user);
     BaseMessageResDto unbanFromGuild(long guildId, long userId, AuthUserDetails user);
     BaseMessageResDto banFromGuild(long guildId, long userId, boolean deleteAllMessages, AuthUserDetails user);
+    BaseMessageResDto delegateGuildProprietyToUser(long guildId, long userId, PasswordReqDto reqDto, AuthUserDetails user);
 }
