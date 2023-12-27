@@ -348,6 +348,19 @@ services:
     networks:
       - visphere-infra-network
 
+  vsph-m-chat-service:
+    extends:
+      file: ./vsph-m-chat-service/docker-compose.yml
+      service: vsph-m-chat-service-template
+    depends_on:
+      - vsph-config-server
+      - vsph-discovery-server
+      - vsph-api-gateway
+      - vsph-cassandra-db
+      - vsph-s3
+    networks:
+      - visphere-infra-network
+
 networks:
   visphere-infra-network:
     driver: bridge
