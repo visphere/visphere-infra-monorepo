@@ -64,6 +64,8 @@ services:
       - 'CASSANDRA_PASSWORD_SEEDER=yes'
       - 'CASSANDRA_USER=${VSPH_CASSANDRA_USERNAME}'
       - 'CASSANDRA_PASSWORD=${VSPH_CASSANDRA_PASSWORD}'
+      - 'HEAP_NEWSIZE=128M'
+      - 'MAX_HEAP_SIZE=1024M'
     healthcheck:
       test: [ "CMD-SHELL", "[ $$(nodetool statusgossip) = running ]" ]
       interval: 30s
