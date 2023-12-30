@@ -61,6 +61,7 @@ public class GuildServiceImpl implements GuildService {
             .profileColor(profileImageDetailsResDto.getProfileColor())
             .profileImageUrl(profileImageDetailsResDto.getProfileImagePath())
             .isPrivate(guild.getPrivate())
+            .ownerId(guild.getOwnerId())
             .isLoggedUserIsOwner(guild.getOwnerId().equals(user.getId()))
             .build();
 

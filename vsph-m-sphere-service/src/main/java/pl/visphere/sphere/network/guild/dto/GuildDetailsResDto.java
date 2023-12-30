@@ -14,6 +14,7 @@ public record GuildDetailsResDto(
     String profileColor,
     String profileImageUrl,
     Boolean isPrivate,
+    Long ownerId,
     Boolean isLoggedUserIsOwner
 ) {
 }
