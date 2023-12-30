@@ -43,6 +43,8 @@ class CorsConfiguration {
             .addPolicy("/api/v1/sphere/participant/**", List.of(GET, PATCH, DELETE))
             .addPolicy("/api/v1/sphere/link/**", List.of(GET, POST, PATCH, DELETE))
             .addPolicy("/api/v1/sphere/join/**", List.of(GET, POST))
+            .addPolicy("/chat/ws/**")
+            .addPolicy("/api/v1/chat/message/**", List.of(GET))
             .createFilter();
     }
 }
