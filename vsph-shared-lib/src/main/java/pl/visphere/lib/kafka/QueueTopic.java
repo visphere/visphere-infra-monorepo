@@ -57,6 +57,7 @@ public enum QueueTopic implements Property {
     DELETE_OAUTH2_USER_DATA("delete-oauth2-user-data"),
     DELETE_USER_SETTINGS_DATA("delete-user-settings-data"),
     DELETE_NOTIF_USER_SETTINGS("delete-notif-user-settings"),
+    CHECK_USER_SESSION("check-user-session"),
     ;
 
     private final String topicKey;

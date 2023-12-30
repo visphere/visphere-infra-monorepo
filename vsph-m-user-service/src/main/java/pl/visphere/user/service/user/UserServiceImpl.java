@@ -22,6 +22,7 @@ import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AppGrantedAuthority;
 import pl.visphere.user.domain.mfauser.MfaUserEntity;
 import pl.visphere.user.domain.refreshtoken.RefreshTokenEntity;
+import pl.visphere.user.domain.refreshtoken.RefreshTokenRepository;
 import pl.visphere.user.domain.role.RoleEntity;
 import pl.visphere.user.domain.role.RoleRepository;
 import pl.visphere.user.domain.user.UserEntity;
@@ -49,6 +50,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public CheckUserResDto checkUser(String usernameOrEmailAddress) {
@@ -207,6 +209,13 @@ public class UserServiceImpl implements UserService {
         } else if (mfaProxyService.isOtpNotValid(mfaUser.getMfaSecret(), mfaToken) || !checkedPassword) {
             throw new AccountException.IncorrectPasswordOrMfaCodeException(userEntity.getUsername(), mfaToken);
         }
+    }
+
+    @Override
+    public CheckUserSessionResDto checkUserSession(CheckUserSessionReqDto reqDto) {
+        return new CheckUserSessionResDto(refreshTokenRepository.findByRefreshToken(reqDto.token())
+            .map(refreshTokenEntity -> refreshTokenEntity.getUser().getId())
+            .orElse(null));
     }
 
     private LoginOAuth2UserDetailsResDto generateTokens(UserEntity user, String firstName, String lastName) {

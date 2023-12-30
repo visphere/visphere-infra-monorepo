@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
+import pl.visphere.lib.kafka.payload.user.CheckUserSessionReqDto;
 import pl.visphere.lib.kafka.payload.user.CredentialsConfirmationReqDto;
 import pl.visphere.lib.kafka.payload.user.PersistOAuth2UserReqDto;
 import pl.visphere.lib.kafka.payload.user.UpdateOAuth2UserDetailsReqDto;
@@ -63,5 +64,10 @@ class UserKafkaListener {
     @KafkaListener(topics = "${visphere.kafka.topic.check-user-crendetials}")
     void checkUserCredentialsListener(Message<CredentialsConfirmationReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, userService::checkUserCredentials);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.check-user-session}")
+    void checkUserSessionListener(Message<CheckUserSessionReqDto> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, userService::checkUserSession);
     }
 }

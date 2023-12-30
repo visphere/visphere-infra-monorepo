@@ -13,5 +13,6 @@ public interface UserService {
     OAuth2UserDetailsResDto getOAuth2UserDetails(Long userId);
     LoginOAuth2UserDetailsResDto updateOAuth2UserDetails(UpdateOAuth2UserDetailsReqDto reqDto);
     LoginOAuth2UserDetailsResDto loginOAuth2User(Long userId);
+    CheckUserSessionResDto checkUserSession(CheckUserSessionReqDto reqDto);
     void checkUserCredentials(CredentialsConfirmationReqDto reqDto);
 }
