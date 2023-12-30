@@ -58,6 +58,7 @@ public enum QueueTopic implements Property {
     DELETE_USER_SETTINGS_DATA("delete-user-settings-data"),
     DELETE_NOTIF_USER_SETTINGS("delete-notif-user-settings"),
     CHECK_USER_SESSION("check-user-session"),
+    CHECK_USER_GUILD_ASSIGNMENTS("check-user-guild-assignments"),
     ;
 
     private final String topicKey;

@@ -7,10 +7,12 @@ package pl.visphere.sphere.service.sphereguild;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import pl.visphere.lib.kafka.payload.sphere.GuildAssignmentsReqDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsReqDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsResDto;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
+import pl.visphere.sphere.domain.userguild.UserGuildRepository;
 import pl.visphere.sphere.exception.SphereGuildException;
 
 import java.time.ZoneId;
@@ -21,6 +23,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class SphereGuildServiceImpl implements SphereGuildService {
     private final GuildRepository guildRepository;
+    private final UserGuildRepository userGuildRepository;
 
     @Override
     public GuildDetailsResDto getGuildDetails(GuildDetailsReqDto reqDto) {
@@ -48,5 +51,10 @@ public class SphereGuildServiceImpl implements SphereGuildService {
         log.info("Successfully found user with ID: '{}' account with some Sphere guilds correlatios: '{}'.",
             userId, userGuilds);
         return userGuilds != 0;
+    }
+
+    @Override
+    public boolean checkUserGuildAssignments(GuildAssignmentsReqDto reqDto) {
+        return userGuildRepository.existsByUserIdAndGuild_Id(reqDto.userId(), reqDto.guildId());
     }
 }
