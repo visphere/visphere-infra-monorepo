@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 public class LoginResDto {
+    private Long id;
     private String fullName;
     private String username;
     private String emailAddress;

@@ -15,6 +15,7 @@ import java.time.ZoneId;
 
 @Builder
 public record LoginResDto(
+    Long id,
     String fullName,
     String username,
     String emailAddress,
@@ -36,6 +37,7 @@ public record LoginResDto(
         UserSettingsResDto resDto, boolean imageFromExternalProvider
     ) {
         this(
+            user.getId(),
             user.getFirstName() + StringUtils.SPACE + user.getLastName(),
             user.getUsername(),
             user.getEmailAddress(),

@@ -93,6 +93,7 @@ class UserServiceImpl implements UserService {
             oAuth2User.getUserId());
 
         final LoginResDto resDto = modelMapper.map(loginResDto, LoginResDto.class);
+        resDto.setId(oAuth2User.getUserId());
         resDto.setProfileUrl(oAuth2User.getProfileImageUrl());
         resDto.setProfileColor(profileResDto.getProfileColor());
         resDto.setSettings(new UserSettingsResDto());
@@ -138,6 +139,7 @@ class UserServiceImpl implements UserService {
             ? oAuth2User.getProfileImageUrl()
             : profileImageDetails.getProfileImagePath();
 
+        resDto.setId(oAuth2User.getUserId());
         resDto.setSettings(settingsResDto);
         resDto.setProfileUrl(imageUrl);
         resDto.setProfileColor(profileImageDetails.getProfileColor());
