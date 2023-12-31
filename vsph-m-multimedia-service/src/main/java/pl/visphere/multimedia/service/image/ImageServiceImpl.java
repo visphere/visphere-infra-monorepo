@@ -6,6 +6,7 @@ package pl.visphere.multimedia.service.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.StringParser;
@@ -13,6 +14,9 @@ import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.*;
 import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2UsersDetails;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2UsersDetailsReqDto;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2UsersDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.s3.*;
 import pl.visphere.multimedia.cache.CacheName;
@@ -27,8 +31,12 @@ import pl.visphere.multimedia.processing.drawer.IdenticonDrawer;
 import pl.visphere.multimedia.processing.drawer.InitialsDrawer;
 import pl.visphere.multimedia.processing.drawer.LockerDrawer;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -280,6 +288,49 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    public UsersImagesDetailsResDto getUsersImagesDetails(UsersImagesDetailsReqDto reqDto) {
+        final List<Long> activeLocalUserIds = determinateUserIds(reqDto,
+            details -> !details.accountDeleted() && !details.externalSupplier());
+
+        final List<Long> deletedAccountIds = determinateUserIds(reqDto, UserImagesIdentify::accountDeleted);
+        final List<Long> oauth2UserIds = determinateUserIds(reqDto, UserImagesIdentify::externalSupplier);
+
+        final Map<Long, OAuth2UsersDetails> oauth2UsersImages = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_USERS_DETAILS,
+                new OAuth2UsersDetailsReqDto(oauth2UserIds), OAuth2UsersDetailsResDto.class)
+            .oauth2UsersImages();
+
+        final List<Map.Entry<Long, OAuth2UsersDetails>> oauth2ExternalImages = oauth2UsersImages.entrySet().stream()
+            .filter(oAuth2UsersDetails -> !oAuth2UsersDetails.getValue().imageFromLocal())
+            .toList();
+
+        final List<Long> activeUserIds = Stream.concat(oauth2UsersImages.entrySet().stream()
+            .filter(entry -> entry.getValue().imageFromLocal())
+            .map(Map.Entry::getKey), activeLocalUserIds.stream()).toList();
+
+        final int size = reqDto.userImagesIdentifies().size();
+        final List<AccountProfileEntity> accountProfiles = accountProfileRepository
+            .findAllByUserIdIn(activeUserIds);
+
+        final Map<Long, String> userImagesDetails = new HashMap<>(size);
+        for (final AccountProfileEntity accountProfile : accountProfiles) {
+            final Long userId = accountProfile.getUserId();
+            final String resourceUrl = s3Client.createFullResourcePath(S3Bucket.USERS, userId, new FilePayload(),
+                accountProfile.getProfileImageUuid());
+            userImagesDetails.put(userId, resourceUrl);
+        }
+        for (final Long userId : deletedAccountIds) {
+            userImagesDetails.put(userId, StringUtils.EMPTY);
+        }
+        for (final Map.Entry<Long, OAuth2UsersDetails> oauth2ExternalImage : oauth2ExternalImages) {
+            userImagesDetails.put(oauth2ExternalImage.getKey(), oauth2ExternalImage.getValue().profileImageUrl());
+        }
+        log.info("Successfully processed images details for: '{}' accounts (deleted: '{}').",
+            size, deletedAccountIds.size());
+        return new UsersImagesDetailsResDto(userImagesDetails);
+    }
+
+    @Override
     @Transactional
     public void deleteUserImageData(Long userId) {
         accountProfileRepository.deleteByUserId(userId);
@@ -293,5 +344,12 @@ public class ImageServiceImpl implements ImageService {
         guildProfileRepository.deleteByGuildId(guildId);
         s3Client.clearObjects(S3Bucket.SPHERES, guildId, S3ResourcePrefix.PROFILE);
         log.info("Successfully deleted Sphere guild with ID: '{}' image data details and resources.", guildId);
+    }
+
+    private List<Long> determinateUserIds(UsersImagesDetailsReqDto reqDto, Predicate<UserImagesIdentify> predicate) {
+        return reqDto.userImagesIdentifies().stream()
+            .filter(predicate)
+            .map(UserImagesIdentify::userId)
+            .toList();
     }
 }

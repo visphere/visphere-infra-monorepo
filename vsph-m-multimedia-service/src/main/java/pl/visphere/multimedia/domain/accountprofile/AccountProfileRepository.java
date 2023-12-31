@@ -7,10 +7,12 @@ package pl.visphere.multimedia.domain.accountprofile;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface AccountProfileRepository extends JpaRepository<AccountProfileEntity, Long> {
     Optional<AccountProfileEntity> findByUserId(Long userId);
+    List<AccountProfileEntity> findAllByUserIdIn(List<Long> userIds);
     void deleteByUserId(Long userId);
 }

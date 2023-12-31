@@ -16,6 +16,7 @@ public interface ImageService {
     ProfileImageDetailsResDto getProfileImageDetails(ProfileImageDetailsReqDto reqDto);
     ProfileImageDetailsResDto getGuildProfileImageDetails(Long guildId);
     GuildImageByIdsResDto getGuildImagesByGuildIds(GuildImageByIdsReqDto reqDto);
+    UsersImagesDetailsResDto getUsersImagesDetails(UsersImagesDetailsReqDto reqDto);
     void deleteUserImageData(Long userId);
     void deleteGuildImageData(Long guildId);
 }

@@ -59,7 +59,7 @@ public class AccountProfileEntity extends AbstractAuditableEntity implements Ser
         this.imageType = imageType;
     }
 
-    Long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 

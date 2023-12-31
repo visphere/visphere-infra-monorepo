@@ -74,4 +74,9 @@ class MultimediaKafkaListener {
     void deleteGuildImageDataListener(Message<Long> payload) {
         syncListenerHandler.parseAndSendResponse(payload, imageService::deleteGuildImageData);
     }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.get-users-images-details}")
+    void getUsersImagesDetailsListener(Message<UsersImagesDetailsReqDto> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, imageService::getUsersImagesDetails);
+    }
 }
