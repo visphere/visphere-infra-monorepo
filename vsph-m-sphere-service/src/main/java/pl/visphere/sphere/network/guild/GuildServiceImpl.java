@@ -14,6 +14,7 @@ import pl.visphere.lib.AbstractAuditableEntity;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.chat.DeleteTextChannelMessagesReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.*;
 import pl.visphere.lib.kafka.payload.user.CredentialsConfirmationReqDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
@@ -22,6 +23,8 @@ import pl.visphere.sphere.domain.guild.GuildCategory;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
 import pl.visphere.sphere.domain.guildlink.GuildLinkRepository;
+import pl.visphere.sphere.domain.textchannel.TextChannelEntity;
+import pl.visphere.sphere.domain.textchannel.TextChannelRepository;
 import pl.visphere.sphere.domain.userguild.UserGuildEntity;
 import pl.visphere.sphere.domain.userguild.UserGuildRepository;
 import pl.visphere.sphere.exception.SphereGuildException;
@@ -41,6 +44,7 @@ public class GuildServiceImpl implements GuildService {
     private final GuildRepository guildRepository;
     private final GuildLinkRepository guildLinkRepository;
     private final UserGuildRepository userGuildRepository;
+    private final TextChannelRepository textChannelRepository;
 
     @Override
     public GuildDetailsResDto getGuildDetails(long guildId, AuthUserDetails user) {
@@ -231,11 +235,17 @@ public class GuildServiceImpl implements GuildService {
         if (!guildRepository.existsByIdAndOwnerId(guildId, user.getId())) {
             throw new SphereGuildException.SphereGuildNotFoundException(guildId);
         }
+        final List<Long> textChannelIds = textChannelRepository
+            .findAllByGuild_Id(guildId).stream()
+            .map(TextChannelEntity::getId)
+            .toList();
+
         guildRepository.deleteById(guildId);
 
-        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_GUILD_IMAGE_DATA, guildId);
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_TEXT_CHANNEL_MESSAGES,
+            new DeleteTextChannelMessagesReqDto(textChannelIds));
 
-        // TODO: delete all messages for all text channels from deleting guild
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_GUILD_IMAGE_DATA, guildId);
 
         log.info("Successfully delete guild with ID: '{}'.", guildId);
         return BaseMessageResDto.builder()

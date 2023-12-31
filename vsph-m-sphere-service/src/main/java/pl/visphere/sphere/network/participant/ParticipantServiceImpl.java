@@ -207,7 +207,7 @@ class ParticipantServiceImpl implements ParticipantService {
         userGuild.setGuild(null);
         userGuildRepository.delete(userGuild);
         if (deleteAllMessages) {
-            // TODO: delete all messages from chat microservice
+            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES, user.getId());
         }
         log.info("Successfully leave guild with ID: '{}'", guildId);
         return BaseMessageResDto.builder()
@@ -230,7 +230,7 @@ class ParticipantServiceImpl implements ParticipantService {
         userGuild.setGuild(null);
         userGuildRepository.delete(userGuild);
         if (deleteAllMessages) {
-            // TODO: delete all messages from chat microservice
+            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES, userId);
         }
         log.info("Successfully kick member with ID: '{}' form guild with ID: '{}'", userId, guildId);
         return BaseMessageResDto.builder()
@@ -272,7 +272,7 @@ class ParticipantServiceImpl implements ParticipantService {
         guild.persistBannedUser(bannedUser);
 
         if (deleteAllMessages) {
-            // TODO: delete all messages from chat microservice
+            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES, userId);
         }
         log.info("Successfully ban member with ID: '{}' form guild with ID: '{}'", userId, guildId);
         return BaseMessageResDto.builder()

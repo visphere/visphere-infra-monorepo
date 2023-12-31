@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.i18n.I18nService;
+import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.chat.DeleteTextChannelMessagesReqDto;
+import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
@@ -32,6 +35,7 @@ import java.util.List;
 @RequiredArgsConstructor
 class TextChannelServiceImpl implements TextChannelService {
     private final I18nService i18nService;
+    private final SyncQueueHandler syncQueueHandler;
 
     private final GuildRepository guildRepository;
     private final UserGuildRepository userGuildRepository;
@@ -113,7 +117,8 @@ class TextChannelServiceImpl implements TextChannelService {
         textChannel.setGuild(null);
         textChannelRepository.deleteById(textChannelId);
 
-        // TODO: delete all messages from guild (chat microservice)
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_TEXT_CHANNEL_MESSAGES,
+            new DeleteTextChannelMessagesReqDto(List.of(textChannelId)));
 
         log.info("Successfully deleted text channel with ID: '{}' from guild.", textChannelId);
         return BaseMessageResDto.builder()

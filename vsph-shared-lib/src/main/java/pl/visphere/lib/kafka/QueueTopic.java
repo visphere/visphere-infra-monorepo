@@ -63,6 +63,8 @@ public enum QueueTopic implements Property {
     GET_USERS_DETAILS("get-users-details"),
     GET_USERS_IMAGES_DETAILS("get-users-images-details"),
     GET_OAUTH2_USERS_DETAILS("get-oauth2-users-details"),
+    DELETE_USER_MESSAGES("delete-user-messages"),
+    DELETE_TEXT_CHANNEL_MESSAGES("delete-text-channel-messages"),
     ;
 
     private final String topicKey;
