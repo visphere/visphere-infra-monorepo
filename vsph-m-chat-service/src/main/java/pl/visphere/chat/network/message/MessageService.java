@@ -6,11 +6,10 @@ package pl.visphere.chat.network.message;
 
 import pl.visphere.chat.network.message.dto.MessagePayloadReqDto;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
+import pl.visphere.chat.network.message.dto.MessagesResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
-import java.util.List;
-
 public interface MessageService {
+    MessagesResDto getAllMessagesWithOffset(long textChannelId, int offset, int size, String nextPage, AuthUserDetails user);
     MessagePayloadResDto processMessage(long userId, long textChannelId, MessagePayloadReqDto payloadDto);
-    List<MessagePayloadResDto> getAllMessagesWithOffset(long textChannelId, int offset, int size, AuthUserDetails user);
 }

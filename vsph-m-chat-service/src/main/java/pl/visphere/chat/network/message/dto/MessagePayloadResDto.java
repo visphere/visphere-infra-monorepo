@@ -15,6 +15,7 @@ public record MessagePayloadResDto(
     String fullName,
     String profileImageUrl,
     ZonedDateTime sendDate,
-    String message
+    String message,
+    Boolean accountDeleted
 ) {
 }
