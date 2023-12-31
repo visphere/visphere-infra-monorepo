@@ -12,7 +12,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.exception.app.UserException;
+import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
@@ -34,8 +36,7 @@ import pl.visphere.user.service.mfa.MfaProxyService;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Set;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -47,6 +48,7 @@ public class UserServiceImpl implements UserService {
     private final SyncQueueHandler syncQueueHandler;
     private final PasswordEncoder passwordEncoder;
     private final MfaProxyService mfaProxyService;
+    private final I18nService i18nService;
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -216,6 +218,41 @@ public class UserServiceImpl implements UserService {
         return new CheckUserSessionResDto(refreshTokenRepository.findByRefreshToken(reqDto.token())
             .map(refreshTokenEntity -> refreshTokenEntity.getUser().getId())
             .orElse(null));
+    }
+
+    @Override
+    public UsersDetailsResDto getUsersDetails(UsersDetailsReqDto reqDto) {
+        final List<UserEntity> users = userRepository.findAllByIdIn(reqDto.userIds());
+        final Map<Long, UserDetails> userDetails = new HashMap<>(reqDto.userIds().size());
+
+        final List<Long> foundedUsersIds = users.stream().map(UserEntity::getId).toList();
+        final List<Long> missingUsersIds = reqDto.userIds().stream()
+            .filter(userId -> !foundedUsersIds.contains(userId))
+            .toList();
+
+        for (final UserEntity user : users) {
+            String fullName = i18nService.getMessage(LibLocaleSet.ACCOUNT_LOCKED_PLACEHOLDER);
+            if (!user.getIsDisabled()) {
+                fullName = user.getFirstName() + StringUtils.SPACE + user.getLastName();
+            }
+            final UserDetails details = UserDetails.builder()
+                .fullName(fullName)
+                .externalSupplier(user.getExternalCredProvider())
+                .accountDeleted(false)
+                .build();
+            userDetails.put(user.getId(), details);
+        }
+        for (final Long userId : missingUsersIds) {
+            final UserDetails details = UserDetails.builder()
+                .fullName(i18nService.getMessage(LibLocaleSet.ACCOUNT_DELETED_PLACEHOLDER))
+                .externalSupplier(false)
+                .accountDeleted(true)
+                .build();
+            userDetails.put(userId, details);
+        }
+        log.info("Successfully processed and parsed: '{}' (missing: '{}') results: '{}'",
+            userDetails.size(), missingUsersIds.size(), userDetails);
+        return new UsersDetailsResDto(userDetails);
     }
 
     private LoginOAuth2UserDetailsResDto generateTokens(UserEntity user, String firstName, String lastName) {

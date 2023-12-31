@@ -59,6 +59,7 @@ public enum QueueTopic implements Property {
     DELETE_NOTIF_USER_SETTINGS("delete-notif-user-settings"),
     CHECK_USER_SESSION("check-user-session"),
     CHECK_USER_GUILD_ASSIGNMENTS("check-user-guild-assignments"),
+    GET_USERS_DETAILS("get-users-details"),
     GET_USERS_IMAGES_DETAILS("get-users-images-details"),
     ;
 
