@@ -11,6 +11,7 @@ import pl.visphere.lib.exception.AbstractRestException;
 import pl.visphere.oauth2.core.OAuth2Supplier;
 import pl.visphere.oauth2.i18n.LocaleSet;
 
+import java.util.List;
 import java.util.Map;
 
 public class OAuth2UserException {
@@ -27,6 +28,11 @@ public class OAuth2UserException {
         public OAuth2UserNotFoundException(Long userId) {
             super(HttpStatus.NOT_FOUND, LibLocaleSet.OAUTH2_USER_NOT_FOUND_EXCEPTION_MESSAGE);
             log.error("Searched user with OAuth2 ID: '{}' not found in database.", userId);
+        }
+
+        public OAuth2UserNotFoundException(List<Long> userIds) {
+            super(HttpStatus.NOT_FOUND, LibLocaleSet.OAUTH2_USER_NOT_FOUND_EXCEPTION_MESSAGE);
+            log.error("Searched users with some of the OAuth2 IDs: '{}' not found in database.", userIds);
         }
     }
 

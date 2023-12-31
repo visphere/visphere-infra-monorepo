@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2UsersDetails;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2UsersDetailsReqDto;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2UsersDetailsResDto;
 import pl.visphere.lib.kafka.payload.user.OAuth2UserDetailsResDto;
 import pl.visphere.lib.kafka.payload.user.PersistOAuth2UserReqDto;
 import pl.visphere.lib.kafka.payload.user.PersistOAuth2UserResDto;
@@ -25,6 +28,9 @@ import pl.visphere.oauth2.domain.oauth2user.OAuth2UserEntity;
 import pl.visphere.oauth2.domain.oauth2user.OAuth2UserRepository;
 import pl.visphere.oauth2.exception.OAuth2UserException;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
@@ -104,6 +110,24 @@ public class OAuth2ServiceImpl implements OAuth2Service, OAuth2UserLoader {
 
         log.info("Successfully get and process OAuth2 user account details: '{}'.", resDto);
         return resDto;
+    }
+
+    @Override
+    public OAuth2UsersDetailsResDto getOAuthUsersDetails(OAuth2UsersDetailsReqDto reqDto) {
+        final List<OAuth2UserEntity> oAuth2Users = oAuth2UserRepository.findAllByUserIdIn(reqDto.userIds());
+        if (oAuth2Users.size() != reqDto.userIds().size()) {
+            throw new OAuth2UserException.OAuth2UserNotFoundException(reqDto.userIds());
+        }
+        final Map<Long, OAuth2UsersDetails> userImages = new HashMap<>(oAuth2Users.size());
+        for (final OAuth2UserEntity oAuth2User : oAuth2Users) {
+            final OAuth2UsersDetails usersDetails = OAuth2UsersDetails.builder()
+                .imageFromLocal(!oAuth2User.getProviderImageSelected())
+                .profileImageUrl(oAuth2User.getProfileImageUrl())
+                .build();
+            userImages.put(oAuth2User.getUserId(), usersDetails);
+        }
+        log.info("Succesfully processed: '{}' user images.", userImages.size());
+        return new OAuth2UsersDetailsResDto(userImages);
     }
 
     @Override

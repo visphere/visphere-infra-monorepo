@@ -62,6 +62,7 @@ public enum QueueTopic implements Property {
     CHECK_TEXT_CHANNEL_ASSIGNMENTS("check-text-channel-assignments"),
     GET_USERS_DETAILS("get-users-details"),
     GET_USERS_IMAGES_DETAILS("get-users-images-details"),
+    GET_OAUTH2_USERS_DETAILS("get-oauth2-users-details"),
     ;
 
     private final String topicKey;

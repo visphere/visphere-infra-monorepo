@@ -8,11 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import pl.visphere.oauth2.core.OAuth2Supplier;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface OAuth2UserRepository extends JpaRepository<OAuth2UserEntity, Long> {
     Optional<OAuth2UserEntity> findByProviderIdAndSupplier(String providerId, OAuth2Supplier supplier);
     Optional<OAuth2UserEntity> findByUserId(Long userId);
+    List<OAuth2UserEntity> findAllByUserIdIn(List<Long> userIds);
     void deleteByUserId(Long userId);
 }
