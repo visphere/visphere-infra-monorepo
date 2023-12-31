@@ -6,7 +6,6 @@ package pl.visphere.multimedia.service.image;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.StringParser;
@@ -20,6 +19,7 @@ import pl.visphere.lib.kafka.payload.oauth2.OAuth2UsersDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.s3.*;
 import pl.visphere.multimedia.cache.CacheName;
+import pl.visphere.multimedia.config.ExternalServiceConfig;
 import pl.visphere.multimedia.domain.ImageType;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileEntity;
 import pl.visphere.multimedia.domain.accountprofile.AccountProfileRepository;
@@ -49,6 +49,8 @@ public class ImageServiceImpl implements ImageService {
     private final S3Helper s3Helper;
     private final CacheService cacheService;
     private final SyncQueueHandler syncQueueHandler;
+    private final ResourceProperties resourceProperties;
+    private final ExternalServiceConfig externalServiceConfig;
 
     private final AccountProfileRepository accountProfileRepository;
     private final GuildProfileRepository guildProfileRepository;
@@ -320,7 +322,11 @@ public class ImageServiceImpl implements ImageService {
             userImagesDetails.put(userId, resourceUrl);
         }
         for (final Long userId : deletedAccountIds) {
-            userImagesDetails.put(userId, StringUtils.EMPTY);
+            final StringJoiner replacerImagePath = new StringJoiner("/")
+                .add(externalServiceConfig.getS3StaticUrl())
+                .add("static")
+                .add(resourceProperties.getImageReplacerPath());
+            userImagesDetails.put(userId, replacerImagePath.toString());
         }
         for (final Map.Entry<Long, OAuth2UsersDetails> oauth2ExternalImage : oauth2ExternalImages) {
             userImagesDetails.put(oauth2ExternalImage.getKey(), oauth2ExternalImage.getValue().profileImageUrl());
