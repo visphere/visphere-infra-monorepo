@@ -11,6 +11,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import pl.visphere.lib.kafka.payload.sphere.GuildAssignmentsReqDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsReqDto;
+import pl.visphere.lib.kafka.payload.sphere.TextChannelAssignmentsReqDto;
 import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 import pl.visphere.sphere.service.sphereguild.SphereGuildService;
 
@@ -34,5 +35,10 @@ public class SphereKafkaListener {
     @KafkaListener(topics = "${visphere.kafka.topic.check-user-guild-assignments}")
     void checkGuildAssignmentsListener(Message<GuildAssignmentsReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, sphereGuildService::checkUserGuildAssignments);
+    }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.check-text-channel-assignments}")
+    void checkTextChannelAssignmentsListener(Message<TextChannelAssignmentsReqDto> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, sphereGuildService::checkTextChannelAssignments);
     }
 }

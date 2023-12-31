@@ -10,10 +10,14 @@ import org.springframework.stereotype.Service;
 import pl.visphere.lib.kafka.payload.sphere.GuildAssignmentsReqDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsReqDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsResDto;
+import pl.visphere.lib.kafka.payload.sphere.TextChannelAssignmentsReqDto;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
+import pl.visphere.sphere.domain.textchannel.TextChannelEntity;
+import pl.visphere.sphere.domain.textchannel.TextChannelRepository;
 import pl.visphere.sphere.domain.userguild.UserGuildRepository;
 import pl.visphere.sphere.exception.SphereGuildException;
+import pl.visphere.sphere.exception.TextChannelException;
 
 import java.time.ZoneId;
 import java.util.Objects;
@@ -24,6 +28,7 @@ import java.util.Objects;
 public class SphereGuildServiceImpl implements SphereGuildService {
     private final GuildRepository guildRepository;
     private final UserGuildRepository userGuildRepository;
+    private final TextChannelRepository textChannelRepository;
 
     @Override
     public GuildDetailsResDto getGuildDetails(GuildDetailsReqDto reqDto) {
@@ -56,5 +61,19 @@ public class SphereGuildServiceImpl implements SphereGuildService {
     @Override
     public boolean checkUserGuildAssignments(GuildAssignmentsReqDto reqDto) {
         return userGuildRepository.existsByUserIdAndGuild_Id(reqDto.userId(), reqDto.guildId());
+    }
+
+    @Override
+    public void checkTextChannelAssignments(TextChannelAssignmentsReqDto reqDto) {
+        final TextChannelEntity textChannel = textChannelRepository
+            .findById(reqDto.textChannelId())
+            .orElseThrow(() -> new TextChannelException.TextChannelNotFoundException(reqDto.textChannelId()));
+
+        final Long guildId = textChannel.getGuild().getId();
+        if (!userGuildRepository.existsByUserIdAndGuild_Id(reqDto.userId(), guildId)) {
+            throw new TextChannelException.TextChannelNotFoundException(reqDto.textChannelId());
+        }
+        log.info("Successfully found text channel: '{}' for user: '{}' and guild: '{}'.",
+            reqDto.textChannelId(), reqDto.userId(), guildId);
     }
 }
