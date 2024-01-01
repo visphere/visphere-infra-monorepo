@@ -5,7 +5,7 @@
 package pl.visphere.chat.network.message;
 
 import org.springframework.stereotype.Component;
-import pl.visphere.chat.domain.ChatMessageEntity;
+import pl.visphere.chat.domain.chatmessage.ChatMessageEntity;
 import pl.visphere.chat.network.message.dto.MessagePayloadReqDto;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
 import pl.visphere.lib.kafka.payload.user.UserDetails;
