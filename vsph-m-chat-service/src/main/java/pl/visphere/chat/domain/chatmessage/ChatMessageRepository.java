@@ -15,6 +15,6 @@ import java.util.UUID;
 @Repository
 public interface ChatMessageRepository extends CassandraRepository<ChatMessageEntity, UUID> {
     Slice<ChatMessageEntity> findAllByTextChannelId(Long textChannelId, Pageable pageable);
-    void deleteAllByUserId(Long userId);
+    void deleteAllByTextChannelIdInAndUserId(List<Long> textChannelId, Long userId);
     void deleteAllByTextChannelIdIn(List<Long> textChannelIds);
 }

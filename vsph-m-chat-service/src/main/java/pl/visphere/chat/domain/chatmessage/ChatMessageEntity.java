@@ -30,18 +30,19 @@ public class ChatMessageEntity implements Serializable {
     @PrimaryKeyColumn(name = "text_channel_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private Long textChannelId;
 
-    @PrimaryKeyColumn(name = "created_timestamp", ordinal = 1, ordering = Ordering.DESCENDING)
+    @PrimaryKeyColumn(name = "user_id", ordinal = 1)
+    private Long userId;
+
+    @PrimaryKeyColumn(name = "created_timestamp", ordinal = 2, ordering = Ordering.DESCENDING)
     private Instant createdTimestamp;
 
+    @PrimaryKeyColumn(name = "id", ordinal = 3)
     private UUID id;
 
     private String message;
 
     @Column(value = "time_zone")
     private ZoneId timeZone;
-
-    @Column(value = "user_id")
-    private Long userId;
 
     Long getTextChannelId() {
         return textChannelId;

@@ -15,9 +15,7 @@ interface AccountService {
     BaseMessageResDto createNew(CreateAccountReqDto reqDto);
     BaseMessageResDto activate(String token);
     BaseMessageResDto resend(ActivateAccountReqDto reqDto);
-    BaseMessageResDto disable(PasswordReqDto reqDto, AuthUserDetails user);
+    BaseMessageResDto disable(boolean deleteMessages, PasswordReqDto reqDto, AuthUserDetails user);
     BaseMessageResDto enable(HttpServletRequest req);
-
-
-    BaseMessageResDto delete(PasswordReqDto reqDto, AuthUserDetails user);
+    BaseMessageResDto delete(boolean deleteMessages, PasswordReqDto reqDto, AuthUserDetails user);
 }

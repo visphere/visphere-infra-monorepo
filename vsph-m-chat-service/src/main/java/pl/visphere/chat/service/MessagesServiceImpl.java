@@ -8,8 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.visphere.chat.domain.ChatMessageRepository;
+import pl.visphere.chat.domain.chatmessage.ChatMessageRepository;
 import pl.visphere.lib.kafka.payload.chat.DeleteTextChannelMessagesReqDto;
+import pl.visphere.lib.kafka.payload.chat.DeleteUserMessagesReqDto;
 
 @Slf4j
 @Service
@@ -19,12 +20,14 @@ public class MessagesServiceImpl implements MessagesService {
 
     @Override
     @Transactional
-    public void deleteUserMessages(Long userId) {
-        chatMessageRepository.deleteAllByUserId(userId);
-        log.info("Successfully deleted messages from user with ID: '{}'.", userId);
+    public void deleteUserMessages(DeleteUserMessagesReqDto reqDto) {
+        chatMessageRepository.deleteAllByTextChannelIdInAndUserId(reqDto.textChannelIds(), reqDto.userId());
+        log.info("Successfully deleted messages from user and text channels: '{}' with ID: '{}'.",
+            reqDto.textChannelIds(), reqDto.userId());
     }
 
     @Override
+    @Transactional
     public void deleteTextChannelMessages(DeleteTextChannelMessagesReqDto reqDto) {
         chatMessageRepository.deleteAllByTextChannelIdIn(reqDto.textChannelIds());
         log.info("Successfully deleted messages from text channel with IDs: '{}'.", reqDto.textChannelIds());

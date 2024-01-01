@@ -51,10 +51,11 @@ class AccountController {
 
     @PostMapping("/disable")
     ResponseEntity<BaseMessageResDto> disable(
+        @RequestParam boolean deleteMessages,
         @Valid @RequestBody PasswordReqDto reqDto,
         @LoggedUser AuthUserDetails user
     ) {
-        return ResponseEntity.ok(accountService.disable(reqDto, user));
+        return ResponseEntity.ok(accountService.disable(deleteMessages, reqDto, user));
     }
 
     @PostMapping("/enable")
@@ -64,9 +65,10 @@ class AccountController {
 
     @DeleteMapping("/delete")
     ResponseEntity<BaseMessageResDto> delete(
+        @RequestParam boolean deleteMessages,
         @Valid @RequestBody PasswordReqDto reqDto,
         @LoggedUser AuthUserDetails user
     ) {
-        return ResponseEntity.ok(accountService.delete(reqDto, user));
+        return ResponseEntity.ok(accountService.delete(deleteMessages, reqDto, user));
     }
 }

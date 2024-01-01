@@ -14,6 +14,7 @@ import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.exception.app.UserException;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.chat.DeleteUserMessagesReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.user.CredentialsConfirmationReqDto;
@@ -24,6 +25,8 @@ import pl.visphere.sphere.domain.banneduser.BannedUserEntity;
 import pl.visphere.sphere.domain.banneduser.BannedUserRepository;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
+import pl.visphere.sphere.domain.textchannel.TextChannelEntity;
+import pl.visphere.sphere.domain.textchannel.TextChannelRepository;
 import pl.visphere.sphere.domain.userguild.UserGuildEntity;
 import pl.visphere.sphere.domain.userguild.UserGuildRepository;
 import pl.visphere.sphere.exception.BannedUserException;
@@ -51,6 +54,7 @@ class ParticipantServiceImpl implements ParticipantService {
     private final GuildRepository guildRepository;
     private final UserGuildRepository userGuildRepository;
     private final BannedUserRepository bannedUserRepository;
+    private final TextChannelRepository textChannelRepository;
 
     @Override
     public GuildParticipantsResDto getAllGuildParticipants(long guildId, AuthUserDetails user) {
@@ -201,14 +205,15 @@ class ParticipantServiceImpl implements ParticipantService {
             .findByUserIdAndGuild_Id(user.getId(), guildId)
             .orElseThrow(() -> new UserGuildException.UserIsNotGuildParticipantException(user.getId(), guildId));
 
-        if (userGuild.getGuild().getOwnerId().equals(user.getId())) {
+        final GuildEntity guild = userGuild.getGuild();
+        if (guild.getOwnerId().equals(user.getId())) {
             throw new UserGuildException.DeleteGuildOwnerException(guildId, user.getId());
         }
         userGuild.setGuild(null);
         userGuildRepository.delete(userGuild);
-        if (deleteAllMessages) {
-            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES, user.getId());
-        }
+
+        findTextChannelsAndDeleteUserMessages(guild, user.getId(), deleteAllMessages);
+        
         log.info("Successfully leave guild with ID: '{}'", guildId);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LEAVE_RESPONSE_SUCCESS))
@@ -229,9 +234,9 @@ class ParticipantServiceImpl implements ParticipantService {
         }
         userGuild.setGuild(null);
         userGuildRepository.delete(userGuild);
-        if (deleteAllMessages) {
-            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES, userId);
-        }
+
+        findTextChannelsAndDeleteUserMessages(guild, userId, deleteAllMessages);
+
         log.info("Successfully kick member with ID: '{}' form guild with ID: '{}'", userId, guildId);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_KICK_RESPONSE_SUCCESS))
@@ -271,9 +276,8 @@ class ParticipantServiceImpl implements ParticipantService {
             .build();
         guild.persistBannedUser(bannedUser);
 
-        if (deleteAllMessages) {
-            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES, userId);
-        }
+        findTextChannelsAndDeleteUserMessages(guild, userId, deleteAllMessages);
+
         log.info("Successfully ban member with ID: '{}' form guild with ID: '{}'", userId, guildId);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_BAN_RESPONSE_SUCCESS))
@@ -313,5 +317,16 @@ class ParticipantServiceImpl implements ParticipantService {
         return guildRepository
             .findByIdAndOwnerId(guildId, user.getId())
             .orElseThrow(() -> new SphereGuildException.SphereGuildNotFoundException(guildId));
+    }
+
+    private void findTextChannelsAndDeleteUserMessages(GuildEntity guild, Long userId, boolean deleteAllMessages) {
+        final List<Long> textChannelIds = textChannelRepository
+            .findAllByGuild_Id(guild.getId())
+            .stream().map(TextChannelEntity::getId)
+            .toList();
+        if (deleteAllMessages) {
+            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES,
+                new DeleteUserMessagesReqDto(userId, textChannelIds));
+        }
     }
 }

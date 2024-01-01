@@ -22,12 +22,14 @@ import pl.visphere.lib.jwt.JwtService;
 import pl.visphere.lib.jwt.TokenData;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.async.AsyncQueueHandler;
+import pl.visphere.lib.kafka.payload.chat.DeleteUserMessagesReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.DefaultUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.multimedia.UpdateUserProfileReqDto;
 import pl.visphere.lib.kafka.payload.notification.PersistUserNotifSettingsReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendBaseEmailReqDto;
 import pl.visphere.lib.kafka.payload.notification.SendTokenEmailReqDto;
+import pl.visphere.lib.kafka.payload.sphere.UserTextChannelsResDto;
 import pl.visphere.lib.kafka.payload.user.CredentialsConfirmationReqDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
 import pl.visphere.lib.security.OtaToken;
@@ -236,13 +238,15 @@ class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public BaseMessageResDto disable(PasswordReqDto reqDto, AuthUserDetails user) {
+    public BaseMessageResDto disable(boolean deleteMessages, PasswordReqDto reqDto, AuthUserDetails user) {
         final UserEntity userEntity = findUserAndCheckPasswordForLocal(reqDto, user);
         if (userEntity.getIsDisabled()) {
             throw new AccountException.AccountAlreadyDisabledException(user.getUsername());
         }
         refreshTokenRepository.deleteAllByUser_Id(user.getId());
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.REPLACE_PROFILE_IMAGE_WITH_LOCKED, user.getId());
+
+        deleteUserMessages(deleteMessages, user);
 
         userEntity.setIsDisabled(true);
         cacheService.deleteCache(CacheName.USER_ENTITY_USER_ID, user.getId());
@@ -287,7 +291,7 @@ class AccountServiceImpl implements AccountService {
 
     @Override
     @Transactional
-    public BaseMessageResDto delete(PasswordReqDto reqDto, AuthUserDetails user) {
+    public BaseMessageResDto delete(boolean deleteMessages, PasswordReqDto reqDto, AuthUserDetails user) {
         final UserEntity userEntity = findUserAndCheckPasswordForLocal(reqDto, user);
 
         final boolean hasSomeGuilds = syncQueueHandler
@@ -302,6 +306,8 @@ class AccountServiceImpl implements AccountService {
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_NOTIF_USER_SETTINGS, userEntity.getId());
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_IMAGE_DATA, userEntity.getId());
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_FROM_GUILDS, userEntity.getId());
+
+        deleteUserMessages(deleteMessages, user);
 
         refreshTokenRepository.deleteAllByUser_Id(user.getId());
         userRepository.delete(userEntity);
@@ -331,5 +337,14 @@ class AccountServiceImpl implements AccountService {
             .build();
         userService.checkUserCredentials(confirmationReqDto);
         return userEntity;
+    }
+
+    private void deleteUserMessages(boolean deleteMessages, AuthUserDetails user) {
+        final UserTextChannelsResDto resDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GET_USER_TEXT_CHANNELS, user.getId(), UserTextChannelsResDto.class);
+        if (deleteMessages) {
+            syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES,
+                new DeleteUserMessagesReqDto(user.getId(), resDto.textChannelIds()));
+        }
     }
 }

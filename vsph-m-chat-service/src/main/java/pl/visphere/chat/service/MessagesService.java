@@ -5,8 +5,9 @@
 package pl.visphere.chat.service;
 
 import pl.visphere.lib.kafka.payload.chat.DeleteTextChannelMessagesReqDto;
+import pl.visphere.lib.kafka.payload.chat.DeleteUserMessagesReqDto;
 
 public interface MessagesService {
-    void deleteUserMessages(Long userId);
+    void deleteUserMessages(DeleteUserMessagesReqDto reqDto);
     void deleteTextChannelMessages(DeleteTextChannelMessagesReqDto reqDto);
 }

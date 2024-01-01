@@ -11,6 +11,7 @@ import org.springframework.messaging.Message;
 import org.springframework.stereotype.Component;
 import pl.visphere.chat.service.MessagesService;
 import pl.visphere.lib.kafka.payload.chat.DeleteTextChannelMessagesReqDto;
+import pl.visphere.lib.kafka.payload.chat.DeleteUserMessagesReqDto;
 import pl.visphere.lib.kafka.sync.SyncListenerHandler;
 
 @Slf4j
@@ -21,7 +22,7 @@ class ChatKafkaListener {
     private final SyncListenerHandler syncListenerHandler;
 
     @KafkaListener(topics = "${visphere.kafka.topic.delete-user-messages}")
-    void deleteUserMessagesListener(Message<Long> payload) {
+    void deleteUserMessagesListener(Message<DeleteUserMessagesReqDto> payload) {
         syncListenerHandler.parseAndSendResponse(payload, messagesService::deleteUserMessages);
     }
 
