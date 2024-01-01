@@ -76,4 +76,11 @@ public class SphereGuildServiceImpl implements SphereGuildService {
         log.info("Successfully found text channel: '{}' for user: '{}' and guild: '{}'.",
             reqDto.textChannelId(), reqDto.userId(), guildId);
     }
+
+    @Override
+    @Transactional
+    public void deleteUserFromGuilds(Long userId) {
+        userGuildRepository.deleteAllByUserId(userId);
+        log.info("Successfully deleted user guild relations with user ID: '{}'.", userId);
+    }
 }

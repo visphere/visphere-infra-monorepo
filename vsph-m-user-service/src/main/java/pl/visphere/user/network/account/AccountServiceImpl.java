@@ -301,6 +301,7 @@ class AccountServiceImpl implements AccountService {
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_SETTINGS_DATA, userEntity.getId());
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_NOTIF_USER_SETTINGS, userEntity.getId());
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_IMAGE_DATA, userEntity.getId());
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_FROM_GUILDS, userEntity.getId());
 
         refreshTokenRepository.deleteAllByUser_Id(user.getId());
         userRepository.delete(userEntity);
