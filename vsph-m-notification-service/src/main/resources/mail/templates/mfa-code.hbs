@@ -7,12 +7,12 @@
     <mj-text align="center" font-size="20px" font-weight="bold">
       [[vsph.i18n.mail.hello]] {{ username }}!
     </mj-text>
-    <mj-text align="center" color="rgb(140,140,140)" font-size="15px">
+    <mj-text align="center" color="hsl(210, 12%, 50%)" font-size="15px">
       [[vsph.i18n.mail.mfaCode.paragraph1]]:
     </mj-text>
     <mj-button
       padding="20px 0"
-      background-color="white"
+      background-color="transparent"
       border="1px solid black"
       border-radius="10px"
       color="black"
@@ -22,16 +22,16 @@
       font-weight="bold">
       {{ token }}
     </mj-button>
-    <mj-text align="center" color="rgb(140,140,140)" font-size="15px">
+    <mj-text align="center" color="hsl(210, 12%, 50%)" font-size="15px">
       [[vsph.i18n.mail.tokenLife]] <span style="color: black; font-weight: bold">
         {{ tokenLife }} [[vsph.i18n.mail.minutes]]</span>. [[vsph.i18n.mail.mfaCode.paragraph2]]
       <a style="color: black" href="mailto:{{ replyMail }}">{{ replyMail }}</a>.
     </mj-text>
     <mj-image padding="20px 0 5px" width="40px" src="{{ s3StaticUrl }}/static/icon/danger-higher.svg"/>
-    <mj-text color="rgb(189,57,57)" font-weight="bold" align="center" font-size="15px" padding-bottom="0">
+    <mj-text color="hsl(0, 44%, 50%)" font-weight="bold" align="center" font-size="15px" padding-bottom="0">
       [[vsph.i18n.mail.mfaCode.warning]]!
     </mj-text>
-    <mj-text color="rgb(189,57,57)" align="center" font-size="15px">
+    <mj-text color="hsl(0, 44%, 50%)" align="center" font-size="15px">
       [[vsph.i18n.mail.mfaCode.warningExplanation]].
     </mj-text>
   </mj-column>
