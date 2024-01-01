@@ -7,10 +7,9 @@ package pl.visphere.sphere.service.sphereguild;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import pl.visphere.lib.kafka.payload.sphere.GuildAssignmentsReqDto;
-import pl.visphere.lib.kafka.payload.sphere.GuildDetailsReqDto;
-import pl.visphere.lib.kafka.payload.sphere.GuildDetailsResDto;
-import pl.visphere.lib.kafka.payload.sphere.TextChannelAssignmentsReqDto;
+import org.springframework.transaction.annotation.Transactional;
+import pl.visphere.lib.AbstractAuditableEntity;
+import pl.visphere.lib.kafka.payload.sphere.*;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
 import pl.visphere.sphere.domain.textchannel.TextChannelEntity;
@@ -20,6 +19,7 @@ import pl.visphere.sphere.exception.SphereGuildException;
 import pl.visphere.sphere.exception.TextChannelException;
 
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -48,6 +48,22 @@ public class SphereGuildServiceImpl implements SphereGuildService {
 
         log.info("Successfully fetched guild with ID: '{}' and parse to details: '{}'.", guildId, resDto);
         return resDto;
+    }
+
+    @Override
+    public UserTextChannelsResDto getUserTextChannels(Long userId) {
+        final List<Long> guildIds = userGuildRepository
+            .findAllByUserId(userId)
+            .stream().map(userGuild -> userGuild.getGuild().getId())
+            .toList();
+
+        final List<Long> textChannelsIds = textChannelRepository
+            .findAllByGuild_IdIn(guildIds)
+            .stream().map(AbstractAuditableEntity::getId)
+            .toList();
+
+        log.info("Successfully find text channel IDs: '{}' for user: '{}'.", textChannelsIds, userId);
+        return new UserTextChannelsResDto(textChannelsIds);
     }
 
     @Override

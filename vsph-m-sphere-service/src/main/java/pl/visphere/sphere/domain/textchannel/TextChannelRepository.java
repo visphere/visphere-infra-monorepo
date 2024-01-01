@@ -13,6 +13,7 @@ import java.util.Optional;
 @Repository
 public interface TextChannelRepository extends JpaRepository<TextChannelEntity, Long> {
     List<TextChannelEntity> findAllByGuild_Id(Long guildId);
+    List<TextChannelEntity> findAllByGuild_IdIn(List<Long> guildIds);
     Optional<TextChannelEntity> findByIdAndGuild_OwnerId(Long textChannelId, Long ownerId);
     boolean existsByGuild_IdAndName(Long guildId, String name);
     boolean existsByGuild_IdAndNameAndIdNot(Long guildId, String name, Long textChannelId);
