@@ -6,12 +6,14 @@ package pl.visphere.multimedia.network.profilecolor;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.visphere.lib.StringParser;
 import pl.visphere.lib.cache.CacheService;
 import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
+import pl.visphere.lib.kafka.payload.oauth2.OAuth2DetailsResDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsReqDto;
 import pl.visphere.lib.kafka.payload.sphere.GuildDetailsResDto;
 import pl.visphere.lib.kafka.payload.user.UserDetailsResDto;
@@ -68,6 +70,14 @@ public class ProfileColorServiceImpl implements ProfileColorService {
         final UserDetailsResDto userDetailsResDto = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.USER_DETAILS, user.getId(), UserDetailsResDto.class);
 
+        String profileImagePath = StringUtils.EMPTY;
+        if (userDetailsResDto.isExternalCredentialsSupplier()) {
+            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
+            if (detailsResDto.profileImageSuppliedByProvider()) {
+                profileImagePath = detailsResDto.profileImageUrl();
+            }
+        }
         final char[] initials = {
             userDetailsResDto.getFirstName().charAt(0),
             userDetailsResDto.getLastName().charAt(0)
@@ -89,12 +99,15 @@ public class ProfileColorServiceImpl implements ProfileColorService {
             accountProfile.setProfileImageUuid(res.uuid());
             fullPath = res.fullPath();
         }
+        if (profileImagePath.equals(StringUtils.EMPTY)) {
+            profileImagePath = fullPath;
+        }
         accountProfile.setProfileColor(reqDto.getColor());
         cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, user.getId());
 
         log.info("Successfully updated profile color from: '{}' to: '{}'.", prevColor, reqDto.getColor());
         return MessageWithResourcePathResDto.builder()
-            .resourcePath(fullPath)
+            .resourcePath(profileImagePath)
             .message(i18nService.getMessage(LocaleSet.USER_PROFILE_COLOR_UPDATE_RESPONSE_SUCCESS))
             .build();
     }

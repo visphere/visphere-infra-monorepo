@@ -200,6 +200,14 @@ class ProfileImageServiceImpl implements ProfileImageService {
             .findByUserId(user.getId())
             .orElseThrow(() -> new AccountProfileException.AccountProfileNotFoundException(user.getId()));
 
+        String profileImagePath = StringUtils.EMPTY;
+        if (userDetailsResDto.isExternalCredentialsSupplier()) {
+            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
+            if (detailsResDto.profileImageSuppliedByProvider()) {
+                profileImagePath = detailsResDto.profileImageUrl();
+            }
+        }
         final char[] initials = {
             userDetailsResDto.getFirstName().charAt(0),
             userDetailsResDto.getLastName().charAt(0)
@@ -214,13 +222,8 @@ class ProfileImageServiceImpl implements ProfileImageService {
         accountProfile.setProfileImageUuid(res.uuid());
         accountProfile.setImageType(ImageType.DEFAULT);
 
-        String profileImagePath = res.fullPath();
-        if (userDetailsResDto.isExternalCredentialsSupplier()) {
-            final OAuth2DetailsResDto detailsResDto = syncQueueHandler
-                .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_DETAILS, user.getId(), OAuth2DetailsResDto.class);
-            if (detailsResDto.profileImageSuppliedByProvider()) {
-                profileImagePath = detailsResDto.profileImageUrl();
-            }
+        if (profileImagePath.equals(StringUtils.EMPTY)) {
+            profileImagePath = res.fullPath();
         }
         cacheService.deleteCache(CacheName.ACCOUNT_PROFILE_ENTITY_USER_ID, user.getId());
 
