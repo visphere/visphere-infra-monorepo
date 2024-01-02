@@ -155,7 +155,7 @@ public class PasswordRenewServiceImpl implements PasswordRenewService {
             .findByLocalUsernameOrEmailAddress(username)
             .orElseThrow(() -> new UserException.UserNotExistException(username));
 
-        final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.MFA_EMAIL);
+        final GenerateOtaResDto otaResDto = otaTokenService.generate(user, OtaToken.CHANGE_PASSWORD);
         final SendTokenEmailReqDto emailReqDto = otaTokenEmailMapper
             .mapToSendTokenEmailReq(user, otaResDto);
 
