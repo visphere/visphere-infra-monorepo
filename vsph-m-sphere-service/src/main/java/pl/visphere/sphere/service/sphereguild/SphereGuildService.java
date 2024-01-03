@@ -13,4 +13,5 @@ public interface SphereGuildService {
     boolean checkUserGuildAssignments(GuildAssignmentsReqDto reqDto);
     void checkTextChannelAssignments(TextChannelAssignmentsReqDto reqDto);
     void deleteUserFromGuilds(Long userId);
+    GuildByTextChannelIdResDto getGuildBaseTextChannelId(Long textChannelId);
 }

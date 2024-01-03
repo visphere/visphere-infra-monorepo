@@ -99,4 +99,12 @@ public class SphereGuildServiceImpl implements SphereGuildService {
         userGuildRepository.deleteAllByUserId(userId);
         log.info("Successfully deleted user guild relations with user ID: '{}'.", userId);
     }
+
+    @Override
+    public GuildByTextChannelIdResDto getGuildBaseTextChannelId(Long textChannelId) {
+        final TextChannelEntity textChannel = textChannelRepository
+            .findById(textChannelId)
+            .orElseThrow(() -> new TextChannelException.TextChannelNotFoundException(textChannelId));
+        return new GuildByTextChannelIdResDto(textChannel.getGuild().getId());
+    }
 }

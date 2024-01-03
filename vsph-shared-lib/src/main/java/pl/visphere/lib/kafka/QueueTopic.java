@@ -67,6 +67,7 @@ public enum QueueTopic implements Property {
     DELETE_TEXT_CHANNEL_MESSAGES("delete-text-channel-messages"),
     GET_USER_TEXT_CHANNELS("get-user-text-channels"),
     DELETE_USER_FROM_GUILDS("delete-user-from-guilds"),
+    GET_GUILD_BASE_TEXT_CHANNEL_ID("get-guild-base-text-channel-id"),
     ;
 
     private final String topicKey;

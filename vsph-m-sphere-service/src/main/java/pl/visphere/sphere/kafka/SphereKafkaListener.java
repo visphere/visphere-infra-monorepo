@@ -51,4 +51,9 @@ public class SphereKafkaListener {
     void deleteUserFromGuildsListener(Message<Long> payload) {
         syncListenerHandler.parseAndSendResponse(payload, sphereGuildService::deleteUserFromGuilds);
     }
+
+    @KafkaListener(topics = "${visphere.kafka.topic.get-guild-base-text-channel-id}")
+    void getGuildBaseTextChannelIdListener(Message<Long> payload) {
+        syncListenerHandler.parseAndSendResponse(payload, sphereGuildService::getGuildBaseTextChannelId);
+    }
 }
