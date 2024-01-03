@@ -37,16 +37,14 @@ class MessageMapper {
             .build();
     }
 
-    MessagePayloadResDto mapToMessagePayload(
-        MessagePayloadReqDto payloadDto, UUID messageId, Long userId, ZonedDateTime messageTime
-    ) {
+    MessagePayloadResDto mapToMessagePayload(ChatMessageEntity chatMessage, MessagePayloadReqDto payloadDto, Long userId) {
         return MessagePayloadResDto.builder()
             .userId(userId)
-            .messageId(messageId.toString())
+            .messageId(chatMessage.getId().toString())
             .fullName(payloadDto.fullName())
             .profileImageUrl(payloadDto.profileImageUrl())
-            .sendDate(messageTime)
-            .message(payloadDto.message())
+            .sendDate(chatMessage.getCreatedTimestamp().atZone(chatMessage.getTimeZone()))
+            .message(chatMessage.getMessage())
             .accountDeleted(false)
             .attachments(mapToAttachmentFilesList(chatMessage.getFilesList()))
             .build();

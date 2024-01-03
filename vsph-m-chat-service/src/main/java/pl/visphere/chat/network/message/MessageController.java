@@ -22,7 +22,7 @@ public class MessageController {
     private final MessageService messageService;
     private final SimpMessagingTemplate simpMessagingTemplate;
 
-    @GetMapping("/textChannel/{textChannelId}/all")
+    @GetMapping("/textchannel/{textChannelId}/all")
     ResponseEntity<MessagesResDto> getAllMessagesWithOffset(
         @PathVariable long textChannelId,
         @RequestParam int offset,

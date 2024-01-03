@@ -69,7 +69,7 @@ public class MessageServiceImpl implements MessageService {
             return new MessagesResDto(true);
         }
         final PageRequest pageRequest = PageRequest.of(offset, size);
-        final ByteBuffer previousState = !Objects.equals(nextPage, StringUtils.EMPTY)
+        final ByteBuffer previousState = nextPage != null && !Objects.equals(nextPage, StringUtils.EMPTY)
             ? com.datastax.oss.protocol.internal.util.Bytes.fromHexString(nextPage)
             : null;
 

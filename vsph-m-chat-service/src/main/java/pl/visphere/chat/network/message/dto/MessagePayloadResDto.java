@@ -20,4 +20,14 @@ public record MessagePayloadResDto(
     Boolean accountDeleted,
     List<AttachmentFile> attachments
 ) {
+    @Override
+    public String toString() {
+        return "{" +
+            "userId=" + userId +
+            ", messageId='" + messageId +
+            ", sendDate=" + sendDate +
+            ", message='" + message.replace("\n", "\\n") +
+            ", attachments=" + attachments +
+            '}';
+    }
 }
