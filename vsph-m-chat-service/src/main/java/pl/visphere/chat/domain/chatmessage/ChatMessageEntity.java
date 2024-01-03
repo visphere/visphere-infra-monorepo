@@ -17,6 +17,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.UUID;
 
 @Table(value = "chat_messages")
@@ -43,6 +44,9 @@ public class ChatMessageEntity implements Serializable {
 
     @Column(value = "time_zone")
     private ZoneId timeZone;
+
+    @Column(value = "files_list")
+    private List<ChatFileDefinition> filesList;
 
     Long getTextChannelId() {
         return textChannelId;
@@ -92,15 +96,24 @@ public class ChatMessageEntity implements Serializable {
         this.userId = userId;
     }
 
+    public List<ChatFileDefinition> getFilesList() {
+        return filesList;
+    }
+
+    void setFilesList(List<ChatFileDefinition> filesList) {
+        this.filesList = filesList;
+    }
+
     @Override
     public String toString() {
         return "{" +
             "textChannelId=" + textChannelId +
+            ", userId=" + userId +
             ", createdTimestamp=" + createdTimestamp +
             ", id=" + id +
             ", message=" + message +
             ", timeZone=" + timeZone +
-            ", userId=" + userId +
+            ", filesList=" + filesList +
             '}';
     }
 }

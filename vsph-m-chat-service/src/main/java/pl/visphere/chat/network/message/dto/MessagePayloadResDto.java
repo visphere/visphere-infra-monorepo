@@ -7,6 +7,7 @@ package pl.visphere.chat.network.message.dto;
 import lombok.Builder;
 
 import java.time.ZonedDateTime;
+import java.util.List;
 
 @Builder
 public record MessagePayloadResDto(
@@ -16,6 +17,7 @@ public record MessagePayloadResDto(
     String profileImageUrl,
     ZonedDateTime sendDate,
     String message,
-    Boolean accountDeleted
+    Boolean accountDeleted,
+    List<AttachmentFile> attachments
 ) {
 }

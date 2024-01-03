@@ -4,6 +4,9 @@
  */
 package pl.visphere.chat.network.message;
 
+import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -11,22 +14,33 @@ import org.springframework.data.cassandra.core.query.CassandraPageRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+import pl.visphere.chat.config.FileProperties;
+import pl.visphere.chat.domain.chatmessage.ChatFileDefinition;
 import pl.visphere.chat.domain.chatmessage.ChatMessageEntity;
 import pl.visphere.chat.domain.chatmessage.ChatMessageRepository;
 import pl.visphere.chat.network.message.dto.MessagePayloadReqDto;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
 import pl.visphere.chat.network.message.dto.MessagesResDto;
+import pl.visphere.lib.exception.GenericRestException;
+import pl.visphere.lib.exception.app.FileException;
+import pl.visphere.lib.file.FileHelper;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.UserImagesIdentify;
 import pl.visphere.lib.kafka.payload.multimedia.UsersImagesDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.UsersImagesDetailsResDto;
+import pl.visphere.lib.kafka.payload.sphere.GuildByTextChannelIdResDto;
 import pl.visphere.lib.kafka.payload.sphere.TextChannelAssignmentsReqDto;
 import pl.visphere.lib.kafka.payload.user.UserDetails;
 import pl.visphere.lib.kafka.payload.user.UsersDetailsReqDto;
 import pl.visphere.lib.kafka.payload.user.UsersDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
+import pl.visphere.lib.s3.S3Bucket;
+import pl.visphere.lib.s3.S3Client;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -37,6 +51,10 @@ import java.util.*;
 public class MessageServiceImpl implements MessageService {
     private final SyncQueueHandler syncQueueHandler;
     private final MessageMapper messageMapper;
+    private final ObjectMapper objectMapper;
+    private final FileProperties fileProperties;
+    private final FileHelper fileHelper;
+    private final S3Client s3Client;
 
     private final ChatMessageRepository chatMessageRepository;
 
@@ -113,30 +131,104 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
+    @Transactional
     public MessagePayloadResDto processMessage(long userId, long textChannelId, MessagePayloadReqDto payloadDto) {
         MessagePayloadResDto resDto;
         try {
-            final ZonedDateTime messageTime = ZonedDateTime.now();
             final UUID messageId = UUID.randomUUID();
-
-            final ChatMessageEntity chatMessage = ChatMessageEntity.builder()
-                .id(messageId)
-                .message(payloadDto.message())
-                .createdTimestamp(messageTime.toInstant())
-                .timeZone(messageTime.getZone())
-                .userId(userId)
-                .textChannelId(textChannelId)
-                .build();
-
-            chatMessageRepository.save(chatMessage);
-            resDto = messageMapper.mapToMessagePayload(payloadDto, messageId, userId, messageTime);
-
-            log.info("Successfully processed and saved message for user ID: '{}' in text channel with ID: '{}': '{}'",
-                userId, textChannelId, resDto);
+            resDto = createAndSaveNewMessage(payloadDto, userId, textChannelId, messageId);
         } catch (Exception ex) {
             return null;
         }
         return resDto;
     }
 
+    @Override
+    @Transactional
+    public MessagePayloadResDto processFilesMessages(
+        long userId, long textChannelId, String body, MultipartFile[] files
+    ) {
+        MessagePayloadResDto resDto;
+        final GuildByTextChannelIdResDto guild = syncQueueHandler.sendNotNullWithBlockThread(
+            QueueTopic.GET_GUILD_BASE_TEXT_CHANNEL_ID, textChannelId, GuildByTextChannelIdResDto.class);
+        try {
+            final MessagePayloadReqDto reqDto = objectMapper.readValue(body, MessagePayloadReqDto.class);
+            final UUID messageId = UUID.randomUUID();
+
+            final int maxFilesCount = fileProperties.getMaxPerMessage();
+            final int maxFileSizeMb = fileProperties.getMaxSizeMb();
+
+            if (files.length > maxFilesCount) {
+                throw new FileException.MaxFilesInRequestExceedException(files.length, maxFilesCount);
+            }
+            for (final MultipartFile file : files) {
+                if (fileHelper.checkIfExceededMaxSize(file, maxFileSizeMb)) {
+                    throw new FileException.FileExceededMaxSizeException(fileHelper.mbFormat(maxFileSizeMb),
+                        file.getSize());
+                }
+            }
+            final List<ChatFileDefinition> chatFileDefinitions = new ArrayList<>(maxFilesCount);
+            for (final MultipartFile file : files) {
+                final String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
+                final String resourceDir = new StringJoiner("/")
+                    .add(String.valueOf(guild.id()))
+                    .add(String.valueOf(textChannelId))
+                    .add(messageId.toString())
+                    .toString();
+
+                final String contentType = file.getContentType();
+                final List<String> multimediaMime = List.of("image", "audio", "video");
+
+                final ObjectMetadata objectMetadata = new ObjectMetadata();
+                if (contentType != null && multimediaMime.stream().noneMatch(contentType::contains)) {
+                    // prevent show file content, force to download
+                    objectMetadata.setContentDisposition("attachment; filename=\"" + file.getOriginalFilename() + "\"");
+                }
+                final String fullResourcePath = s3Client
+                    .putRawObject(S3Bucket.ATTACHMENTS, file, resourceDir, fileName, objectMetadata);
+
+                final ChatFileDefinition chatFileDefinition = ChatFileDefinition.builder()
+                    .mimeType(contentType)
+                    .originalName(file.getOriginalFilename())
+                    .path(fullResourcePath)
+                    .build();
+                chatFileDefinitions.add(chatFileDefinition);
+            }
+            resDto = createAndSaveNewMessage(reqDto, userId, textChannelId, messageId, chatFileDefinitions);
+        } catch (JsonProcessingException ex) {
+            throw new GenericRestException("Unable to process json body: '{}'. Cause: '{}'.", body, ex.getMessage());
+        } catch (IOException ex) {
+            throw new GenericRestException("Unable to process file. Cause: '{}'.", ex.getMessage());
+        }
+        return resDto;
+    }
+
+    private MessagePayloadResDto createAndSaveNewMessage(
+        MessagePayloadReqDto payloadDto, long userId, long textChannelId, UUID messageId,
+        List<ChatFileDefinition> filesList
+    ) {
+        final ZonedDateTime messageTime = ZonedDateTime.now();
+        final ChatMessageEntity chatMessage = ChatMessageEntity.builder()
+            .id(messageId)
+            .message(payloadDto.message())
+            .createdTimestamp(messageTime.toInstant())
+            .timeZone(messageTime.getZone())
+            .userId(userId)
+            .textChannelId(textChannelId)
+            .filesList(filesList)
+            .build();
+
+        chatMessageRepository.save(chatMessage);
+        final MessagePayloadResDto resDto = messageMapper.mapToMessagePayload(chatMessage, payloadDto, userId);
+
+        log.info("Successfully processed and saved message for user ID: '{}' in text channel with ID: '{}': '{}'",
+            userId, textChannelId, resDto);
+        return resDto;
+    }
+
+    private MessagePayloadResDto createAndSaveNewMessage(
+        MessagePayloadReqDto payloadDto, long userId, long textChannelId, UUID messageId
+    ) {
+        return createAndSaveNewMessage(payloadDto, userId, textChannelId, messageId, List.of());
+    }
 }

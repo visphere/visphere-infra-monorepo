@@ -12,13 +12,11 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.Bucket;
-import com.amazonaws.services.s3.model.ObjectListing;
-import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectSummary;
+import com.amazonaws.services.s3.model.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
+import org.springframework.web.multipart.MultipartFile;
 import pl.visphere.lib.exception.GenericRestException;
 
 import java.io.File;
@@ -89,6 +87,24 @@ public class S3Client {
             .uuid(uuid)
             .fullPath(createFullResourcePath(bucket, resourceDir, payload, uuid))
             .build();
+    }
+
+    public String putRawObject(
+        S3Bucket bucket, MultipartFile file, String resourceDir, String fileName, ObjectMetadata objectMetadata
+    ) throws IOException {
+        final String fullFileName = new StringJoiner("/")
+            .add(resourceDir)
+            .add(fileName)
+            .toString();
+        objectMetadata.setContentType(file.getContentType());
+        objectMetadata.setContentLength(file.getSize());
+
+        client.putObject(bucket.getName(), fullFileName, file.getInputStream(), objectMetadata);
+
+        return new StringJoiner("/")
+            .add(bucket.getName())
+            .add(fullFileName)
+            .toString();
     }
 
     public void moveObject(S3Bucket inputBucket, S3Bucket outputBucket, String fileKey) {

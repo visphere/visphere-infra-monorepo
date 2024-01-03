@@ -5,8 +5,12 @@
 package pl.visphere.chat.network.message;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
 import pl.visphere.chat.network.message.dto.MessagesResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.lib.security.user.LoggedUser;
@@ -16,6 +20,7 @@ import pl.visphere.lib.security.user.LoggedUser;
 @RequiredArgsConstructor
 public class MessageController {
     private final MessageService messageService;
+    private final SimpMessagingTemplate simpMessagingTemplate;
 
     @GetMapping("/textChannel/{textChannelId}/all")
     ResponseEntity<MessagesResDto> getAllMessagesWithOffset(
@@ -26,5 +31,17 @@ public class MessageController {
         @LoggedUser AuthUserDetails user
     ) {
         return ResponseEntity.ok(messageService.getAllMessagesWithOffset(textChannelId, offset, size, nextPage, user));
+    }
+
+    @PostMapping("/textchannel/{textChannelId}/user/{userId}")
+    ResponseEntity<Void> publishMessageWithFiles(
+        @PathVariable long textChannelId,
+        @PathVariable long userId,
+        @RequestParam("body") String body,
+        @RequestParam("files") MultipartFile[] files
+    ) {
+        final MessagePayloadResDto resDto = messageService.processFilesMessages(userId, textChannelId, body, files);
+        simpMessagingTemplate.convertAndSend(String.format("/topic/outbound.%s", textChannelId), resDto);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }
