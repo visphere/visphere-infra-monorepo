@@ -6,7 +6,7 @@ package pl.visphere.multimedia.processing.drawer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
-import pl.visphere.multimedia.exception.FileException;
+import pl.visphere.lib.exception.app.FileException;
 import pl.visphere.multimedia.processing.ImageProperties;
 
 import javax.imageio.ImageIO;

@@ -11,6 +11,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.web.client.RestTemplate;
 import pl.visphere.lib.AbstractBaseServiceBeans;
 import pl.visphere.lib.cache.CacheService;
+import pl.visphere.lib.file.FileHelper;
 import pl.visphere.lib.s3.S3Client;
 import pl.visphere.lib.s3.S3Helper;
 
@@ -36,5 +37,10 @@ class ServiceConfig extends AbstractBaseServiceBeans {
     @Bean
     CacheService cacheService(CacheManager cacheManager) {
         return new CacheService(cacheManager);
+    }
+
+    @Bean
+    FileHelper fileHelper() {
+        return new FileHelper();
     }
 }

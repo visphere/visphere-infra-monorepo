@@ -12,10 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.exception.AbstractBaseExceptionListener;
 import pl.visphere.lib.exception.MessageExceptionResDto;
 import pl.visphere.lib.i18n.I18nService;
-import pl.visphere.multimedia.i18n.LocaleSet;
 
 import java.util.Map;
 
@@ -37,7 +37,7 @@ class ExceptionsListener extends AbstractBaseExceptionListener {
         MaxUploadSizeExceededException ex
     ) {
         final HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
-        final String message = i18nService.getMessage(LocaleSet.MAX_UPLOADED_FILE_SIZE_EXCEEDED_EXCEPTION_MESSAGE, Map.of(
+        final String message = i18nService.getMessage(LibLocaleSet.MAX_UPLOADED_FILE_SIZE_EXCEEDED_EXCEPTION_MESSAGE, Map.of(
             "maxSize", environment.getProperty("spring.servlet.multipart.max-file-size", "?")
         ));
         log.error("Multipart file max upload size eceeded. Cause: '{}'.", ex.getMaxUploadSize());

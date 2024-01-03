@@ -1,17 +1,14 @@
 /*
- * Copyright (c) 2023 by Visphere & Vsph Technologies
+ * Copyright (c) 2024 by Visphere & Vsph Technologies
  * Originally developed by Miłosz Gilga <https://miloszgilga.pl>
  */
-package pl.visphere.multimedia.file;
+package pl.visphere.lib.file;
 
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
-import pl.visphere.lib.file.MimeType;
 
 import java.util.Arrays;
 import java.util.Objects;
 
-@Component
 public class FileHelper {
     public boolean checkIfExtensionIsSupported(MultipartFile file, MimeType... types) {
         return Arrays.stream(types).anyMatch(t -> Objects.equals(t.getMime(), file.getContentType()));

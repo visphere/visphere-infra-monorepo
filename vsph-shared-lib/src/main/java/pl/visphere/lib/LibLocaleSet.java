@@ -34,6 +34,9 @@ public enum LibLocaleSet implements LocaleExtendableSet {
     ACCOUNT_DELETED_PLACEHOLDER("vsph.lib.i18n.accountDeletedPlaceholder"),
     INVALID_PASSWORD_EXCEPTION_MESSAGE("vsph.lib.exc.invalidPassword"),
     INVALID_PASSWORD_OR_MFA_CODE_EXCEPTION_MESSAGE("vsph.lib.exc.invalidPasswordOrMfaCode"),
+    FILE_EXTENSION_NOT_SUPPORTED_EXCEPTION_MESSAGE("vsph.lib.exc.fileExtensionIsNotSupported"),
+    MAX_UPLOADED_FILE_SIZE_EXCEEDED_EXCEPTION_MESSAGE("vsph.lib.exc.maxUploadedFileSizeExceeded"),
+    FILE_IS_CORRUPTED_EXCEPTION_MESSAGE("vsph.lib.exc.fileIsCorrupted"),
     ;
 
     private final String holder;
