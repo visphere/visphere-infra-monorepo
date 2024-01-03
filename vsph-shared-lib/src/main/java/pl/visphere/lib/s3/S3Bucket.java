@@ -14,6 +14,7 @@ public enum S3Bucket {
     USERS("users"),
     EMAILS("emails"),
     LOCKED_USERS("locked-users"),
+    ATTACHMENTS("attachments"),
     ;
 
     private final String name;
