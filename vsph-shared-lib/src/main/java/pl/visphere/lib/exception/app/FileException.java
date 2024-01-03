@@ -44,4 +44,12 @@ public class FileException {
             log.error("Attempt to process unsupported or corrupted file. Cause: '{}'.", reason);
         }
     }
+
+    @Slf4j
+    public static class MaxFilesInRequestExceedException extends AbstractRestException {
+        public MaxFilesInRequestExceedException(int sendFiles, int maxFiles) {
+            super(HttpStatus.BAD_REQUEST, LibLocaleSet.MAX_FILES_IN_REQUEST_EXCEED_EXCEPTION_MESSAGE);
+            log.error("Attempt to send '{}' files when request only take: '{}'.", sendFiles, maxFiles);
+        }
+    }
 }

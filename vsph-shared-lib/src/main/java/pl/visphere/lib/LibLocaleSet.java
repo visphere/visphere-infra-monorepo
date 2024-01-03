@@ -37,6 +37,7 @@ public enum LibLocaleSet implements LocaleExtendableSet {
     FILE_EXTENSION_NOT_SUPPORTED_EXCEPTION_MESSAGE("vsph.lib.exc.fileExtensionIsNotSupported"),
     MAX_UPLOADED_FILE_SIZE_EXCEEDED_EXCEPTION_MESSAGE("vsph.lib.exc.maxUploadedFileSizeExceeded"),
     FILE_IS_CORRUPTED_EXCEPTION_MESSAGE("vsph.lib.exc.fileIsCorrupted"),
+    MAX_FILES_IN_REQUEST_EXCEED_EXCEPTION_MESSAGE("vsph.lib.exc.maxFilesInRequestExceed"),
     ;
 
     private final String holder;
