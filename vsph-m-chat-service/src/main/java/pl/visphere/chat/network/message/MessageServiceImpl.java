@@ -54,7 +54,6 @@ public class MessageServiceImpl implements MessageService {
     private final MessageMapper messageMapper;
     private final ObjectMapper objectMapper;
     private final FileProperties fileProperties;
-    private final FileHelper fileHelper;
     private final S3Client s3Client;
 
     private final ChatMessageRepository chatMessageRepository;
@@ -158,16 +157,8 @@ public class MessageServiceImpl implements MessageService {
             final UUID messageId = UUID.randomUUID();
 
             final int maxFilesCount = fileProperties.getMaxPerMessage();
-            final int maxFileSizeMb = fileProperties.getMaxSizeMb();
-
             if (files.length > maxFilesCount) {
                 throw new FileException.MaxFilesInRequestExceedException(files.length, maxFilesCount);
-            }
-            for (final MultipartFile file : files) {
-                if (fileHelper.checkIfExceededMaxSize(file, maxFileSizeMb)) {
-                    throw new FileException.FileExceededMaxSizeException(fileHelper.mbFormat(maxFileSizeMb),
-                        file.getSize());
-                }
             }
             final List<ChatFileDefinition> chatFileDefinitions = new ArrayList<>(maxFilesCount);
             for (final MultipartFile file : files) {
