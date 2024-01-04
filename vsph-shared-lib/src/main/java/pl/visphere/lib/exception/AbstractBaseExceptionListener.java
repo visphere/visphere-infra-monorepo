@@ -7,6 +7,7 @@ package pl.visphere.lib.exception;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.AuthenticationException;
@@ -15,6 +16,7 @@ import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.i18n.I18nService;
 
@@ -26,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public abstract class AbstractBaseExceptionListener {
     private final I18nService i18nService;
+    private final Environment environment;
 
     @ExceptionHandler(AbstractRestException.class)
     ResponseEntity<MessageExceptionResDto> restException(AbstractRestException ex, HttpServletRequest req) {
@@ -78,5 +81,18 @@ public abstract class AbstractBaseExceptionListener {
         final String message = i18nService.getMessage(LibLocaleSet.UNKNOW_SERVER_EXCEPTION_MESSAGE);
         log.error("Unexpected issue during server process. Cause: '{}'.", ex.getMessage());
         return new ResponseEntity<>(new MessageExceptionResDto(reponseStatus, req, message), reponseStatus);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<MessageExceptionResDto> maxUploadSizeExceededException(
+        HttpServletRequest req,
+        MaxUploadSizeExceededException ex
+    ) {
+        final HttpStatus responseStatus = HttpStatus.BAD_REQUEST;
+        final String message = i18nService.getMessage(LibLocaleSet.MAX_UPLOADED_FILE_SIZE_EXCEEDED_EXCEPTION_MESSAGE, Map.of(
+            "maxSize", environment.getProperty("spring.servlet.multipart.max-file-size", "?")
+        ));
+        log.error("Multipart file max upload size eceeded. Cause: '{}'.", ex.getMaxUploadSize());
+        return new ResponseEntity<>(new MessageExceptionResDto(responseStatus, req, message), responseStatus);
     }
 }
