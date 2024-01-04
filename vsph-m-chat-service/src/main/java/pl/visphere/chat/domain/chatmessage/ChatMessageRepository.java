@@ -17,4 +17,8 @@ public interface ChatMessageRepository extends CassandraRepository<ChatMessageEn
     Slice<ChatMessageEntity> findAllByTextChannelId(Long textChannelId, Pageable pageable);
     void deleteAllByTextChannelIdInAndUserId(List<Long> textChannelId, Long userId);
     void deleteAllByTextChannelIdIn(List<Long> textChannelIds);
+public interface ChatMessageRepository extends CassandraRepository<ChatMessageEntity, ChatPrimaryKey> {
+    Slice<ChatMessageEntity> findAllByKey_TextChannelId(Long textChannelId, Pageable pageable);
+    void deleteAllByKey_TextChannelIdInAndKey_UserId(List<Long> textChannelId, Long userId);
+    void deleteAllByKey_TextChannelIdIn(List<Long> textChannelIds);
 }

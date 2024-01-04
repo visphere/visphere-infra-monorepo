@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import pl.visphere.chat.config.ExternalServiceConfig;
 import pl.visphere.chat.domain.chatmessage.ChatFileDefinition;
 import pl.visphere.chat.domain.chatmessage.ChatMessageEntity;
+import pl.visphere.chat.domain.chatmessage.ChatPrimaryKey;
 import pl.visphere.chat.network.message.dto.AttachmentFile;
 import pl.visphere.chat.network.message.dto.MessagePayloadReqDto;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
@@ -25,25 +26,29 @@ class MessageMapper {
     MessagePayloadResDto mapToMessagePayload(
         ChatMessageEntity chatMessage, UserDetails details, String profileImagePath
     ) {
+        final ChatPrimaryKey key = chatMessage.getKey();
         return MessagePayloadResDto.builder()
-            .userId(chatMessage.getUserId())
-            .messageId(chatMessage.getId().toString())
+            .userId(key.getUserId())
+            .messageId(key.getId().toString())
             .fullName(details.fullName())
             .profileImageUrl(profileImagePath)
-            .sendDate(ZonedDateTime.ofInstant(chatMessage.getCreatedTimestamp(), chatMessage.getTimeZone()))
+            .sendDate(ZonedDateTime.ofInstant(key.getCreatedTimestamp(), chatMessage.getTimeZone()))
             .message(chatMessage.getMessage())
             .accountDeleted(details.accountDeleted())
             .attachments(mapToAttachmentFilesList(chatMessage.getFilesList()))
             .build();
     }
 
-    MessagePayloadResDto mapToMessagePayload(ChatMessageEntity chatMessage, MessagePayloadReqDto payloadDto, Long userId) {
+    MessagePayloadResDto mapToMessagePayload(
+        ChatMessageEntity chatMessage, MessagePayloadReqDto payloadDto, Long userId
+    ) {
+        final ChatPrimaryKey key = chatMessage.getKey();
         return MessagePayloadResDto.builder()
             .userId(userId)
-            .messageId(chatMessage.getId().toString())
+            .messageId(key.getId().toString())
             .fullName(payloadDto.fullName())
             .profileImageUrl(payloadDto.profileImageUrl())
-            .sendDate(chatMessage.getCreatedTimestamp().atZone(chatMessage.getTimeZone()))
+            .sendDate(key.getCreatedTimestamp().atZone(chatMessage.getTimeZone()))
             .message(chatMessage.getMessage())
             .accountDeleted(false)
             .attachments(mapToAttachmentFilesList(chatMessage.getFilesList()))

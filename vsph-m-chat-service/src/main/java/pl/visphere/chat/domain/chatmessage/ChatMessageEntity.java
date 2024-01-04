@@ -7,18 +7,14 @@ package pl.visphere.chat.domain.chatmessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-import org.springframework.data.cassandra.core.cql.Ordering;
-import org.springframework.data.cassandra.core.cql.PrimaryKeyType;
 import org.springframework.data.cassandra.core.mapping.Column;
-import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
+import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 import java.io.Serial;
 import java.io.Serializable;
-import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
-import java.util.UUID;
 
 @Table(value = "chat_messages")
 @Builder
@@ -28,17 +24,8 @@ public class ChatMessageEntity implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @PrimaryKeyColumn(name = "text_channel_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
-    private Long textChannelId;
-
-    @PrimaryKeyColumn(name = "user_id", ordinal = 1)
-    private Long userId;
-
-    @PrimaryKeyColumn(name = "created_timestamp", ordinal = 2, ordering = Ordering.DESCENDING)
-    private Instant createdTimestamp;
-
-    @PrimaryKeyColumn(name = "id", ordinal = 3)
-    private UUID id;
+    @PrimaryKey
+    private ChatPrimaryKey key;
 
     private String message;
 
@@ -48,28 +35,12 @@ public class ChatMessageEntity implements Serializable {
     @Column(value = "files_list")
     private List<ChatFileDefinition> filesList;
 
-    Long getTextChannelId() {
-        return textChannelId;
+    public ChatPrimaryKey getKey() {
+        return key;
     }
 
-    void setTextChannelId(Long textChannelId) {
-        this.textChannelId = textChannelId;
-    }
-
-    public Instant getCreatedTimestamp() {
-        return createdTimestamp;
-    }
-
-    void setCreatedTimestamp(Instant createdTimestamp) {
-        this.createdTimestamp = createdTimestamp;
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    void setId(UUID id) {
-        this.id = id;
+    void setKey(ChatPrimaryKey key) {
+        this.key = key;
     }
 
     public String getMessage() {
@@ -88,14 +59,6 @@ public class ChatMessageEntity implements Serializable {
         this.timeZone = timeZone;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public List<ChatFileDefinition> getFilesList() {
         return filesList;
     }
@@ -107,10 +70,7 @@ public class ChatMessageEntity implements Serializable {
     @Override
     public String toString() {
         return "{" +
-            "textChannelId=" + textChannelId +
-            ", userId=" + userId +
-            ", createdTimestamp=" + createdTimestamp +
-            ", id=" + id +
+            "key=" + key +
             ", message=" + message +
             ", timeZone=" + timeZone +
             ", filesList=" + filesList +

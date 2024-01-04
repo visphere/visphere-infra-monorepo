@@ -21,7 +21,7 @@ public class MessagesServiceImpl implements MessagesService {
     @Override
     @Transactional
     public void deleteUserMessages(DeleteUserMessagesReqDto reqDto) {
-        chatMessageRepository.deleteAllByTextChannelIdInAndUserId(reqDto.textChannelIds(), reqDto.userId());
+        chatMessageRepository.deleteAllByKey_TextChannelIdInAndKey_UserId(reqDto.textChannelIds(), reqDto.userId());
         log.info("Successfully deleted messages from user and text channels: '{}' with ID: '{}'.",
             reqDto.textChannelIds(), reqDto.userId());
     }
@@ -29,7 +29,7 @@ public class MessagesServiceImpl implements MessagesService {
     @Override
     @Transactional
     public void deleteTextChannelMessages(DeleteTextChannelMessagesReqDto reqDto) {
-        chatMessageRepository.deleteAllByTextChannelIdIn(reqDto.textChannelIds());
+        chatMessageRepository.deleteAllByKey_TextChannelIdIn(reqDto.textChannelIds());
         log.info("Successfully deleted messages from text channel with IDs: '{}'.", reqDto.textChannelIds());
     }
 }

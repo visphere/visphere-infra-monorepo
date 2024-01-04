@@ -20,6 +20,7 @@ import pl.visphere.chat.config.FileProperties;
 import pl.visphere.chat.domain.chatmessage.ChatFileDefinition;
 import pl.visphere.chat.domain.chatmessage.ChatMessageEntity;
 import pl.visphere.chat.domain.chatmessage.ChatMessageRepository;
+import pl.visphere.chat.domain.chatmessage.ChatPrimaryKey;
 import pl.visphere.chat.network.message.dto.MessagePayloadReqDto;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
 import pl.visphere.chat.network.message.dto.MessagesResDto;
@@ -77,10 +78,10 @@ public class MessageServiceImpl implements MessageService {
             .of(pageRequest, previousState);
 
         final Slice<ChatMessageEntity> pageableChatMessages = chatMessageRepository
-            .findAllByTextChannelId(textChannelId, cassandraPageRequest);
+            .findAllByKey_TextChannelId(textChannelId, cassandraPageRequest);
 
         final List<Long> userIds = pageableChatMessages.getContent().stream()
-            .map(ChatMessageEntity::getUserId)
+            .map(message -> message.getKey().getUserId())
             .distinct()
             .toList();
 
@@ -108,8 +109,9 @@ public class MessageServiceImpl implements MessageService {
         }
         final List<MessagePayloadResDto> resDtos = new ArrayList<>(pageableChatMessages.getNumberOfElements());
         for (final ChatMessageEntity chatMessage : pageableChatMessages.getContent()) {
-            final UserDetails details = userDetails.get(chatMessage.getUserId());
-            final String profileImagePath = userImagesDetails.get(chatMessage.getUserId());
+            final ChatPrimaryKey key = chatMessage.getKey();
+            final UserDetails details = userDetails.get(key.getUserId());
+            final String profileImagePath = userImagesDetails.get(key.getUserId());
             if (details == null || profileImagePath == null) {
                 continue;
             }
@@ -208,13 +210,18 @@ public class MessageServiceImpl implements MessageService {
         List<ChatFileDefinition> filesList
     ) {
         final ZonedDateTime messageTime = ZonedDateTime.now();
-        final ChatMessageEntity chatMessage = ChatMessageEntity.builder()
+
+        final ChatPrimaryKey primaryKey = ChatPrimaryKey.builder()
             .id(messageId)
-            .message(payloadDto.message())
-            .createdTimestamp(messageTime.toInstant())
-            .timeZone(messageTime.getZone())
-            .userId(userId)
             .textChannelId(textChannelId)
+            .createdTimestamp(messageTime.toInstant())
+            .userId(userId)
+            .build();
+
+        final ChatMessageEntity chatMessage = ChatMessageEntity.builder()
+            .key(primaryKey)
+            .message(payloadDto.message())
+            .timeZone(messageTime.getZone())
             .filesList(filesList)
             .build();
 
