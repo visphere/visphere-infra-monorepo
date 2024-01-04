@@ -148,7 +148,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     @Transactional
     public MessagePayloadResDto processFilesMessages(
-        long userId, long textChannelId, String body, MultipartFile[] files
+        long textChannelId, String body, MultipartFile[] files, AuthUserDetails user
     ) {
         MessagePayloadResDto resDto;
         final GuildByTextChannelIdResDto guild = syncQueueHandler.sendNotNullWithBlockThread(

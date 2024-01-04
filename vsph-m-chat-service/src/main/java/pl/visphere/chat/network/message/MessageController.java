@@ -33,14 +33,14 @@ public class MessageController {
         return ResponseEntity.ok(messageService.getAllMessagesWithOffset(textChannelId, offset, size, nextPage, user));
     }
 
-    @PostMapping("/textchannel/{textChannelId}/user/{userId}")
+    @PostMapping("/textchannel/{textChannelId}")
     ResponseEntity<Void> publishMessageWithFiles(
         @PathVariable long textChannelId,
-        @PathVariable long userId,
         @RequestParam("body") String body,
-        @RequestParam("files") MultipartFile[] files
+        @RequestParam("files") MultipartFile[] files,
+        @LoggedUser AuthUserDetails user
     ) {
-        final MessagePayloadResDto resDto = messageService.processFilesMessages(userId, textChannelId, body, files);
+        final MessagePayloadResDto resDto = messageService.processFilesMessages(textChannelId, body, files, user);
         simpMessagingTemplate.convertAndSend(String.format("/topic/outbound.%s", textChannelId), resDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
