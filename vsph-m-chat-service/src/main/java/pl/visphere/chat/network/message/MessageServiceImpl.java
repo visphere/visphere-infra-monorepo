@@ -31,8 +31,7 @@ import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.UserImagesIdentify;
 import pl.visphere.lib.kafka.payload.multimedia.UsersImagesDetailsReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.UsersImagesDetailsResDto;
-import pl.visphere.lib.kafka.payload.sphere.GuildByTextChannelIdResDto;
-import pl.visphere.lib.kafka.payload.sphere.TextChannelAssignmentsReqDto;
+import pl.visphere.lib.kafka.payload.sphere.*;
 import pl.visphere.lib.kafka.payload.user.UserDetails;
 import pl.visphere.lib.kafka.payload.user.UsersDetailsReqDto;
 import pl.visphere.lib.kafka.payload.user.UsersDetailsResDto;
@@ -150,8 +149,7 @@ public class MessageServiceImpl implements MessageService {
         long textChannelId, String body, MultipartFile[] files, AuthUserDetails user
     ) {
         MessagePayloadResDto resDto;
-        final GuildByTextChannelIdResDto guild = syncQueueHandler.sendNotNullWithBlockThread(
-            QueueTopic.GET_GUILD_BASE_TEXT_CHANNEL_ID, textChannelId, GuildByTextChannelIdResDto.class);
+        final Long guildId = checkTextChannelAndUserAssignments(user, textChannelId);
         try {
             final MessagePayloadReqDto reqDto = objectMapper.readValue(body, MessagePayloadReqDto.class);
             final UUID messageId = UUID.randomUUID();
@@ -164,7 +162,7 @@ public class MessageServiceImpl implements MessageService {
             for (final MultipartFile file : files) {
                 final String fileName = UUID.randomUUID() + "-" + file.getOriginalFilename();
                 final String resourceDir = new StringJoiner("/")
-                    .add(String.valueOf(guild.id()))
+                    .add(String.valueOf(guildId))
                     .add(String.valueOf(textChannelId))
                     .add(messageId.toString())
                     .toString();
@@ -187,7 +185,7 @@ public class MessageServiceImpl implements MessageService {
                     .build();
                 chatFileDefinitions.add(chatFileDefinition);
             }
-            resDto = createAndSaveNewMessage(reqDto, userId, textChannelId, messageId, chatFileDefinitions);
+            resDto = createAndSaveNewMessage(reqDto, user.getId(), textChannelId, messageId, chatFileDefinitions);
         } catch (JsonProcessingException ex) {
             throw new GenericRestException("Unable to process json body: '{}'. Cause: '{}'.", body, ex.getMessage());
         } catch (IOException ex) {
@@ -228,5 +226,19 @@ public class MessageServiceImpl implements MessageService {
         MessagePayloadReqDto payloadDto, long userId, long textChannelId, UUID messageId
     ) {
         return createAndSaveNewMessage(payloadDto, userId, textChannelId, messageId, List.of());
+    }
+
+    private Long checkTextChannelAndUserAssignments(AuthUserDetails user, long textChannelId) {
+        final GuildByTextChannelIdResDto guild = syncQueueHandler.sendNotNullWithBlockThread(
+            QueueTopic.GET_GUILD_BASE_TEXT_CHANNEL_ID, textChannelId, GuildByTextChannelIdResDto.class);
+
+        final GuildAssignmentsReqDto assignmentsReqDto = GuildAssignmentsReqDto.builder()
+            .userId(user.getId())
+            .guildId(guild.id())
+            .throwingError(true)
+            .build();
+        syncQueueHandler.sendNullableWithBlockThread(QueueTopic.CHECK_USER_GUILD_ASSIGNMENTS, assignmentsReqDto);
+
+        return guild.id();
     }
 }
