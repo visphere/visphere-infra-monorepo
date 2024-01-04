@@ -10,15 +10,13 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface ChatMessageRepository extends CassandraRepository<ChatMessageEntity, UUID> {
-    Slice<ChatMessageEntity> findAllByTextChannelId(Long textChannelId, Pageable pageable);
-    void deleteAllByTextChannelIdInAndUserId(List<Long> textChannelId, Long userId);
-    void deleteAllByTextChannelIdIn(List<Long> textChannelIds);
 public interface ChatMessageRepository extends CassandraRepository<ChatMessageEntity, ChatPrimaryKey> {
     Slice<ChatMessageEntity> findAllByKey_TextChannelId(Long textChannelId, Pageable pageable);
+    Optional<ChatMessageEntity> findByKey_TextChannelIdAndKey_Id(Long textChannelId, UUID keyId);
     void deleteAllByKey_TextChannelIdInAndKey_UserId(List<Long> textChannelId, Long userId);
     void deleteAllByKey_TextChannelIdIn(List<Long> textChannelIds);
 }

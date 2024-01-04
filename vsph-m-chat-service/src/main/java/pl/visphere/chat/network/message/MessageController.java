@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
 import pl.visphere.chat.network.message.dto.MessagesResDto;
+import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.lib.security.user.LoggedUser;
 
@@ -43,5 +44,17 @@ public class MessageController {
         final MessagePayloadResDto resDto = messageService.processFilesMessages(textChannelId, body, files, user);
         simpMessagingTemplate.convertAndSend(String.format("/topic/outbound.%s", textChannelId), resDto);
         return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("/{messageId}/textchannel/{textChannelId}")
+    ResponseEntity<BaseMessageResDto> deleteMessage(
+        @PathVariable String messageId,
+        @PathVariable long textChannelId,
+        @LoggedUser AuthUserDetails user
+    ) {
+        final BaseMessageResDto resDto = messageService.deleteMessage(messageId, textChannelId, user);
+        simpMessagingTemplate
+            .convertAndSend(String.format("/topic/outbound.%s.delete.message", textChannelId), messageId);
+        return ResponseEntity.ok(resDto);
     }
 }

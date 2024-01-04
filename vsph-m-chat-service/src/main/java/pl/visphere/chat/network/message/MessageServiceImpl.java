@@ -21,12 +21,15 @@ import pl.visphere.chat.domain.chatmessage.ChatFileDefinition;
 import pl.visphere.chat.domain.chatmessage.ChatMessageEntity;
 import pl.visphere.chat.domain.chatmessage.ChatMessageRepository;
 import pl.visphere.chat.domain.chatmessage.ChatPrimaryKey;
+import pl.visphere.chat.exception.MessageException;
+import pl.visphere.chat.i18n.LocaleSet;
 import pl.visphere.chat.network.message.dto.MessagePayloadReqDto;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
 import pl.visphere.chat.network.message.dto.MessagesResDto;
+import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.exception.app.FileException;
-import pl.visphere.lib.file.FileHelper;
+import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.multimedia.UserImagesIdentify;
 import pl.visphere.lib.kafka.payload.multimedia.UsersImagesDetailsReqDto;
@@ -54,6 +57,7 @@ public class MessageServiceImpl implements MessageService {
     private final ObjectMapper objectMapper;
     private final FileProperties fileProperties;
     private final S3Client s3Client;
+    private final I18nService i18nService;
 
     private final ChatMessageRepository chatMessageRepository;
 
@@ -192,6 +196,50 @@ public class MessageServiceImpl implements MessageService {
             throw new GenericRestException("Unable to process file. Cause: '{}'.", ex.getMessage());
         }
         return resDto;
+    }
+
+    @Override
+    @Transactional
+    public BaseMessageResDto deleteMessage(String messageId, long textChannelId, AuthUserDetails user) {
+        final Long guildId = checkTextChannelAndUserAssignments(user, textChannelId);
+
+        final GuildDetailsReqDto guildDetailsReqDto = GuildDetailsReqDto.builder()
+            .guildId(guildId)
+            .isModifiable(false)
+            .build();
+
+        final GuildDetailsResDto detailsResDto = syncQueueHandler
+            .sendNotNullWithBlockThread(QueueTopic.GET_GUILD_DETAILS, guildDetailsReqDto, GuildDetailsResDto.class);
+
+        final ChatMessageEntity chatMessage = chatMessageRepository
+            .findByKey_TextChannelIdAndKey_Id(textChannelId, UUID.fromString(messageId))
+            .orElseThrow(() -> new MessageException.MessageNotFoundException(messageId, user.getId()));
+
+        final boolean isAuthor = Objects.equals(chatMessage.getKey().getUserId(), user.getId());
+        final boolean isGuildOwner = Objects.equals(detailsResDto.ownerId(), user.getId());
+        if (!isAuthor && !isGuildOwner) {
+            throw new MessageException.MessageNotFoundException(messageId, user.getId());
+        }
+        List<ChatFileDefinition> attachments = new ArrayList<>();
+        if (chatMessage.getFilesList() != null) {
+            // copy elements array to prevent unexpected behavior on detached Hibernate bean
+            attachments = List.copyOf(chatMessage.getFilesList());
+        }
+        chatMessageRepository.delete(chatMessage);
+
+        if (!attachments.isEmpty()) {
+            for (final ChatFileDefinition fileDefinition : attachments) {
+                final String fileKey = fileDefinition
+                    .getPath()
+                    .replace(S3Bucket.ATTACHMENTS.getName() + "/", StringUtils.EMPTY);
+                s3Client.deleteObject(S3Bucket.ATTACHMENTS, fileKey);
+            }
+            log.info("Successfully removed: '{}' resources for removing message with ID: '{}'.,",
+                attachments.size(), messageId);
+        }
+        return BaseMessageResDto.builder()
+            .message(i18nService.getMessage(LocaleSet.MESSAGE_DELETED_RESPONSE_SUCCESS))
+            .build();
     }
 
     private MessagePayloadResDto createAndSaveNewMessage(

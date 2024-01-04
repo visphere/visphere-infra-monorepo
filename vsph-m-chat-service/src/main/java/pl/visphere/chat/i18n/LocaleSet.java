@@ -11,6 +11,8 @@ import pl.visphere.lib.i18n.LocaleExtendableSet;
 @Getter
 @RequiredArgsConstructor
 public enum LocaleSet implements LocaleExtendableSet {
+    MESSAGE_DELETED_RESPONSE_SUCCESS("vsph.i18n.messageDeleted.res.success"),
+    MESSAGE_NOT_FOUND_EXCEPTION_MESSAGE("vsph.chat.exc.messageNotFound"),
     ;
 
     private final String holder;

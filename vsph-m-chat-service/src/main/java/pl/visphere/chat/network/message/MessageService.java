@@ -8,10 +8,12 @@ import org.springframework.web.multipart.MultipartFile;
 import pl.visphere.chat.network.message.dto.MessagePayloadReqDto;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
 import pl.visphere.chat.network.message.dto.MessagesResDto;
+import pl.visphere.lib.BaseMessageResDto;
 import pl.visphere.lib.security.user.AuthUserDetails;
 
 public interface MessageService {
     MessagesResDto getAllMessagesWithOffset(long textChannelId, int offset, int size, String nextPage, AuthUserDetails user);
     MessagePayloadResDto processMessage(long userId, long textChannelId, MessagePayloadReqDto payloadDto);
-    MessagePayloadResDto processFilesMessages(long userId, long textChannelId, String body, MultipartFile[] files);
+    MessagePayloadResDto processFilesMessages(long textChannelId, String body, MultipartFile[] files, AuthUserDetails user);
+    BaseMessageResDto deleteMessage(String messageId, long textChannelId, AuthUserDetails user);
 }
