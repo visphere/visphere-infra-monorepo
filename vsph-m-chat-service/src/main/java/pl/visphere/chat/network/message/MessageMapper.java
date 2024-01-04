@@ -56,10 +56,7 @@ class MessageMapper {
     }
 
     List<AttachmentFile> mapToAttachmentFilesList(List<ChatFileDefinition> files) {
-        if (files == null) {
-            return List.of();
-        }
-        return files.stream()
+        return files == null ? List.of() : files.stream()
             .map(file -> AttachmentFile.builder()
                 .mimeType(file.getMimeType())
                 .originalName(file.getOriginalName())

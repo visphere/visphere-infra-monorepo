@@ -17,5 +17,4 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties("visphere.files")
 public class FileProperties {
     private int maxPerMessage;
-    private int maxSizeMb;
 }
