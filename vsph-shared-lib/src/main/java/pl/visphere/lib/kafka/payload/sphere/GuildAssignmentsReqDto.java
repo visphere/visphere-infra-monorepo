@@ -9,6 +9,7 @@ import lombok.Builder;
 @Builder
 public record GuildAssignmentsReqDto(
     Long userId,
-    Long guildId
+    Long guildId,
+    boolean throwingError
 ) {
 }

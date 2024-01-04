@@ -17,6 +17,7 @@ import pl.visphere.sphere.domain.textchannel.TextChannelRepository;
 import pl.visphere.sphere.domain.userguild.UserGuildRepository;
 import pl.visphere.sphere.exception.SphereGuildException;
 import pl.visphere.sphere.exception.TextChannelException;
+import pl.visphere.sphere.exception.UserGuildException;
 
 import java.time.ZoneId;
 import java.util.List;
@@ -76,7 +77,12 @@ public class SphereGuildServiceImpl implements SphereGuildService {
 
     @Override
     public boolean checkUserGuildAssignments(GuildAssignmentsReqDto reqDto) {
-        return userGuildRepository.existsByUserIdAndGuild_Id(reqDto.userId(), reqDto.guildId());
+        final boolean userExistInGuild = userGuildRepository
+            .existsByUserIdAndGuild_Id(reqDto.userId(), reqDto.guildId());
+        if (!userExistInGuild && reqDto.throwingError()) {
+            throw new UserGuildException.UserIsNotGuildParticipantException(reqDto.userId(), reqDto.guildId());
+        }
+        return userExistInGuild;
     }
 
     @Override
