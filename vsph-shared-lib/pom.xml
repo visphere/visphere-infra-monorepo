@@ -30,6 +30,7 @@
     <jakarta-persistence-api.version>3.1.0</jakarta-persistence-api.version>
     <hibernate.version>6.3.0.Final</hibernate.version>
     <swagger-core.version>2.2.15</swagger-core.version>
+    <junit.version>5.10.1</junit.version>
     <!-- End of libs versions section -->
   </properties>
 
@@ -110,6 +111,12 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>
