@@ -20,6 +20,8 @@ import pl.visphere.lib.kafka.payload.multimedia.ProfileImageDetailsResDto;
 import pl.visphere.lib.kafka.payload.user.CredentialsConfirmationReqDto;
 import pl.visphere.lib.kafka.payload.user.UserDetailsResDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
+import pl.visphere.lib.s3.S3Bucket;
+import pl.visphere.lib.s3.S3Client;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.sphere.domain.banneduser.BannedUserEntity;
 import pl.visphere.sphere.domain.banneduser.BannedUserRepository;
@@ -50,6 +52,7 @@ import java.util.Objects;
 class ParticipantServiceImpl implements ParticipantService {
     private final SyncQueueHandler syncQueueHandler;
     private final I18nService i18nService;
+    private final S3Client s3Client;
 
     private final GuildRepository guildRepository;
     private final UserGuildRepository userGuildRepository;
@@ -213,7 +216,7 @@ class ParticipantServiceImpl implements ParticipantService {
         userGuildRepository.delete(userGuild);
 
         findTextChannelsAndDeleteUserMessages(guild, user.getId(), deleteAllMessages);
-        
+
         log.info("Successfully leave guild with ID: '{}'", guildId);
         return BaseMessageResDto.builder()
             .message(i18nService.getMessage(LocaleSet.SPHERE_GUILD_LEAVE_RESPONSE_SUCCESS))
@@ -327,6 +330,10 @@ class ParticipantServiceImpl implements ParticipantService {
         if (deleteAllMessages) {
             syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_USER_MESSAGES,
                 new DeleteUserMessagesReqDto(userId, textChannelIds));
+            for (final Long textChannelId : textChannelIds) {
+                s3Client.clearObjects(S3Bucket.ATTACHMENTS, String.format("%s/%s/%s",
+                    guild.getId(), textChannelId, userId));
+            }
         }
     }
 }

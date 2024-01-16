@@ -18,6 +18,8 @@ import pl.visphere.lib.kafka.payload.chat.DeleteTextChannelMessagesReqDto;
 import pl.visphere.lib.kafka.payload.multimedia.*;
 import pl.visphere.lib.kafka.payload.user.CredentialsConfirmationReqDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
+import pl.visphere.lib.s3.S3Bucket;
+import pl.visphere.lib.s3.S3Client;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.sphere.domain.guild.GuildCategory;
 import pl.visphere.sphere.domain.guild.GuildEntity;
@@ -40,6 +42,7 @@ import java.util.*;
 public class GuildServiceImpl implements GuildService {
     private final I18nService i18nService;
     private final SyncQueueHandler syncQueueHandler;
+    private final S3Client s3Client;
 
     private final GuildRepository guildRepository;
     private final GuildLinkRepository guildLinkRepository;
@@ -244,6 +247,8 @@ public class GuildServiceImpl implements GuildService {
 
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_TEXT_CHANNEL_MESSAGES,
             new DeleteTextChannelMessagesReqDto(textChannelIds));
+
+        s3Client.clearObjects(S3Bucket.ATTACHMENTS, guildId);
 
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_GUILD_IMAGE_DATA, guildId);
 

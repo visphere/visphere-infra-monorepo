@@ -13,6 +13,8 @@ import pl.visphere.lib.i18n.I18nService;
 import pl.visphere.lib.kafka.QueueTopic;
 import pl.visphere.lib.kafka.payload.chat.DeleteTextChannelMessagesReqDto;
 import pl.visphere.lib.kafka.sync.SyncQueueHandler;
+import pl.visphere.lib.s3.S3Bucket;
+import pl.visphere.lib.s3.S3Client;
 import pl.visphere.lib.security.user.AuthUserDetails;
 import pl.visphere.sphere.domain.guild.GuildEntity;
 import pl.visphere.sphere.domain.guild.GuildRepository;
@@ -36,6 +38,7 @@ import java.util.List;
 class TextChannelServiceImpl implements TextChannelService {
     private final I18nService i18nService;
     private final SyncQueueHandler syncQueueHandler;
+    private final S3Client s3Client;
 
     private final GuildRepository guildRepository;
     private final UserGuildRepository userGuildRepository;
@@ -113,12 +116,15 @@ class TextChannelServiceImpl implements TextChannelService {
     @Override
     public BaseMessageResDto deleteTextChannel(long textChannelId, AuthUserDetails user) {
         final TextChannelEntity textChannel = findTextChannel(textChannelId, user);
+        final String guildId = String.valueOf(textChannel.getGuild().getId());
 
         textChannel.setGuild(null);
         textChannelRepository.deleteById(textChannelId);
 
         syncQueueHandler.sendNullableWithBlockThread(QueueTopic.DELETE_TEXT_CHANNEL_MESSAGES,
             new DeleteTextChannelMessagesReqDto(List.of(textChannelId)));
+
+        s3Client.clearObjects(S3Bucket.ATTACHMENTS, String.format("%s/%s", guildId, textChannelId));
 
         log.info("Successfully deleted text channel with ID: '{}' from guild.", textChannelId);
         return BaseMessageResDto.builder()

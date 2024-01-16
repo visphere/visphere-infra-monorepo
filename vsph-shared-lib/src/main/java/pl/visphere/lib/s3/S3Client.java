@@ -153,6 +153,17 @@ public class S3Client {
         clearObjects(bucket, String.valueOf(resourceDir), resourcePrefix);
     }
 
+    public void clearObjects(S3Bucket bucket, String resourceDir) {
+        final ObjectListing objects = client.listObjects(bucket.getName(), resourceDir);
+        for (final S3ObjectSummary objectSummary : objects.getObjectSummaries()) {
+            client.deleteObject(bucket.getName(), objectSummary.getKey());
+        }
+    }
+
+    public void clearObjects(S3Bucket bucket, Long resourceDir) {
+        clearObjects(bucket, String.valueOf(resourceDir));
+    }
+
     public ObjectData parseObjectKey(S3Bucket bucket, String key) {
         final int uuidStartPos = key.indexOf('-');
         if (uuidStartPos == -1) {
