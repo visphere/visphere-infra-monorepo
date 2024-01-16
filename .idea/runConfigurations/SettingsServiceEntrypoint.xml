@@ -1,0 +1,24 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="SettingsServiceEntrypoint" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+    <option name="ACTIVE_PROFILES" value="dev" />
+    <option name="ALTERNATIVE_JRE_PATH" value="17" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <module name="vsph-m-settings-service" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="pl.visphere.settings.SettingsServiceEntrypoint" />
+    <option name="VM_PARAMETERS" value="-Dvisphere.micro.instance.hash=dGGR2NR0" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="pl.visphere.settings.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <extension name="software.aws.toolkits.jetbrains.core.execution.JavaAwsConnectionExtension">
+      <option name="credential" />
+      <option name="region" />
+      <option name="useCurrentConnection" value="false" />
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
