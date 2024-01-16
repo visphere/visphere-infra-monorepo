@@ -15,9 +15,11 @@ import java.util.StringJoiner;
 
 @Slf4j
 public class InitialsDrawer extends AbstractImageDrawer<char[]> {
+    private final Font loadedFont;
+
     public InitialsDrawer(ImageProperties imageProperties, ResourcesRestLoader resourcesRestLoader) {
         super(imageProperties);
-        resourcesRestLoader.loadFontFromExternalServer();
+        loadedFont = resourcesRestLoader.loadFontFromExternalServer();
     }
 
     @Override
@@ -34,7 +36,7 @@ public class InitialsDrawer extends AbstractImageDrawer<char[]> {
         graphics2D.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         graphics2D.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        graphics2D.setFont(new Font(imageProperties.getFontName(), Font.PLAIN, fontSize));
+        graphics2D.setFont(loadedFont.deriveFont((float) fontSize));
         graphics2D.setPaint(Color.decode(color));
         graphics2D.fillRect(0, 0, size, size);
         graphics2D.setColor(calcFontColor(color));

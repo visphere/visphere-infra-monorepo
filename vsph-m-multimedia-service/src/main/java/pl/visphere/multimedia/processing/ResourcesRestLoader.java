@@ -27,17 +27,17 @@ public class ResourcesRestLoader {
     private final ImageProperties imageProperties;
     private final ExternalServiceConfig externalServiceConfig;
 
-    public void loadFontFromExternalServer() {
+    public Font loadFontFromExternalServer() {
+        Font font;
         final String path = imageProperties.getFontPath();
         final byte[] fontData = loadResourceFromRemoteServer(path);
         try (final InputStream inputStream = new ByteArrayInputStream(fontData)) {
-            final GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
-            graphicsEnvironment.registerFont(Font.createFont(Font.TRUETYPE_FONT, inputStream));
+            font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             log.info("Successfully loaded font graphics resource from external server: '{}'.", path);
-
         } catch (IOException | FontFormatException ex) {
             throw new RuntimeException("Unable to process image font resource. Cause: '" + ex.getMessage() + "'.");
         }
+        return font;
     }
 
     public BufferedImage loadLockerAlphaBlend() {
