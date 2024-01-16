@@ -15,5 +15,5 @@ public interface MessageService {
     MessagesResDto getAllMessagesWithOffset(long textChannelId, int offset, int size, String nextPage, AuthUserDetails user);
     MessagePayloadResDto processMessage(long userId, long textChannelId, MessagePayloadReqDto payloadDto);
     MessagePayloadResDto processFilesMessages(long textChannelId, String body, MultipartFile[] files, AuthUserDetails user);
-    BaseMessageResDto deleteMessage(String messageId, long textChannelId, AuthUserDetails user);
+    BaseMessageResDto deleteMessage(String messageId, long authorId, long textChannelId, AuthUserDetails user);
 }

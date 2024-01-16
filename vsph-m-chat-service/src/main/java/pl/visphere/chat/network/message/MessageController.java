@@ -46,13 +46,14 @@ public class MessageController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{messageId}/textchannel/{textChannelId}")
+    @DeleteMapping("/{messageId}/author/{authorId}/textchannel/{textChannelId}")
     ResponseEntity<BaseMessageResDto> deleteMessage(
         @PathVariable String messageId,
+        @PathVariable long authorId,
         @PathVariable long textChannelId,
         @LoggedUser AuthUserDetails user
     ) {
-        final BaseMessageResDto resDto = messageService.deleteMessage(messageId, textChannelId, user);
+        final BaseMessageResDto resDto = messageService.deleteMessage(messageId, authorId, textChannelId, user);
         simpMessagingTemplate
             .convertAndSend(String.format("/topic/outbound.%s.delete.message", textChannelId), messageId);
         return ResponseEntity.ok(resDto);

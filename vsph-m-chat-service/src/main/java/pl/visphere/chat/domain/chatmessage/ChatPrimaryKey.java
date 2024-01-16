@@ -21,14 +21,14 @@ import java.util.UUID;
 @PrimaryKeyClass
 public class ChatPrimaryKey {
 
-    @PrimaryKeyColumn(name = "id", ordinal = 0)
-    private UUID id;
-
-    @PrimaryKeyColumn(name = "text_channel_id", ordinal = 1, type = PrimaryKeyType.PARTITIONED)
+    @PrimaryKeyColumn(name = "text_channel_id", ordinal = 0, type = PrimaryKeyType.PARTITIONED)
     private Long textChannelId;
 
-    @PrimaryKeyColumn(name = "user_id", ordinal = 2)
+    @PrimaryKeyColumn(name = "user_id", ordinal = 1)
     private Long userId;
+
+    @PrimaryKeyColumn(name = "id", ordinal = 2)
+    private UUID id;
 
     @PrimaryKeyColumn(name = "created_timestamp", ordinal = 3, ordering = Ordering.DESCENDING)
     private Instant createdTimestamp;

@@ -200,7 +200,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
-    public BaseMessageResDto deleteMessage(String messageId, long textChannelId, AuthUserDetails user) {
+    public BaseMessageResDto deleteMessage(String messageId, long authorId, long textChannelId, AuthUserDetails user) {
         final Long guildId = checkTextChannelAndUserAssignments(user, textChannelId);
 
         final GuildDetailsReqDto guildDetailsReqDto = GuildDetailsReqDto.builder()
@@ -212,7 +212,7 @@ public class MessageServiceImpl implements MessageService {
             .sendNotNullWithBlockThread(QueueTopic.GET_GUILD_DETAILS, guildDetailsReqDto, GuildDetailsResDto.class);
 
         final ChatMessageEntity chatMessage = chatMessageRepository
-            .findByKey_TextChannelIdAndKey_Id(textChannelId, UUID.fromString(messageId))
+            .findByKey_TextChannelIdAndKey_UserIdAndKey_Id(textChannelId, authorId, UUID.fromString(messageId))
             .orElseThrow(() -> new MessageException.MessageNotFoundException(messageId, user.getId()));
 
         final boolean isAuthor = Objects.equals(chatMessage.getKey().getUserId(), user.getId());
