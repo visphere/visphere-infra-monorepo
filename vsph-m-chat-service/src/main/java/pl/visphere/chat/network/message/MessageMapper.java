@@ -24,17 +24,17 @@ class MessageMapper {
     private final ExternalServiceConfig externalServiceConfig;
 
     MessagePayloadResDto mapToMessagePayload(
-        ChatMessageEntity chatMessage, UserDetails details, String profileImagePath
+        ChatMessageEntity chatMessage, UserDetails details, String fullName, String profileImagePath, boolean isRemoved
     ) {
         final ChatPrimaryKey key = chatMessage.getKey();
         return MessagePayloadResDto.builder()
             .userId(key.getUserId())
             .messageId(key.getId().toString())
-            .fullName(details.fullName())
+            .fullName(fullName)
             .profileImageUrl(profileImagePath)
             .sendDate(ZonedDateTime.ofInstant(key.getCreatedTimestamp(), chatMessage.getTimeZone()))
             .message(chatMessage.getMessage())
-            .accountDeleted(details.accountDeleted())
+            .accountDeleted(details.accountDeleted() || isRemoved)
             .attachments(mapToAttachmentFilesList(chatMessage.getFilesList()))
             .build();
     }

@@ -293,9 +293,10 @@ public class ImageServiceImpl implements ImageService {
     public UsersImagesDetailsResDto getUsersImagesDetails(UsersImagesDetailsReqDto reqDto) {
         final List<Long> activeLocalUserIds = determinateUserIds(reqDto,
             details -> !details.accountDeleted() && !details.externalSupplier());
+        final List<Long> oauth2UserIds = determinateUserIds(reqDto,
+            details -> details.externalSupplier() && !details.accountDeleted());
 
         final List<Long> deletedAccountIds = determinateUserIds(reqDto, UserImagesIdentify::accountDeleted);
-        final List<Long> oauth2UserIds = determinateUserIds(reqDto, UserImagesIdentify::externalSupplier);
 
         final Map<Long, OAuth2UsersDetails> oauth2UsersImages = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.GET_OAUTH2_USERS_DETAILS,

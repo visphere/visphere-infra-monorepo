@@ -32,6 +32,7 @@ public enum LibLocaleSet implements LocaleExtendableSet {
     USER_ACCOUNT_DISABLED_EXCEPTION_MESSAGE("vsph.lib.exc.userAccountDisabled"),
     ACCOUNT_LOCKED_PLACEHOLDER("vsph.lib.i18n.accountLockedPlaceholder"),
     ACCOUNT_DELETED_PLACEHOLDER("vsph.lib.i18n.accountDeletedPlaceholder"),
+    UNKNOW_PARTICIPANT_PLACEHOLDER("vsph.lib.i18n.unknowParticipantPlaceholder"),
     INVALID_PASSWORD_EXCEPTION_MESSAGE("vsph.lib.exc.invalidPassword"),
     INVALID_PASSWORD_OR_MFA_CODE_EXCEPTION_MESSAGE("vsph.lib.exc.invalidPasswordOrMfaCode"),
     FILE_EXTENSION_NOT_SUPPORTED_EXCEPTION_MESSAGE("vsph.lib.exc.fileExtensionIsNotSupported"),

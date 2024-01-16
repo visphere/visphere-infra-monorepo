@@ -27,6 +27,7 @@ import pl.visphere.chat.network.message.dto.MessagePayloadReqDto;
 import pl.visphere.chat.network.message.dto.MessagePayloadResDto;
 import pl.visphere.chat.network.message.dto.MessagesResDto;
 import pl.visphere.lib.BaseMessageResDto;
+import pl.visphere.lib.LibLocaleSet;
 import pl.visphere.lib.exception.GenericRestException;
 import pl.visphere.lib.exception.app.FileException;
 import pl.visphere.lib.i18n.I18nService;
@@ -91,14 +92,26 @@ public class MessageServiceImpl implements MessageService {
             .sendNotNullWithBlockThread(QueueTopic.GET_USERS_DETAILS, new UsersDetailsReqDto(userIds),
                 UsersDetailsResDto.class);
 
-        final List<UserImagesIdentify> userImagesIdentifies = usersDetailsResDto.userDetails().entrySet().stream()
-            .map(details -> UserImagesIdentify.builder()
-                .userId(details.getKey())
-                .externalSupplier(details.getValue().externalSupplier())
-                .accountDeleted(details.getValue().accountDeleted())
-                .build())
-            .toList();
+        final List<UserImagesIdentify> userImagesIdentifies = new ArrayList<>(usersDetailsResDto.userDetails().size());
+        final List<Long> removedUsersFromChannel = new ArrayList<>();
 
+        for (final Map.Entry<Long, UserDetails> details : usersDetailsResDto.userDetails().entrySet()) {
+            final UserDetails userDetails = details.getValue();
+            final Long userId = details.getKey();
+            final List<Long> textChannelIds = syncQueueHandler
+                .sendNotNullWithBlockThread(QueueTopic.GET_USER_TEXT_CHANNELS, userId, UserTextChannelsResDto.class)
+                .textChannelIds();
+            final boolean isRemoved = !textChannelIds.contains(textChannelId);
+            if (isRemoved) {
+                removedUsersFromChannel.add(userId);
+            }
+            final UserImagesIdentify userImagesIdentify = UserImagesIdentify.builder()
+                .userId(userId)
+                .externalSupplier(userDetails.externalSupplier())
+                .accountDeleted(userDetails.accountDeleted() || isRemoved)
+                .build();
+            userImagesIdentifies.add(userImagesIdentify);
+        }
         final UsersImagesDetailsResDto usersImagesDetailsResDto = syncQueueHandler
             .sendNotNullWithBlockThread(QueueTopic.GET_USERS_IMAGES_DETAILS,
                 new UsersImagesDetailsReqDto(userImagesIdentifies), UsersImagesDetailsResDto.class);
@@ -114,10 +127,15 @@ public class MessageServiceImpl implements MessageService {
             final ChatPrimaryKey key = chatMessage.getKey();
             final UserDetails details = userDetails.get(key.getUserId());
             final String profileImagePath = userImagesDetails.get(key.getUserId());
-            if (details == null || profileImagePath == null) {
-                continue;
+            if (details != null && profileImagePath != null) {
+                final boolean isRemoved = removedUsersFromChannel.contains(key.getUserId());
+                String fullName = details.fullName();
+                if (isRemoved && !details.accountDeleted()) {
+                    fullName = i18nService.getMessage(LibLocaleSet.UNKNOW_PARTICIPANT_PLACEHOLDER);
+                }
+                resDtos.add(messageMapper.mapToMessagePayload(chatMessage, details, fullName,
+                    profileImagePath, isRemoved));
             }
-            resDtos.add(messageMapper.mapToMessagePayload(chatMessage, details, profileImagePath));
         }
         resDtos.sort(Comparator.comparing(MessagePayloadResDto::sendDate));
 
@@ -168,6 +186,7 @@ public class MessageServiceImpl implements MessageService {
                 final String resourceDir = new StringJoiner("/")
                     .add(String.valueOf(guildId))
                     .add(String.valueOf(textChannelId))
+                    .add(String.valueOf(user.getId()))
                     .add(messageId.toString())
                     .toString();
 
