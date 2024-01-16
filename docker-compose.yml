@@ -129,6 +129,7 @@ services:
   vsph-s3:
     container_name: vsph-s3
     image: bitnami/minio:2023.9.27
+    user: root
     ports:
       - '${VSPH_DEV_S3_API_PORT}:9000'
       - '${VSPH_DEV_S3_PORT}:9001'
